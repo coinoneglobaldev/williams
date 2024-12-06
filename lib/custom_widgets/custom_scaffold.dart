@@ -8,12 +8,12 @@ class ScreenCustomScaffold extends ConsumerStatefulWidget {
   final String title;
   final Widget bodyWidget;
   final bool resizeToAvoidBottomInset;
-
+  final Widget? floatingActionButton;
   const ScreenCustomScaffold({
     super.key,
     required this.title,
     required this.bodyWidget,
-
+    this.floatingActionButton,
     this.resizeToAvoidBottomInset = true,
   });
 
@@ -31,10 +31,12 @@ class _ScreenHomePageState extends ConsumerState<ScreenCustomScaffold> {
     var connectivityStatusProvider = ref.watch(connectivityStatusProviders);
     if (connectivityStatusProvider == ConnectivityStatus.isConnected) {
       return Scaffold(
+        floatingActionButton: widget.floatingActionButton,
         backgroundColor: Colors.black,
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
         appBar: AppBar(
-          title: Text(widget.title, style: const TextStyle(color: Colors.white)),
+          title:
+              Text(widget.title, style: const TextStyle(color: Colors.white)),
           centerTitle: true,
           backgroundColor: Colors.black,
           leading: IconButton(

@@ -12,6 +12,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   late List<OrderItem> orderItems;
   late List<TextEditingController> qtyControllers;
   late List<TextEditingController> notesControllers;
+  int selectedRowIndex = 0;
 
   @override
   void initState() {
@@ -62,13 +63,28 @@ class _OrderItemViewState extends State<OrderItemView> {
     super.dispose();
   }
 
+  void _moveUp() {
+    if (selectedRowIndex > 0) {
+      setState(() {
+        selectedRowIndex--;
+      });
+    }
+  }
+
+  void _moveDown() {
+    if (selectedRowIndex < orderItems.length - 1) {
+      setState(() {
+        selectedRowIndex++;
+      });
+    }
+  }
+
   bool get isValidToSave =>
       qtyControllers.every((controller) => controller.text.isNotEmpty);
 
   void _handleSave() {
     if (!isValidToSave) return;
 
-    // Update items with current controller values
     for (int i = 0; i < orderItems.length; i++) {
       orderItems[i].qty = qtyControllers[i].text;
       orderItems[i].notes = notesControllers[i].text;
@@ -137,7 +153,18 @@ class _OrderItemViewState extends State<OrderItemView> {
             scrollDirection: Axis.horizontal,
             child: DataTable(
               columnSpacing: 30.0,
-              dataRowColor: WidgetStateProperty.all(Colors.grey.shade900),
+              dataRowColor: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) {
+                  final int index = states.contains(WidgetState.selected)
+                      ? states.contains(WidgetState.selected)
+                          ? data.indexOf(data[selectedRowIndex])
+                          : -1
+                      : -1;
+                  return index == selectedRowIndex
+                      ? Colors.blue.withOpacity(0.3)
+                      : Colors.grey.shade900;
+                },
+              ),
               headingRowColor: WidgetStateProperty.all(Colors.white),
               columns: columns
                   .map((column) => DataColumn(
@@ -157,6 +184,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                   final index = entry.key;
                   final item = entry.value;
                   return DataRow(
+                    selected: index == selectedRowIndex,
                     cells: [
                       DataCell(
                         SizedBox(
@@ -164,8 +192,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                           child: TextField(
                             controller: qtyControllers[index],
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
+                            decoration: const InputDecoration(
                               isDense: true,
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 8,
@@ -197,8 +224,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                           width: 120,
                           child: TextField(
                             controller: notesControllers[index],
-                            decoration: const InputDecoration(focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
+                            decoration: const InputDecoration(
                               isDense: true,
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 8,
@@ -216,7 +242,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                       DataCell(
                         Checkbox(
                           fillColor: WidgetStateProperty.all(Colors.white),
-                          checkColor:Colors.black,
+                          checkColor: Colors.black,
                           value: item.isChecked,
                           onChanged: (bool? value) {
                             setState(() {
@@ -240,6 +266,27 @@ class _OrderItemViewState extends State<OrderItemView> {
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
       title: 'Order Item',
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(left: 30),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              onPressed: _moveUp,
+              mini: true,
+              backgroundColor: Colors.grey.shade900,
+              child: const Icon(Icons.arrow_upward, color: Colors.white),
+            ),
+            const SizedBox(height: 10),
+            FloatingActionButton(
+              onPressed: _moveDown,
+              mini: true,
+              backgroundColor: Colors.grey.shade900,
+              child: const Icon(Icons.arrow_downward, color: Colors.white),
+            ),
+          ],
+        ),
+      ),
       bodyWidget: SingleChildScrollView(
         child: Column(
           children: [
@@ -251,18 +298,12 @@ class _OrderItemViewState extends State<OrderItemView> {
               child: ElevatedButton(
                 onPressed: isValidToSave ? _handleSave : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade900,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  disabledBackgroundColor: Colors.grey,
+                  backgroundColor:
+                      isValidToSave ? Colors.grey.shade900 : Colors.grey,
                 ),
-                child: const Text(
-                  'Save',
-                  style: TextStyle(color: Colors.white),
-                ),
+                child: const Icon(Icons.save, color: Colors.white),
               ),
             ),
-            const SizedBox(height: 20),
           ],
         ),
       ),
