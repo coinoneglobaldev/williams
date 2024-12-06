@@ -88,7 +88,6 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.fromSwatch()
             .copyWith(primary: themeColor, secondary: Colors.black),
-
         textTheme: TextTheme(
           labelMedium: TextStyle(
             fontSize: 25,
