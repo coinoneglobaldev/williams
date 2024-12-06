@@ -84,68 +84,12 @@ class _PackingViewState extends State<PackingView> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
-      title: 'Packing',
-      bodyWidget: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(' Start Date',
-                        style: TextStyle(fontSize: 16, color: Colors.white)),
-                    TextField(
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        suffixIcon: Icon(Icons.calendar_today),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                      ),
-                      controller: startDateController,
-                      onTap: _selectStartDate,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(' End Date',
-                        style: TextStyle(fontSize: 16, color: Colors.white)),
-                    TextField(
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        suffixIcon: Icon(Icons.calendar_today),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                      ),
-                      controller: endDateController,
-                      onTap: _selectEndDate,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-            ],
-          ),
-          if (startDate != null && endDate != null) ...[
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text(
-                'Duration: ${endDate!.difference(startDate!).inDays + 1} days',
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ],
+      appBar: AppBar(
+        title: const Text('Packing'),
+        centerTitle: true,
+        backgroundColor: Colors.white,
       ),
+      homeWidget: Container(),
     );
   }
 }
