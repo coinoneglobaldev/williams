@@ -9,6 +9,7 @@ class ScreenCustomScaffold extends ConsumerStatefulWidget {
   final Widget bodyWidget;
   final bool resizeToAvoidBottomInset;
   final Widget? floatingActionButton;
+
   const ScreenCustomScaffold({
     super.key,
     required this.title,
