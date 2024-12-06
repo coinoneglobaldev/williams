@@ -7,10 +7,11 @@ import '../providers/connectivity_status_provider.dart';
 class ScreenCustomScaffold extends ConsumerStatefulWidget {
   final Widget homeWidget;
   final bool resizeToAvoidBottomInset;
-
+  final PreferredSizeWidget? appBar;
   const ScreenCustomScaffold({
     super.key,
     required this.homeWidget,
+    this.appBar,
     this.resizeToAvoidBottomInset = true,
   });
 
@@ -29,6 +30,7 @@ class _ScreenHomePageState extends ConsumerState<ScreenCustomScaffold> {
     if (connectivityStatusProvider == ConnectivityStatus.isConnected) {
       return Scaffold(
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+        appBar: widget.appBar,
         key: _scaffoldKey,
         body: Container(
           decoration: const BoxDecoration(
