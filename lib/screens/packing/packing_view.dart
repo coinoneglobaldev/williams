@@ -13,7 +13,7 @@ class _PackingViewState extends State<PackingView> {
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
       title: 'Packing',
-      homeWidget: Container(),
+      bodyWidget: Container(),
     );
   }
 }

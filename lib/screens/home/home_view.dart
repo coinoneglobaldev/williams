@@ -60,31 +60,35 @@ class _ScreenHomePageState extends ConsumerState<ScreenHomeView> {
               )
                   .animate()
                   .slideY(
-                duration: 400.milliseconds,
-                delay: 1000.milliseconds,
-                curve: Curves.easeInOut,
-                begin: 0.1,
-                end: 0.0,
-              )
+                    duration: 400.milliseconds,
+                    delay: 1000.milliseconds,
+                    curve: Curves.easeInOut,
+                    begin: 0.1,
+                    end: 0.0,
+                  )
                   .fadeIn(),
               const SizedBox(
                 height: 15,
               ),
               HomeCards(
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const BuyingSheetScreen()));
+                onTap: () {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => const BuyingSheetScreen(),
+                    ),
+                  );
                 },
                 cardName: 'BUYING SHEET',
                 imagePath: 'assets/images/login_bg.jpg',
               )
                   .animate()
                   .slideY(
-                duration: 400.milliseconds,
-                delay: 1200.milliseconds,
-                curve: Curves.easeInOut,
-                begin: 0.1,
-                end: 0.0,
-              )
+                    duration: 400.milliseconds,
+                    delay: 1200.milliseconds,
+                    curve: Curves.easeInOut,
+                    begin: 0.1,
+                    end: 0.0,
+                  )
                   .fadeIn(),
             ],
           ),

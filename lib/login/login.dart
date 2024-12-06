@@ -303,7 +303,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                             .fadeIn(),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: primaryColor,
+                            backgroundColor: buttonColor,
                           ),
                           onPressed: () async {
                             if (!_eMailKey.currentState!.validate() ||
