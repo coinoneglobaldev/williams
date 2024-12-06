@@ -29,20 +29,16 @@ class _ScreenHomePageState extends ConsumerState<ScreenCustomScaffold> {
     var connectivityStatusProvider = ref.watch(connectivityStatusProviders);
     if (connectivityStatusProvider == ConnectivityStatus.isConnected) {
       return Scaffold(
+        backgroundColor: Colors.black,
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
         appBar: widget.appBar,
         key: _scaffoldKey,
-        body: Container(
-          decoration: const BoxDecoration(
-            color: Colors.black,
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                child: widget.homeWidget,
-              ),
-            ],
-          ),
+        body: Column(
+          children: [
+            Expanded(
+              child: widget.homeWidget,
+            ),
+          ],
         ),
       );
     } else {
