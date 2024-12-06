@@ -261,12 +261,15 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   Widget _buildTableCellWithTextField(TextEditingController controller) {
     return Container(
       height: 60,
-      padding: const EdgeInsets.all(8.0),
       color: Colors.grey.shade900,
+      padding: const EdgeInsets.all(5.0),
       child: TextField(
+
         controller: controller,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
           hintText: 'Enter value',
           hintStyle: TextStyle(color: Colors.grey.shade500),
           border: InputBorder.none,

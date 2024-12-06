@@ -164,7 +164,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                           child: TextField(
                             controller: qtyControllers[index],
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
+                            decoration: const InputDecoration(focusedBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
                               isDense: true,
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 8,
@@ -196,7 +197,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                           width: 120,
                           child: TextField(
                             controller: notesControllers[index],
-                            decoration: const InputDecoration(
+                            decoration: const InputDecoration(focusedBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
                               isDense: true,
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 8,
@@ -213,6 +215,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                       ),
                       DataCell(
                         Checkbox(
+                          fillColor: WidgetStateProperty.all(Colors.white),
+                          checkColor:Colors.black,
                           value: item.isChecked,
                           onChanged: (bool? value) {
                             setState(() {
