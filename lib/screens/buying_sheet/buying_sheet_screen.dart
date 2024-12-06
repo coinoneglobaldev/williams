@@ -23,7 +23,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     'Subcategory C',
   ];
 
-  // Dummy data for the table
   final List<Map<String, dynamic>> _dummyTableData = [
     {
       'code': 'P001',
@@ -32,8 +31,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       'corYal': '10',
       'stockBulk': '500',
       'stockSplit': '100',
-      'orderBulk': '',
-      'orderSplit': '',
+      'orderBulk': TextEditingController(),
+      'orderSplit': TextEditingController(),
     },
     {
       'code': 'P002',
@@ -42,8 +41,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       'corYal': '15',
       'stockBulk': '250',
       'stockSplit': '50',
-      'orderBulk': '',
-      'orderSplit': '',
+      'orderBulk': TextEditingController(),
+      'orderSplit': TextEditingController(),
     },
     {
       'code': 'P003',
@@ -52,10 +51,19 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       'corYal': '5',
       'stockBulk': '750',
       'stockSplit': '200',
-      'orderBulk': '',
-      'orderSplit': '',
+      'orderBulk': TextEditingController(),
+      'orderSplit': TextEditingController(),
     },
   ];
+
+  @override
+  void dispose() {
+    for (var item in _dummyTableData) {
+      (item['orderBulk'] as TextEditingController).dispose();
+      (item['orderSplit'] as TextEditingController).dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,59 +71,67 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       title: 'Buying Sheet',
       bodyWidget: Column(
         children: [
-          DropdownButtonFormField<String>(
-            decoration: InputDecoration(
-              hintText: 'Category',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+          Row(
+            children: [
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    hintText: 'Category',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  value: _selectedCategory,
+                  items: _categories
+                      .map((category) => DropdownMenuItem(
+                            value: category,
+                            child: Text(category),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  },
+                ),
               ),
-            ),
-            value: _selectedCategory,
-            items: _categories
-                .map((category) => DropdownMenuItem(
-              value: category,
-              child: Text(category),
-            ))
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedCategory = value;
-              });
-            },
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            decoration: InputDecoration(
-              hintText: 'Supplier',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+              const SizedBox(width: 10),
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    hintText: 'Supplier',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  value: _selectedSubcategory,
+                  items: _subcategories
+                      .map((subcategory) => DropdownMenuItem(
+                            value: subcategory,
+                            child: Text(subcategory),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedSubcategory = value;
+                    });
+                  },
+                ),
               ),
-            ),
-            value: _selectedSubcategory,
-            items: _subcategories
-                .map((subcategory) => DropdownMenuItem(
-              value: subcategory,
-              child: Text(subcategory),
-            ))
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedSubcategory = value;
-              });
-            },
+            ],
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
               if (_selectedCategory != null && _selectedSubcategory != null) {
-                // todo: implement search logic
+                // Implement search logic
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        'Search with Category: $_selectedCategory, Subcategory: $_selectedSubcategory'),
+                  ),
+                );
               }
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                      'Search with Category: $_selectedCategory, Subcategory: $_selectedSubcategory'),
-                ),
-              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: buttonColor,
@@ -127,137 +143,116 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             child: const Text('Search'),
           ),
           const SizedBox(height: 20),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Table(
-              border: TableBorder.all(
-                color: Colors.white,
-              ),
-              columnWidths: {
-                0: FixedColumnWidth(80),
-                1: FixedColumnWidth(120),
-                2: FixedColumnWidth(80),
-                3: FixedColumnWidth(80),
-                4: FixedColumnWidth(100),
-                5: FixedColumnWidth(100),
-                6: FixedColumnWidth(100),
-                7: FixedColumnWidth(100),
-              },
-              children: [
-                TableRow(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[800],
-                  ),
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Code', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Name', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Uom', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Cor Yal', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Stock Bulk', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Stock Split', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Order Bulk', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Order Split', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-                // Generate rows with dummy data and order text fields
-                ...List.generate(_dummyTableData.length, (index) {
-                  var item = _dummyTableData[index];
-                  return TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item['code'], style: const TextStyle(color: Colors.white)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item['name'], style: const TextStyle(color: Colors.white)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item['uom'], style: const TextStyle(color: Colors.white)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item['corYal'], style: const TextStyle(color: Colors.white)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item['stockBulk'], style: const TextStyle(color: Colors.white)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item['stockSplit'], style: const TextStyle(color: Colors.white)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          style: const TextStyle(color: Colors.white),
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: 'Bulk Order',
-                            hintStyle: TextStyle(color: Colors.grey[400]),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _dummyTableData[index]['orderBulk'] = value;
-                            });
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          style: const TextStyle(color: Colors.white),
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: 'Split Order',
-                            hintStyle: TextStyle(color: Colors.grey[400]),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _dummyTableData[index]['orderSplit'] = value;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              ],
-            ),
-          ),
+          _buyingSheetTable(data: _dummyTableData),
         ],
       ),
+    );
+  }
+
+  Widget _buyingSheetTable({
+    required List<Map<String, dynamic>> data,
+  }) {
+    final columns = [
+      'Code',
+      'Name',
+      'UOM',
+      'Cor Yal',
+      'Bulk',
+      'Split',
+      'Bulk',
+      'Split'
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8.0),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columnSpacing: 20.0,
+              dataRowColor: WidgetStateProperty.all(Colors.grey.shade900),
+              headingRowColor: WidgetStateProperty.all(Colors.white),
+              columns: columns
+                  .map((column) => DataColumn(
+                        label: Expanded(
+                          child: Text(
+                            column,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ))
+                  .toList(),
+              rows: data.map((item) {
+                return DataRow(
+                  cells: [
+                    DataCell(Text(
+                      item['code'] ?? '',
+                      style: const TextStyle(color: Colors.white),
+                    )),
+                    DataCell(Text(
+                      item['name'] ?? '',
+                      style: const TextStyle(color: Colors.white),
+                    )),
+                    DataCell(Text(
+                      item['uom'] ?? '',
+                      style: const TextStyle(color: Colors.white),
+                    )),
+                    DataCell(Text(
+                      item['corYal'] ?? '',
+                      style: const TextStyle(color: Colors.white),
+                    )),
+                    DataCell(Text(
+                      item['stockBulk'] ?? '',
+                      style: const TextStyle(color: Colors.white),
+                    )),
+                    DataCell(Text(
+                      item['stockSplit'] ?? '',
+                      style: const TextStyle(color: Colors.white),
+                    )),
+                    DataCell(
+                      SizedBox(
+                        width: 100,
+                        height: 40,
+                        child: TextField(
+                          controller: item['orderBulk'],
+                          style: const TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                            hintText: 'Bulk',
+                            hintStyle: TextStyle(color: Colors.grey.shade500),
+                            border: InputBorder.none,
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      SizedBox(
+                        width: 100,
+                        height: 40,
+                        child: TextField(
+                          controller: item['orderSplit'],
+                          style: const TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                            hintText: 'Split',
+                            hintStyle: TextStyle(color: Colors.grey.shade500),
+                            border: InputBorder.none,
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
