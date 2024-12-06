@@ -6,7 +6,6 @@ import '../providers/connectivity_status_provider.dart';
 
 class ScreenCustomScaffold extends ConsumerStatefulWidget {
   final Widget homeWidget;
-  final bool isPremium;
   final FloatingActionButton? floatingActionButton;
   final Widget? bottomNavigationBar;
   final bool resizeToAvoidBottomInset;
@@ -14,7 +13,6 @@ class ScreenCustomScaffold extends ConsumerStatefulWidget {
   const ScreenCustomScaffold({
     super.key,
     required this.homeWidget,
-    required this.isPremium,
     this.floatingActionButton,
     this.bottomNavigationBar,
     this.resizeToAvoidBottomInset = true,

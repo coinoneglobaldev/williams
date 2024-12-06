@@ -9,7 +9,7 @@ import '../../constants.dart';
 import '../../custom_screens/custom_network_error.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../providers/connectivity_status_provider.dart';
-import '../screens/homepage.dart';
+import '../screens/home/home_view.dart';
 
 class ScreenLogin extends ConsumerStatefulWidget {
   const ScreenLogin({
@@ -40,7 +40,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     Navigator.pushReplacement(
       context,
       CupertinoPageRoute(
-        builder: (context) => const ScreenHomePage(),
+        builder: (context) => const ScreenHomeView(),
         settings: const RouteSettings(name: '/home'),
       ),
     );

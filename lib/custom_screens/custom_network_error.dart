@@ -16,7 +16,7 @@ class _ScreenCustomNetworkErrorState extends State<ScreenCustomNetworkError> {
     return Scaffold(
       body: PopScope(
         canPop: false,
-        onPopInvoked: (bool didPop) {
+        onPopInvokedWithResult: (bool didPop, dynamic result) {
           if (didPop) {
             return;
           }
