@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../custom_widgets/custom_exit_confirmation.dart';
 
 class ScreenCustomNetworkError extends StatefulWidget {
@@ -28,35 +29,35 @@ class _ScreenCustomNetworkErrorState extends State<ScreenCustomNetworkError> {
         child: Column(
           children: [
             Expanded(
-              child: Container(
-                color: Colors.black,
-                child: const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.wifi_off,
+                child: Container(
+              color: Colors.black,
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.wifi_off,
+                      color: Colors.white,
+                      size: 50,
+                    ),
+                    Text(
+                      'Network error',
+                      style: TextStyle(
                         color: Colors.white,
-                        size: 50,
+                        fontSize: 16,
                       ),
-                      Text(
-                        'Network error',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
+                    ),
+                    Text(
+                      'Please check your internet connection',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
                       ),
-                      Text(
-                        'Please check your internet connection',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              )
-            ),
+              ),
+            )),
           ],
         ),
       ),

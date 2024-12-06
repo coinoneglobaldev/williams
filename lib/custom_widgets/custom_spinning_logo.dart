@@ -43,7 +43,7 @@ class _CustomLogoSpinnerState extends State<CustomLogoSpinner>
           Center(
             child: SizedBox(
               height: widget.oneSize,
-              width:  widget.oneSize,
+              width: widget.oneSize,
               child: Image.asset(
                 'assets/images/one.png',
                 fit: BoxFit.contain,

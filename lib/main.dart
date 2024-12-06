@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:williams/routes.dart';
+
 import 'constants.dart';
 
 void main() {
@@ -12,7 +13,7 @@ void main() {
       DeviceOrientation.portraitDown,
     ],
   ).then(
-        (value) {
+    (value) {
       runApp(
         const ProviderScope(
           child: MyApp(),
@@ -87,11 +88,11 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.fromSwatch()
             .copyWith(primary: themeColor, secondary: Colors.black),
-        appBarTheme:  AppBarTheme(
+        appBarTheme: AppBarTheme(
           color: themeColor,
           elevation: 15,
         ),
-        textTheme:  TextTheme(
+        textTheme: TextTheme(
           labelMedium: TextStyle(
             fontSize: 25,
             color: themeColor,
@@ -118,13 +119,10 @@ class _MyAppState extends State<MyApp> {
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             textStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.white
-            ),
+                fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
           ),
         ),
-        tabBarTheme:  TabBarTheme(
+        tabBarTheme: TabBarTheme(
           labelColor: Colors.white,
           unselectedLabelColor: Colors.black,
           unselectedLabelStyle: const TextStyle(

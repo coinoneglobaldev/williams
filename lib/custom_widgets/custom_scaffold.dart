@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../custom_screens/custom_network_error.dart';
 import '../providers/connectivity_status_provider.dart';
+
 class ScreenCustomScaffold extends ConsumerStatefulWidget {
   final Widget homeWidget;
   final bool isPremium;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 Color themeColor = Colors.grey.shade900;
- Color primaryColor = Colors.blue[900]!;
+Color primaryColor = Colors.blue[900]!;
 
 const String appVersion = '1.0.1';
 

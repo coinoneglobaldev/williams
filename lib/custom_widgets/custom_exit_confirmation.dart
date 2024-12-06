@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../constants.dart';
 
 class ScreenCustomExitConfirmation extends StatefulWidget {
@@ -42,7 +43,7 @@ class _ScreenCustomExitConfirmationState
         SizedBox(
           height: 30,
           child: TextButton(
-            onPressed: (){
+            onPressed: () {
               SystemNavigator.pop();
             },
             child: const Text(

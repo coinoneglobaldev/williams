@@ -8,7 +8,6 @@ enum ConnectivityStatus {
 }
 
 class ConnectivityStatusNotifier extends StateNotifier<ConnectivityStatus> {
-
   ConnectivityStatusNotifier() : super(ConnectivityStatus.isDisconnected) {
     Connectivity().onConnectivityChanged.listen((event) {
       if (event.contains(ConnectivityResult.mobile) ||
