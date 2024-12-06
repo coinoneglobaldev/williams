@@ -135,6 +135,8 @@ class _PackingViewState extends State<PackingView> {
           ],
         ],
       ),
+      title: 'Packing',
+      bodyWidget: Container(),
     );
   }
 }

@@ -19,7 +19,7 @@ class _ScreenCustomExitConfirmationState
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      backgroundColor: themeColor,
+      backgroundColor: secondaryColor,
       title: const Text(
         'Exit ?',
         style: TextStyle(
@@ -40,7 +40,7 @@ class _ScreenCustomExitConfirmationState
       ),
       actions: <Widget>[
         SizedBox(
-          height: 30,
+          height: 35,
           child: TextButton(
             onPressed: () {
               SystemNavigator.pop();
@@ -52,7 +52,7 @@ class _ScreenCustomExitConfirmationState
           ),
         ),
         SizedBox(
-          height: 30,
+          height: 35,
           child: TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: const Text(
