@@ -188,12 +188,18 @@ class _OrderItemViewState extends State<OrderItemView> {
                     cells: [
                       DataCell(
                         SizedBox(
-                          width: 60,
+                          width: 120,
                           child: TextField(
                             controller: qtyControllers[index],
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
+                            style: const TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
                               isDense: true,
+                              focusedBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              hintText: 'Enter value',
+                              hintStyle: TextStyle(color: Colors.grey.shade500),
+                              border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 8,
                                 vertical: 8,
@@ -224,8 +230,14 @@ class _OrderItemViewState extends State<OrderItemView> {
                           width: 120,
                           child: TextField(
                             controller: notesControllers[index],
-                            decoration: const InputDecoration(
+                            style: const TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
                               isDense: true,
+                              focusedBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              hintText: 'Enter value',
+                              hintStyle: TextStyle(color: Colors.grey.shade500),
+                              border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 8,
                                 vertical: 8,
