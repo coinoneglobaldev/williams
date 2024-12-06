@@ -31,7 +31,7 @@ class HomeCards extends StatelessWidget {
                   width: 1,
                 ),
                 borderRadius: BorderRadius.circular(15),
-                image:  DecorationImage(
+                image: DecorationImage(
                   image: AssetImage(imagePath),
                   fit: BoxFit.cover,
                 ),

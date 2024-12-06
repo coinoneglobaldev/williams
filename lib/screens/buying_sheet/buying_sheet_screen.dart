@@ -264,7 +264,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       color: Colors.grey.shade900,
       padding: const EdgeInsets.all(5.0),
       child: TextField(
-
         controller: controller,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
