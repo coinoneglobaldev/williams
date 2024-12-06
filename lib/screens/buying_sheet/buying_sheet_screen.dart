@@ -152,107 +152,127 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   Widget _buyingSheetTable({
     required List<Map<String, dynamic>> data,
   }) {
-    final columns = [
-      'Code',
-      'Name',
-      'UOM',
-      'Cor Yal',
-      'Bulk',
-      'Split',
-      'Bulk',
-      'Split'
-    ];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 8.0),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columnSpacing: 20.0,
-              dataRowColor: WidgetStateProperty.all(Colors.grey.shade900),
-              headingRowColor: WidgetStateProperty.all(Colors.white),
-              columns: columns
-                  .map((column) => DataColumn(
-                        label: Expanded(
-                          child: Text(
-                            column,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ))
-                  .toList(),
-              rows: data.map((item) {
-                return DataRow(
-                  cells: [
-                    DataCell(Text(
-                      item['code'] ?? '',
-                      style: const TextStyle(color: Colors.white),
-                    )),
-                    DataCell(Text(
-                      item['name'] ?? '',
-                      style: const TextStyle(color: Colors.white),
-                    )),
-                    DataCell(Text(
-                      item['uom'] ?? '',
-                      style: const TextStyle(color: Colors.white),
-                    )),
-                    DataCell(Text(
-                      item['corYal'] ?? '',
-                      style: const TextStyle(color: Colors.white),
-                    )),
-                    DataCell(Text(
-                      item['stockBulk'] ?? '',
-                      style: const TextStyle(color: Colors.white),
-                    )),
-                    DataCell(Text(
-                      item['stockSplit'] ?? '',
-                      style: const TextStyle(color: Colors.white),
-                    )),
-                    DataCell(
-                      SizedBox(
-                        width: 100,
-                        height: 40,
-                        child: TextField(
-                          controller: item['orderBulk'],
-                          style: const TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            hintText: 'Bulk',
-                            hintStyle: TextStyle(color: Colors.grey.shade500),
-                            border: InputBorder.none,
-                          ),
-                          keyboardType: TextInputType.number,
-                        ),
-                      ),
-                    ),
-                    DataCell(
-                      SizedBox(
-                        width: 100,
-                        height: 40,
-                        child: TextField(
-                          controller: item['orderSplit'],
-                          style: const TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            hintText: 'Split',
-                            hintStyle: TextStyle(color: Colors.grey.shade500),
-                            border: InputBorder.none,
-                          ),
-                          keyboardType: TextInputType.number,
-                        ),
-                      ),
-                    ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(15),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Table(
+              columnWidths: const {
+                0: FixedColumnWidth(150.0),
+                1: FixedColumnWidth(200.0),
+                2: FixedColumnWidth(100.0),
+                3: FixedColumnWidth(100.0),
+                4: FixedColumnWidth(200.0),
+                5: FixedColumnWidth(300.0),
+              },
+              border: TableBorder.all(color: Colors.black),
+              children: [
+                TableRow(
+                  children: [
+                    SizedBox.shrink(),
+                    SizedBox.shrink(),
+                    SizedBox.shrink(),
+                    SizedBox.shrink(),
+                    _buildTableHeader('Stock'),
+                    _buildTableHeader('Order'),
                   ],
-                );
-              }).toList(),
+                ),
+              ],
             ),
-          ),
+            Table(
+              columnWidths: const {
+                0: FixedColumnWidth(150.0),
+                1: FixedColumnWidth(200.0),
+                2: FixedColumnWidth(100.0),
+                3: FixedColumnWidth(100.0),
+                4: FixedColumnWidth(100.0),
+                5: FixedColumnWidth(100.0),
+                6: FixedColumnWidth(150.0),
+                7: FixedColumnWidth(150.0),
+              },
+              border: TableBorder.all(color: Colors.black),
+              children: [
+                TableRow(
+                  children: [
+                    _buildTableHeader('Code'),
+                    _buildTableHeader('Name'),
+                    _buildTableHeader('UOM'),
+                    _buildTableHeader('Con Val'),
+                    _buildTableHeader('Stock Bulk'),
+                    _buildTableHeader('Stock Split'),
+                    _buildTableHeader('Order Bulk'),
+                    _buildTableHeader('Order Split'),
+                  ],
+                ),
+                ...data.map((item) {
+                  return TableRow(
+                    children: [
+                      _buildTableCell(item['code']),
+                      _buildTableCell(item['name']),
+                      _buildTableCell(item['uom']),
+                      _buildTableCell(item['corYal']),
+                      _buildTableCell(item['stockBulk']),
+                      _buildTableCell(item['stockSplit']),
+                      _buildTableCellWithTextField(item['orderBulk']),
+                      _buildTableCellWithTextField(item['orderSplit']),
+                    ],
+                  );
+                }),
+              ],
+            ),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildTableHeader(String text) {
+    return Container(
+      height: 50,
+      padding: const EdgeInsets.all(8.0),
+      color: Colors.white,
+      child: Center(
+        child: Text(
+          text,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTableCell(String? text) {
+    return Container(
+      height: 60,
+      padding: const EdgeInsets.all(8.0),
+      color: Colors.grey.shade900,
+      child: Center(
+        child: Text(
+          text ?? '',
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTableCellWithTextField(TextEditingController controller) {
+    return Container(
+      height: 60,
+      padding: const EdgeInsets.all(8.0),
+      color: Colors.grey.shade900,
+      child: TextField(
+        controller: controller,
+        style: const TextStyle(color: Colors.black),
+        decoration: InputDecoration(
+          hintText: 'Enter value',
+          hintStyle: TextStyle(color: Colors.grey.shade500),
+          border: InputBorder.none,
+        ),
+        keyboardType: TextInputType.number,
+      ),
     );
   }
 }
