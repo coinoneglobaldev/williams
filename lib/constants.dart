@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 Color themeColor = Colors.black;
 Color primaryColor = Colors.grey.shade900;
+Color secondaryColor = Colors.grey.shade800;
 Color buttonColor = Colors.blue.shade900;
 
 const String appVersion = '1.0.1';
