@@ -6,15 +6,11 @@ import '../providers/connectivity_status_provider.dart';
 
 class ScreenCustomScaffold extends ConsumerStatefulWidget {
   final Widget homeWidget;
-  final FloatingActionButton? floatingActionButton;
-  final Widget? bottomNavigationBar;
   final bool resizeToAvoidBottomInset;
 
   const ScreenCustomScaffold({
     super.key,
     required this.homeWidget,
-    this.floatingActionButton,
-    this.bottomNavigationBar,
     this.resizeToAvoidBottomInset = true,
   });
 
@@ -32,8 +28,6 @@ class _ScreenHomePageState extends ConsumerState<ScreenCustomScaffold> {
     var connectivityStatusProvider = ref.watch(connectivityStatusProviders);
     if (connectivityStatusProvider == ConnectivityStatus.isConnected) {
       return Scaffold(
-        floatingActionButton: widget.floatingActionButton,
-        bottomNavigationBar: widget.bottomNavigationBar,
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
         key: _scaffoldKey,
         body: Container(
