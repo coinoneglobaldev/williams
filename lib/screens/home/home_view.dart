@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:williams/screens/home/page_cards.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_scaffold.dart';
+import '../buying_sheet/buying_sheet_screen.dart';
 import 'appbar.dart';
 
 class ScreenHomeView extends ConsumerStatefulWidget {
@@ -18,7 +19,7 @@ class _ScreenHomePageState extends ConsumerState<ScreenHomeView> {
   Widget build(
     BuildContext context,
   ) {
-    return ScreenCustomScaffold(
+    return ScreenCustomScaffold( 
       homeWidget: SafeArea(
         child: PopScope(
           canPop: false,
@@ -60,7 +61,9 @@ class _ScreenHomePageState extends ConsumerState<ScreenHomeView> {
                 height: 15,
               ),
               HomeCards(
-                onTap: (){},
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const BuyingSheetScreen()));
+                },
                 cardName: 'BUYING SHEET',
                 imagePath: 'assets/images/login_bg.jpg',
               )
