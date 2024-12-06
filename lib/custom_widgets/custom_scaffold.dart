@@ -5,12 +5,15 @@ import '../custom_screens/custom_network_error.dart';
 import '../providers/connectivity_status_provider.dart';
 
 class ScreenCustomScaffold extends ConsumerStatefulWidget {
+  final String title;
   final Widget homeWidget;
   final bool resizeToAvoidBottomInset;
 
   const ScreenCustomScaffold({
     super.key,
+    required this.title,
     required this.homeWidget,
+
     this.resizeToAvoidBottomInset = true,
   });
 
@@ -29,6 +32,11 @@ class _ScreenHomePageState extends ConsumerState<ScreenCustomScaffold> {
     if (connectivityStatusProvider == ConnectivityStatus.isConnected) {
       return Scaffold(
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+        appBar: AppBar(
+          title: Text(widget.title),
+          centerTitle: true,
+          backgroundColor: Colors.white,
+        ),
         key: _scaffoldKey,
         body: Container(
           decoration: const BoxDecoration(
