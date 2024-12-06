@@ -5,16 +5,15 @@ import '../custom_screens/custom_network_error.dart';
 import '../providers/connectivity_status_provider.dart';
 
 class ScreenCustomScaffold extends ConsumerStatefulWidget {
-  final Widget homeWidget;
-  final FloatingActionButton? floatingActionButton;
-  final Widget? bottomNavigationBar;
+  final String title;
+  final Widget bodyWidget;
   final bool resizeToAvoidBottomInset;
-
+  final Widget? floatingActionButton;
   const ScreenCustomScaffold({
     super.key,
-    required this.homeWidget,
+    required this.title,
+    required this.bodyWidget,
     this.floatingActionButton,
-    this.bottomNavigationBar,
     this.resizeToAvoidBottomInset = true,
   });
 
@@ -33,20 +32,25 @@ class _ScreenHomePageState extends ConsumerState<ScreenCustomScaffold> {
     if (connectivityStatusProvider == ConnectivityStatus.isConnected) {
       return Scaffold(
         floatingActionButton: widget.floatingActionButton,
-        bottomNavigationBar: widget.bottomNavigationBar,
+        backgroundColor: Colors.black,
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+        appBar: AppBar(
+          title:
+              Text(widget.title, style: const TextStyle(color: Colors.white)),
+          centerTitle: true,
+          backgroundColor: Colors.black,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
         key: _scaffoldKey,
-        body: Container(
-          decoration: const BoxDecoration(
-            color: Colors.black,
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                child: widget.homeWidget,
-              ),
-            ],
-          ),
+        body: Padding(
+          padding: const EdgeInsets.only(left: 8, right: 8),
+          child: SafeArea(child: widget.bodyWidget),
         ),
       );
     } else {

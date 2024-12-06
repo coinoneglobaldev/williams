@@ -88,10 +88,6 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.fromSwatch()
             .copyWith(primary: themeColor, secondary: Colors.black),
-        appBarTheme: AppBarTheme(
-          color: themeColor,
-          elevation: 15,
-        ),
         textTheme: TextTheme(
           labelMedium: TextStyle(
             fontSize: 25,
@@ -119,7 +115,10 @@ class _MyAppState extends State<MyApp> {
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             textStyle: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
           ),
         ),
         tabBarTheme: TabBarTheme(

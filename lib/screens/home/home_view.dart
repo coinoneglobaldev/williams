@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:williams/screens/home/page_cards.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
-import '../../custom_widgets/custom_scaffold.dart';
+import '../buying_sheet/buying_sheet_screen.dart';
+import '../packing/packing_view.dart';
 import 'appbar.dart';
 
 class ScreenHomeView extends ConsumerStatefulWidget {
@@ -18,8 +20,9 @@ class _ScreenHomePageState extends ConsumerState<ScreenHomeView> {
   Widget build(
     BuildContext context,
   ) {
-    return ScreenCustomScaffold(
-      homeWidget: SafeArea(
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
         child: PopScope(
           canPop: false,
           onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -43,35 +46,49 @@ class _ScreenHomePageState extends ConsumerState<ScreenHomeView> {
                 height: 25,
               ),
               HomeCards(
-                onTap: (){},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => const PackingView(),
+                      settings: const RouteSettings(name: '/home'),
+                    ),
+                  );
+                },
                 cardName: 'PACKING',
                 imagePath: 'assets/images/login_bg.jpg',
               )
                   .animate()
                   .slideY(
-                duration: 400.milliseconds,
-                delay: 1000.milliseconds,
-                curve: Curves.easeInOut,
-                begin: 0.1,
-                end: 0.0,
-              )
+                    duration: 400.milliseconds,
+                    delay: 1000.milliseconds,
+                    curve: Curves.easeInOut,
+                    begin: 0.1,
+                    end: 0.0,
+                  )
                   .fadeIn(),
               const SizedBox(
                 height: 15,
               ),
               HomeCards(
-                onTap: (){},
+                onTap: () {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => const BuyingSheetScreen(),
+                    ),
+                  );
+                },
                 cardName: 'BUYING SHEET',
                 imagePath: 'assets/images/login_bg.jpg',
               )
                   .animate()
                   .slideY(
-                duration: 400.milliseconds,
-                delay: 1200.milliseconds,
-                curve: Curves.easeInOut,
-                begin: 0.1,
-                end: 0.0,
-              )
+                    duration: 400.milliseconds,
+                    delay: 1200.milliseconds,
+                    curve: Curves.easeInOut,
+                    begin: 0.1,
+                    end: 0.0,
+                  )
                   .fadeIn(),
             ],
           ),
