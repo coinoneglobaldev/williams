@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:williams/constants.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
 
+import '../../../custom_widgets/custom_snackbar.dart';
+
 class BuyingSheetScreen extends StatefulWidget {
   const BuyingSheetScreen({super.key});
 
@@ -69,82 +71,101 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
       title: 'Buying Sheet',
-      bodyWidget: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    hintText: 'Category',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+      bodyWidget: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      hintText: 'Category',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
+                    value: _selectedCategory,
+                    items: _categories
+                        .map((category) => DropdownMenuItem(
+                              value: category,
+                              child: Text(category),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedCategory = value;
+                      });
+                    },
                   ),
-                  value: _selectedCategory,
-                  items: _categories
-                      .map((category) => DropdownMenuItem(
-                            value: category,
-                            child: Text(category),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedCategory = value;
-                    });
-                  },
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      hintText: 'Supplier',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    value: _selectedSubcategory,
+                    items: _subcategories
+                        .map((subcategory) => DropdownMenuItem(
+                              value: subcategory,
+                              child: Text(subcategory),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedSubcategory = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                if (_selectedCategory != null && _selectedSubcategory != null) {
+                  // Implement search logic
+                  CustomErrorSnackbar.show(context,
+                      'Categories and Subcategories are not yet added!');
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonColor,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    hintText: 'Supplier',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+              child: const Text('Search'),
+            ),
+            const SizedBox(height: 20),
+            _buyingSheetTable(data: _dummyTableData),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: buttonColor,
+                  minimumSize: Size(
+                      MediaQuery.of(context).size.width * 0.4,
+                      MediaQuery.of(context).size.height * 0.06,
                   ),
-                  value: _selectedSubcategory,
-                  items: _subcategories
-                      .map((subcategory) => DropdownMenuItem(
-                            value: subcategory,
-                            child: Text(subcategory),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedSubcategory = value;
-                    });
-                  },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              if (_selectedCategory != null && _selectedSubcategory != null) {
-                // Implement search logic
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                        'Search with Category: $_selectedCategory, Subcategory: $_selectedSubcategory'),
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: buttonColor,
-              minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                onPressed: () {
+                  CustomSuccessSnackbar.show(
+                      context, 'Order added successfully!');
+                },
+                child: const Text('Save'),
               ),
             ),
-            child: const Text('Search'),
-          ),
-          const SizedBox(height: 20),
-          _buyingSheetTable(data: _dummyTableData),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -202,10 +223,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     _buildTableHeader('Name'),
                     _buildTableHeader('UOM'),
                     _buildTableHeader('Con Val'),
-                    _buildTableHeader('Stock Bulk'),
-                    _buildTableHeader('Stock Split'),
-                    _buildTableHeader('Order Bulk'),
-                    _buildTableHeader('Order Split'),
+                    _buildTableHeader('Bulk'),
+                    _buildTableHeader('Split'),
+                    _buildTableHeader('Bulk'),
+                    _buildTableHeader('Split'),
                   ],
                 ),
                 ...data.map((item) {
@@ -234,11 +255,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return Container(
       height: 50,
       padding: const EdgeInsets.all(8.0),
-      color: Colors.white,
+      color: Colors.grey.shade800,
       child: Center(
         child: Text(
           text,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -248,11 +270,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return Container(
       height: 60,
       padding: const EdgeInsets.all(8.0),
-      color: Colors.grey.shade900,
+      color: Colors.white,
       child: Center(
         child: Text(
           text ?? '',
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.black),
         ),
       ),
     );
@@ -261,8 +283,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   Widget _buildTableCellWithTextField(TextEditingController controller) {
     return Container(
       height: 60,
-      color: Colors.grey.shade900,
-      padding: const EdgeInsets.all(5.0),
+      color: Colors.grey.shade800,
+      padding: const EdgeInsets.only(bottom: 0, top: 5, left: 5, right: 5),
       child: TextField(
         controller: controller,
         style: const TextStyle(color: Colors.black),

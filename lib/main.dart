@@ -42,6 +42,7 @@ class _MyAppState extends State<MyApp> {
       onGenerateRoute: (routeSettings) => Routes.generateRoute(
         routeSettings,
       ),
+      debugShowCheckedModeBanner: false,
       key: _scaffoldKey,
       theme: ThemeData(
         scrollbarTheme: ScrollbarThemeData(

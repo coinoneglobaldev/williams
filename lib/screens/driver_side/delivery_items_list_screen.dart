@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:williams/screens/driver_side/widget/delivery_item_list.dart';
-
-import '../../custom_widgets/custom_exit_confirmation.dart';
+import '../../custom_widgets/custom_logout_button.dart';
 import 'delivery_upload_screen.dart';
 
 class DeliveryItemsListScreen extends StatefulWidget {
@@ -39,24 +38,23 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.grey.shade900,
-        title: const Text(
+        backgroundColor: Colors.white,
+        title: Text(
           'Delivery Items',
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            color: Colors.white,
+            icon: Icon(Icons.logout),
+            color: Colors.black,
             onPressed: () {
-              // Add logout functionality here
               showDialog(
                 context: context,
-                builder: (context) => const ScreenCustomExitConfirmation(),
+                builder: (context) => const CustomLogoutConfirmation(),
               );
             },
           ),

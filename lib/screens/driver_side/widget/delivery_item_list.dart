@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../constants.dart';
+
 class DeliveryItemList extends StatelessWidget {
   final String name;
   final String poNo;
@@ -16,18 +18,11 @@ class DeliveryItemList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      margin: const EdgeInsets.only(top: 4, left: 8, right: 8),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.grey.shade800,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
+       color: buttonColor,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,52 +30,55 @@ class DeliveryItemList extends StatelessWidget {
           // Name Row
           Row(
             children: [
-              Icon(Icons.person, color: Colors.white70, size: 18),
-              const SizedBox(width: 8),
+              Icon(Icons.person, color: Colors.white, size: 20),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    letterSpacing: 0.5,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           // PoNo Row
           Row(
             children: [
-              Icon(Icons.receipt_long, color: Colors.white70, size: 18),
-              const SizedBox(width: 8),
+              Icon(Icons.receipt_long, color: Colors.white70, size: 20),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'Po No: $poNo',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.85),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           // Address Row
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.location_on, color: Colors.white70, size: 18),
-              const SizedBox(width: 8),
+              Icon(Icons.location_on, color: Colors.white70, size: 20),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   address,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.85),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
