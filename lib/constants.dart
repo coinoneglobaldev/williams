@@ -4,8 +4,9 @@ Color themeColor = Colors.black;
 Color primaryColor = Colors.grey.shade900;
 Color secondaryColor = Colors.grey.shade800;
 Color buttonColor = Colors.blue.shade900;
+Color textColor = Colors.white;
 
-const String appVersion = '1.0.1';
+const String appVersion = '0.0.1';
 
 String imageBaseUrl = 'https://coinoneglobal.in/crm/';
 

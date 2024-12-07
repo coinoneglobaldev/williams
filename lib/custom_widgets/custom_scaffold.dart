@@ -7,13 +7,15 @@ import '../providers/connectivity_status_provider.dart';
 class ScreenCustomScaffold extends ConsumerStatefulWidget {
   final String title;
   final Widget bodyWidget;
-  final bool resizeToAvoidBottomInset;
+  final Color scaffoldColor;
   final Widget? floatingActionButton;
+  final bool resizeToAvoidBottomInset;
 
   const ScreenCustomScaffold({
     super.key,
     required this.title,
     required this.bodyWidget,
+    required this.scaffoldColor,
     this.floatingActionButton,
     this.resizeToAvoidBottomInset = true,
   });
@@ -33,21 +35,26 @@ class _ScreenHomePageState extends ConsumerState<ScreenCustomScaffold> {
     if (connectivityStatusProvider == ConnectivityStatus.isConnected) {
       return Scaffold(
         floatingActionButton: widget.floatingActionButton,
-        backgroundColor: Colors.black,
+        backgroundColor: widget.scaffoldColor,
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
         appBar: AppBar(
-          title:
-              Text(widget.title, style: const TextStyle(color: Colors.white)),
-          centerTitle: true,
-          backgroundColor: Colors.black,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.white,
+            title:Text(
+                widget.title,
+                style: const TextStyle(
+                    color: Colors.white,),
             ),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
+            centerTitle: true,
+            backgroundColor: Colors.black,
+            automaticallyImplyLeading: true,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )),
         key: _scaffoldKey,
         body: Padding(
           padding: const EdgeInsets.only(left: 8, right: 8),

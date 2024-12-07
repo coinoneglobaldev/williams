@@ -277,6 +277,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
+      scaffoldColor: Colors.white,
       title: 'Order Item',
       floatingActionButton: Container(
         margin: const EdgeInsets.only(left: 30),

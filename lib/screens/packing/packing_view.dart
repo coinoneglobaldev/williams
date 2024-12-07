@@ -112,6 +112,7 @@ class _PackingViewState extends State<PackingView> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
+      scaffoldColor: Colors.white,
       title: 'Packing',
       bodyWidget: Padding(
         padding: const EdgeInsets.all(8.0),

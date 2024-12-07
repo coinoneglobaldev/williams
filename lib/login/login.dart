@@ -9,6 +9,7 @@ import '../../constants.dart';
 import '../../custom_screens/custom_network_error.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../providers/connectivity_status_provider.dart';
+import '../screens/driver_side/delivery_items_list_screen.dart';
 import '../screens/home/home_view.dart';
 
 class ScreenLogin extends ConsumerStatefulWidget {
@@ -42,6 +43,16 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
       CupertinoPageRoute(
         builder: (context) => const ScreenHomeView(),
         settings: const RouteSettings(name: '/home'),
+      ),
+    );
+  }
+
+  _fnNavigateToDriverPage() {
+    Navigator.pushReplacement(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const DeliveryItemsListScreen(),
+        settings: const RouteSettings(name: '/driverHome'),
       ),
     );
   }
@@ -313,10 +324,30 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                             setState(() {
                               _isButtonLoading = true;
                             });
+
+                            String username = _usernameController.text.trim();
+                            String password = _passwordController.text.trim();
+
                             await Future.delayed(
                               const Duration(seconds: 2),
                               () {
-                                _fnNavigateToHomePage();
+                                if (username == 'admin' &&
+                                    password == 'admin') {
+                                  _fnNavigateToHomePage();
+                                } else if (username == 'driver' &&
+                                    password == 'driver') {
+                                  _fnNavigateToDriverPage();
+                                } else {
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Invalid username or password')),
+                                  );
+                                  setState(() {
+                                    _isButtonLoading = false;
+                                  });
+                                }
                               },
                             );
                           },
