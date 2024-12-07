@@ -459,16 +459,19 @@ class _OrderItemViewState extends State<OrderItemView> {
                                     ),
                                   ),
                                   DataCell(
-                                    Checkbox(
-                                      fillColor:
-                                          WidgetStateProperty.all(Colors.white),
-                                      checkColor: Colors.black,
-                                      value: item.isChecked,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          item.isChecked = value ?? false;
-                                        });
-                                      },
+                                    Transform.scale(
+                                      scale: 2.5,
+                                      child: Checkbox(
+                                        fillColor: WidgetStateProperty.all(
+                                            Colors.white),
+                                        checkColor: Colors.black,
+                                        value: item.isChecked,
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            item.isChecked = value ?? false;
+                                          });
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -874,22 +877,25 @@ class _OrderItemViewState extends State<OrderItemView> {
               qtyControllers[selectedRowIndex].text;
         });
       },
-      child: Container(
-        margin: const EdgeInsets.all(10),
-        height: 60,
-        width: 60,
-        decoration: BoxDecoration(
-          color: Colors.yellow.shade900,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: Text(
-            value,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+      child: Transform.scale(
+        scale: 1.2,
+        child: Container(
+          margin: const EdgeInsets.all(10),
+          height: 60,
+          width: 60,
+          decoration: BoxDecoration(
+            color: Colors.yellow.shade900,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Text(
+              value,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
