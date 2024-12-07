@@ -35,19 +35,19 @@ class _ScreenHomePageState extends ConsumerState<ScreenCustomScaffold> {
         floatingActionButton: widget.floatingActionButton,
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-        appBar: AppBar(
-          title:
-              Text(widget.title, style: const TextStyle(color: Colors.black)),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
+        // appBar: AppBar(
+        //   title:
+        //       Text(widget.title, style: const TextStyle(color: Colors.black)),
+        //   centerTitle: true,
+        //   backgroundColor: Colors.white,
+        //   leading: IconButton(
+        //     icon: const Icon(
+        //       Icons.arrow_back,
+        //       color: Colors.black,
+        //     ),
+        //     onPressed: () => Navigator.pop(context),
+        //   ),
+        // ),
         key: _scaffoldKey,
         body: Padding(
           padding: const EdgeInsets.only(left: 8, right: 8),
