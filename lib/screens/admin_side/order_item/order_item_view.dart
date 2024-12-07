@@ -24,9 +24,9 @@ class _OrderItemViewState extends State<OrderItemView> {
     orderItems = [
       OrderItem(
         packCode: 'PC001',
-        description: 'Blue T-Shirt Large',
-        qty: '',
-        notes: 'Check quality',
+        description: 'Blue T-Shirt ',
+        qty: '5',
+        notes: 'Check qualityfdgfdgdfgfdgfdsg',
       ),
       OrderItem(
         packCode: 'PC002',
@@ -39,6 +39,96 @@ class _OrderItemViewState extends State<OrderItemView> {
         description: 'Black Hoodie XL',
         qty: '',
         notes: '',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
+      ),
+      OrderItem(
+        packCode: 'PC004',
+        description: 'White Shirt Small',
+        qty: '',
+        notes: 'Fragile items',
       ),
       OrderItem(
         packCode: 'PC004',
@@ -225,138 +315,171 @@ class _OrderItemViewState extends State<OrderItemView> {
         const SizedBox(height: 8.0),
         ClipRRect(
           borderRadius: const BorderRadius.all(Radius.circular(20)),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: KeyboardListener(
-              focusNode: FocusNode(),
-              onKeyEvent: _handleKeyPress,
-              child: DataTable(
-                columnSpacing: 30.0,
-                dataRowColor: WidgetStateProperty.resolveWith<Color>(
-                  (Set<WidgetState> states) {
-                    final int index = states.contains(WidgetState.selected)
-                        ? states.contains(WidgetState.selected)
-                            ? data.indexOf(data[selectedRowIndex])
-                            : -1
-                        : -1;
-                    return index == selectedRowIndex
-                        ? Colors.green.withOpacity(0.6)
-                        : Colors.grey.shade900;
-                  },
-                ),
-                headingRowColor: WidgetStateProperty.all(Colors.black),
-                columns: columns
-                    .map((column) => DataColumn(
-                          label: Expanded(
-                            child: Text(
-                              column,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ))
-                    .toList(),
-                rows: [
-                  ...data.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final item = entry.value;
-                    return DataRow(
-                      selected: index == selectedRowIndex,
-                      cells: [
-                        DataCell(
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: 80,
-                                child: TextField(
-                                  readOnly: true,
-                                  controller: qtyControllers[index],
-                                  focusNode: qtyFocusNodes[index],
-                                  keyboardType: TextInputType.number,
-                                  style: const TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    focusedBorder: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    hintText: 'Enter value',
-                                    hintStyle:
-                                        TextStyle(color: Colors.grey.shade500),
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 8,
-                                    ),
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      item.qty = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        DataCell(
-                          Text(
-                            item.packCode,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        DataCell(
-                          Text(
-                            item.description,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        DataCell(
-                          SizedBox(
-                            width: 120,
-                            child: TextField(
-                              // readOnly: true,
-                              controller: notesControllers[index],
-                              focusNode: notesFocusNodes[index],
-                              style: const TextStyle(color: Colors.black),
-                              decoration: InputDecoration(
-                                isDense: true,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                hintText: 'Enter value',
-                                hintStyle:
-                                    TextStyle(color: Colors.grey.shade500),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 8,
-                                ),
-                              ),
-                              onChanged: (value) {
-                                setState(() {
-                                  item.notes = value;
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                        DataCell(
-                          Checkbox(
-                            fillColor: WidgetStateProperty.all(Colors.white),
-                            checkColor: Colors.black,
-                            value: item.isChecked,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                item.isChecked = value ?? false;
-                              });
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.88,
+            width: MediaQuery.of(context).size.width,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.88,
+              width: MediaQuery.of(context).size.width,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: ListView(
+                    children: [
+                      KeyboardListener(
+                        focusNode: FocusNode(),
+                        onKeyEvent: _handleKeyPress,
+                        child: DataTable(
+                          dataRowMaxHeight: 100,
+                          dataRowMinHeight: 100,
+                          dataRowColor: WidgetStateProperty.resolveWith<Color>(
+                            (Set<WidgetState> states) {
+                              final int index =
+                                  states.contains(WidgetState.selected)
+                                      ? states.contains(WidgetState.selected)
+                                          ? data.indexOf(data[selectedRowIndex])
+                                          : -1
+                                      : -1;
+                              return index == selectedRowIndex
+                                  ? Colors.green.withOpacity(0.6)
+                                  : Colors.grey.shade900;
                             },
                           ),
+                          headingRowColor:
+                              WidgetStateProperty.all(Colors.black),
+                          columns: columns
+                              .map((column) => DataColumn(
+                                    label: Expanded(
+                                      child: Text(
+                                        column,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                          rows: [
+                            ...data.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final item = entry.value;
+                              return DataRow(
+                                selected: index == selectedRowIndex,
+                                cells: [
+                                  DataCell(
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        SizedBox(
+                                          width: 80,
+                                          child: TextField(
+                                            readOnly: true,
+                                            controller: qtyControllers[index],
+                                            focusNode: qtyFocusNodes[index],
+                                            keyboardType: TextInputType.number,
+                                            style: const TextStyle(
+                                                color: Colors.black),
+                                            decoration: InputDecoration(
+                                              isDense: true,
+                                              focusedBorder: InputBorder.none,
+                                              enabledBorder: InputBorder.none,
+                                              hintText: 'Enter value',
+                                              hintStyle: TextStyle(
+                                                  color: Colors.grey.shade500),
+                                              border: InputBorder.none,
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 8,
+                                              ),
+                                            ),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                item.qty = value;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  DataCell(
+                                    SizedBox(
+                                      width: 150,
+                                      child: Text(
+                                        item.packCode,
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                        maxLines: 3,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    SizedBox(
+                                      width: 150,
+                                      child: Text(
+                                        item.description,
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                        maxLines: 3,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    SizedBox(
+                                      width: 150,
+                                      child: TextField(
+                                        // readOnly: true,
+                                        controller: notesControllers[index],
+                                        focusNode: notesFocusNodes[index],
+                                        style: const TextStyle(
+                                            color: Colors.black),
+                                        decoration: InputDecoration(
+                                          isDense: true,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          hintText: 'Enter value',
+                                          hintStyle: TextStyle(
+                                              color: Colors.grey.shade500),
+                                          border: InputBorder.none,
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 8,
+                                          ),
+                                        ),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            item.notes = value;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Checkbox(
+                                      fillColor:
+                                          WidgetStateProperty.all(Colors.white),
+                                      checkColor: Colors.black,
+                                      value: item.isChecked,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          item.isChecked = value ?? false;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
+                          ],
                         ),
-                      ],
-                    );
-                  }),
-                ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -393,114 +516,192 @@ class _OrderItemViewState extends State<OrderItemView> {
       //   ),
       // ),
       bodyWidget: ListView(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildOrderItemTable(data: orderItems),
+              Expanded(flex: 2, child: _buildOrderItemTable(data: orderItems)),
               Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(left: 20),
-                  color: Colors.grey.shade900,
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(left: 10, top: 10, bottom: 8),
-                        child: Text(
-                          "Keyboard",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                child: Column(
+                  children: [
+                    const Text(
+                      ' ',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 10, right: 10),
-                        width: MediaQuery.of(context).size.width * 0.3,
+                    ),
+                    const SizedBox(height: 8.0),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 20),
+                        width: MediaQuery.of(context).size.width,
                         padding: const EdgeInsets.all(10),
+                        height: MediaQuery.of(context).size.height * 0.88,
                         decoration: BoxDecoration(
-                          color: Colors.grey,
                           borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                _calculatorContainer(
-                                  value: '1',
-                                ),
-                                _calculatorContainer(
-                                  value: '2',
-                                ),
-                                _calculatorContainer(
-                                  value: '3',
-                                ),
-                                _calculatorContainer(
-                                  value: '.',
-                                )
-                              ],
+                          color: Colors.white,
+                          border: Border.all(color: Colors.black),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 5,
+                              offset: Offset(0, 3),
                             ),
-                            Row(
-                              children: [
-                                _calculatorContainer(
-                                  value: '4',
-                                ),
-                                _calculatorContainer(
-                                  value: '5',
-                                ),
-                                _calculatorContainer(
-                                  value: '6',
-                                ),
-                                _calculatorContainer(
-                                  value: 'C',
-                                )
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                _calculatorContainer(
-                                  value: '7',
-                                ),
-                                _calculatorContainer(
-                                  value: '8',
-                                ),
-                                _calculatorContainer(
-                                  value: '9',
-                                ),
-                                _calculatorContainer(
-                                  value: '0',
-                                )
-                              ],
-                            )
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 200,
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10, top: 10, bottom: 8),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Keyboard",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => Navigator.pop(context),
+                                    child: Container(
+                                      margin: const EdgeInsets.only(left: 10),
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(color: Colors.black),
+                                      ),
+                                      child: Text(
+                                        'Back',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin:
+                                  const EdgeInsets.only(left: 10, right: 10),
+                              width: MediaQuery.of(context).size.width,
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.black),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: '1',
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: '2',
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: '3',
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: '.',
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: '4',
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: '5',
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: '6',
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: 'C',
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: '7',
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: '8',
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: '9',
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: _calculatorContainer(
+                                          value: '0',
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
                             Row(
                               children: [
                                 Expanded(
                                   child: _itemDetails(
                                     context: context,
-                                    title: 'Item Description',
-                                    data: orderItems[selectedRowIndex]
-                                        .description,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: _itemDetails(
-                                    context: context,
-                                    title: 'Pack Code',
-                                    data: orderItems[selectedRowIndex].packCode,
+                                    title: 'Item Details',
+                                    data:
+                                        '${orderItems[selectedRowIndex].description}, ${orderItems[selectedRowIndex].packCode}',
                                   ),
                                 ),
                               ],
@@ -524,61 +725,74 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 ),
                               ],
                             ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: _itemDetails(
+                                    context: context,
+                                    title: 'Item is Checked',
+                                    data: orderItems[selectedRowIndex].isChecked
+                                        ? 'Yes'
+                                        : 'No',
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: ElevatedButton(
+                                    onPressed: _moveDown,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blueAccent,
+                                      minimumSize: const Size(100, 50),
+                                    ),
+                                    child: const Text('Ok'),
+                                  ),
+                                ),
+                              ],
+                            ),
                             Expanded(
-                              child: _itemDetails(
-                                context: context,
-                                title: 'Item is Checked',
-                                data: orderItems[selectedRowIndex].isChecked
-                                    ? 'Yes'
-                                    : 'No',
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed:
+                                        isValidToSave ? _handleSave : null,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: isValidToSave
+                                          ? Colors.blue
+                                          : Colors.grey,
+                                      minimumSize: const Size(100, 50),
+                                    ),
+                                    child: const Text('Save'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: _moveUp,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.green,
+                                      minimumSize: const Size(100, 50),
+                                    ),
+                                    child: const Icon(Icons.arrow_upward),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: _moveDown,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      minimumSize: const Size(100, 50),
+                                    ),
+                                    child: const Icon(Icons.arrow_downward),
+                                  ),
+                                ],
                               ),
                             ),
+                            const SizedBox(
+                              height: 10,
+                            )
                           ],
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ElevatedButton(
-                            onPressed: _moveDown,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                              minimumSize: const Size(100, 50),
-                            ),
-                            child: const Text('Ok'),
-                          ),
-                          ElevatedButton(
-                            onPressed: isValidToSave ? _handleSave : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  isValidToSave ? Colors.black : Colors.grey,
-                              minimumSize: const Size(100, 50),
-                            ),
-                            child: const Text('Save'),
-                          ),
-                          ElevatedButton(
-                            onPressed: _moveUp,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                              minimumSize: const Size(100, 50),
-                            ),
-                            child: const Icon(Icons.arrow_upward),
-                          ),
-                          ElevatedButton(
-                            onPressed: _moveDown,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                              minimumSize: const Size(100, 50),
-                            ),
-                            child: const Icon(Icons.arrow_downward),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      )
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               )
             ],
@@ -592,6 +806,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     required BuildContext context,
     required String title,
     required String data,
+    bool isReadOnly = true,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -602,20 +817,19 @@ class _OrderItemViewState extends State<OrderItemView> {
             children: [
               Text(
                 title,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.black),
               ),
               const SizedBox(
                 width: 10,
               ),
               Expanded(
                 child: TextField(
-                  readOnly: true,
+                  readOnly: isReadOnly,
+                  enableIMEPersonalizedLearning: true,
                   controller: TextEditingController(text: data),
                   style: const TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     isDense: true,
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
                     hintText: title,
                     hintStyle: TextStyle(color: Colors.grey.shade500),
                     border: InputBorder.none,
@@ -641,18 +855,21 @@ class _OrderItemViewState extends State<OrderItemView> {
       onTap: () {
         setState(() {
           if (value == 'C') {
-            // If the value is 'C', remove the last character
             final currentText = qtyControllers[selectedRowIndex].text;
             if (currentText.isNotEmpty) {
               qtyControllers[selectedRowIndex].text =
                   currentText.substring(0, currentText.length - 1);
             }
+          } else if (value == '.') {
+            final currentText = qtyControllers[selectedRowIndex].text;
+            // Only add decimal point if there isn't one already
+            if (!currentText.contains('.')) {
+              qtyControllers[selectedRowIndex].text = currentText + value;
+            }
           } else {
-            // For all other values, append to existing text
             final currentText = qtyControllers[selectedRowIndex].text;
             qtyControllers[selectedRowIndex].text = currentText + value;
           }
-          // Update the order item qty as well
           orderItems[selectedRowIndex].qty =
               qtyControllers[selectedRowIndex].text;
         });
