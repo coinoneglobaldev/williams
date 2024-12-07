@@ -45,7 +45,6 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
-      scaffoldColor: Colors.white,
       title: 'Delivery Upload',
       bodyWidget: Center(
         child: Padding(

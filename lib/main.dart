@@ -9,6 +9,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
     [
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ],
@@ -51,36 +53,55 @@ class _MyAppState extends State<MyApp> {
           minThumbLength: 30,
           thickness: WidgetStateProperty.all(10),
         ),
-        inputDecorationTheme: InputDecorationTheme(
-          fillColor: Colors.white,
-          filled: true,
-          prefixIconColor: themeColor,
-          suffixIconColor: themeColor,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide.none,
+        inputDecorationTheme: const InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+          ),
+          labelStyle: TextStyle(
+            fontFamily: 'Roboto',
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          helperStyle: TextStyle(
+            fontFamily: 'Roboto',
+            color: Colors.white,
+            fontSize: 16,
+          ),
+          hintStyle: TextStyle(
+            fontFamily: 'Roboto',
+            color: Colors.black,
+            fontSize: 16,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide.none,
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 1,
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+            borderSide: BorderSide(
+              color: Colors.black,
+              width: 2,
             ),
           ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 1,
+          fillColor: Colors.white,
+          filled: true,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+            borderSide: BorderSide(
+              color: Colors.black,
+              width: 2,
             ),
           ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide.none,
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+            borderSide: BorderSide(
+              color: Colors.black,
+              width: 2,
+            ),
           ),
         ),
         primaryColor: themeColor,

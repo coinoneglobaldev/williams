@@ -68,7 +68,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
-      scaffoldColor: Colors.white,
       title: 'Buying Sheet',
       bodyWidget: Column(
         children: [
