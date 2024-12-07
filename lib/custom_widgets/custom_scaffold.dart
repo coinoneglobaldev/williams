@@ -33,17 +33,17 @@ class _ScreenHomePageState extends ConsumerState<ScreenCustomScaffold> {
     if (connectivityStatusProvider == ConnectivityStatus.isConnected) {
       return Scaffold(
         floatingActionButton: widget.floatingActionButton,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
         appBar: AppBar(
           title:
-              Text(widget.title, style: const TextStyle(color: Colors.white)),
+              Text(widget.title, style: const TextStyle(color: Colors.black)),
           centerTitle: true,
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.white,
           leading: IconButton(
             icon: const Icon(
               Icons.arrow_back,
-              color: Colors.white,
+              color: Colors.black,
             ),
             onPressed: () => Navigator.pop(context),
           ),
