@@ -331,8 +331,10 @@ class _OrderItemViewState extends State<OrderItemView> {
                         focusNode: FocusNode(),
                         onKeyEvent: _handleKeyPress,
                         child: DataTable(
-                          dataRowMaxHeight: 100,
-                          dataRowMinHeight: 100,
+                          horizontalMargin: 0,
+                          border: TableBorder.all(color: Colors.black),
+                          dataRowMaxHeight: 50,
+                          dataRowMinHeight: 50,
                           dataRowColor: WidgetStateProperty.resolveWith<Color>(
                             (Set<WidgetState> states) {
                               final int index =
@@ -342,12 +344,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                                           : -1
                                       : -1;
                               return index == selectedRowIndex
-                                  ? Colors.green.withOpacity(0.6)
-                                  : Colors.grey.shade900;
+                                  ? Colors.blue.withOpacity(0.6)
+                                  : Colors.white;
                             },
                           ),
-                          headingRowColor:
-                              WidgetStateProperty.all(Colors.black),
+                          headingRowColor: WidgetStateProperty.all(Colors.grey),
                           columns: columns
                               .map((column) => DataColumn(
                                     label: Expanded(
@@ -355,7 +356,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                         column,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.white,
+                                          color: Colors.black,
                                         ),
                                       ),
                                     ),
@@ -383,8 +384,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                                                 color: Colors.black),
                                             decoration: InputDecoration(
                                               isDense: true,
-                                              focusedBorder: InputBorder.none,
-                                              enabledBorder: InputBorder.none,
                                               hintText: 'Enter value',
                                               hintStyle: TextStyle(
                                                   color: Colors.grey.shade500),
@@ -411,8 +410,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       child: Text(
                                         item.packCode,
                                         style: const TextStyle(
-                                            color: Colors.white),
-                                        maxLines: 3,
+                                            color: Colors.black),
+                                        maxLines: 2,
                                       ),
                                     ),
                                   ),
@@ -422,8 +421,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       child: Text(
                                         item.description,
                                         style: const TextStyle(
-                                            color: Colors.white),
-                                        maxLines: 3,
+                                            color: Colors.black),
+                                        maxLines: 2,
                                       ),
                                     ),
                                   ),
@@ -438,8 +437,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                                             color: Colors.black),
                                         decoration: InputDecoration(
                                           isDense: true,
-                                          focusedBorder: InputBorder.none,
-                                          enabledBorder: InputBorder.none,
                                           hintText: 'Enter value',
                                           hintStyle: TextStyle(
                                               color: Colors.grey.shade500),
@@ -462,9 +459,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                                     Transform.scale(
                                       scale: 2.5,
                                       child: Checkbox(
-                                        fillColor: WidgetStateProperty.all(
-                                            Colors.white),
-                                        checkColor: Colors.black,
+                                        activeColor: Colors.black,
+                                        checkColor: Colors.white,
                                         value: item.isChecked,
                                         onChanged: (bool? value) {
                                           setState(() {
@@ -526,7 +522,7 @@ class _OrderItemViewState extends State<OrderItemView> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(flex: 2, child: _buildOrderItemTable(data: orderItems)),
+              Expanded(flex:2, child: _buildOrderItemTable(data: orderItems)),
               Expanded(
                 child: Column(
                   children: [
@@ -582,9 +578,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       margin: const EdgeInsets.only(left: 10),
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: Colors.black,
+                                        color: Colors.blue,
                                         borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(color: Colors.black),
                                       ),
                                       child: Text(
                                         'Back',
@@ -878,7 +873,7 @@ class _OrderItemViewState extends State<OrderItemView> {
         });
       },
       child: Transform.scale(
-        scale: 1.2,
+        scale: 1.3,
         child: Container(
           margin: const EdgeInsets.all(10),
           height: 60,

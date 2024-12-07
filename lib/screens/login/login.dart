@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -38,6 +39,11 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
   }
 
   _fnNavigateToHomePage() {
+    // Set landscape orientation for admin
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     Navigator.pushReplacement(
       context,
       CupertinoPageRoute(
@@ -48,6 +54,11 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
   }
 
   _fnNavigateToDriverPage() {
+    // Set portrait orientation for driver
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     Navigator.pushReplacement(
       context,
       CupertinoPageRoute(

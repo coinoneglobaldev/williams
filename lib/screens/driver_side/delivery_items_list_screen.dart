@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:williams/screens/driver_side/widget/delivery_item_list.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import 'delivery_upload_screen.dart';
@@ -31,6 +32,27 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
       'address': 'Thrissur, opposite private stand'
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    // Reset to default (all orientations) when leaving the screen
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

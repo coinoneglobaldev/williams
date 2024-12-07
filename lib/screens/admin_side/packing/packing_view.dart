@@ -113,6 +113,7 @@ class _PackingViewState extends State<PackingView> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
+      resizeToAvoidBottomInset: false,
       title: 'Packing',
       bodyWidget: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -165,10 +166,11 @@ class _PackingViewState extends State<PackingView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(' Round',
-                          style: TextStyle(fontSize: 16, color: Colors.white)),
+                      const Text(' ',
+                          style: TextStyle(fontSize: 16, color: Colors.black)),
                       TextField(
                         decoration: const InputDecoration(
+                          label: Text('Round'),
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 12, vertical: 16),
                         ),
@@ -184,7 +186,7 @@ class _PackingViewState extends State<PackingView> {
                       const Text(' '),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey.shade900,
+                          backgroundColor: Colors.blue,
                           minimumSize: const Size(150, 55),
                         ),
                         onPressed: () {},
@@ -275,7 +277,7 @@ class _PackingViewState extends State<PackingView> {
         Text(
           title,
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
       ],
@@ -304,6 +306,7 @@ class _PackingViewState extends State<PackingView> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Table(
+          border: TableBorder.all(color: Colors.black),
           defaultColumnWidth: FixedColumnWidth(kWidth / 2),
           columnWidths: const {
             0: FixedColumnWidth(180),
@@ -316,7 +319,7 @@ class _PackingViewState extends State<PackingView> {
           children: [
             TableRow(
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: Colors.grey,
               ),
               children: columns
                   .map(
@@ -338,7 +341,7 @@ class _PackingViewState extends State<PackingView> {
               final item = entry.value;
               return TableRow(
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade900,
+                  color: Colors.white,
                 ),
                 children: [
                   for (var i = 0; i < columns.length; i++)
@@ -348,10 +351,13 @@ class _PackingViewState extends State<PackingView> {
                         padding: const EdgeInsets.all(16.0),
                         child: i == 0
                             ? ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                ),
                                 onPressed: () {
                                   navigateToDetail(item, index);
                                 },
-                                child: Text(item.round),
+                                child: Text(item.round,style: TextStyle(color: Colors.white),),
                               )
                             : Text(
                                 i == 1
@@ -363,7 +369,7 @@ class _PackingViewState extends State<PackingView> {
                                             : i == 4
                                                 ? item.customerName
                                                 : item.address,
-                                style: const TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.black),
                               ),
                       ),
                     ),
