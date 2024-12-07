@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../../constants.dart';
+import '../../../constants.dart';
 import '../../login/login.dart';
 
 class HomeAppBar extends StatelessWidget {

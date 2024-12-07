@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:williams/screens/driver_side/widget/delivery_item_list.dart';
+
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import 'delivery_upload_screen.dart';
 
@@ -55,13 +56,12 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
               // Add logout functionality here
               showDialog(
                 context: context,
-                builder: (context) => const  ScreenCustomExitConfirmation(),
+                builder: (context) => const ScreenCustomExitConfirmation(),
               );
             },
           ),
         ],
       ),
-
       body: ListView.builder(
         itemCount: deliveryItems.length,
         itemBuilder: (context, index) {

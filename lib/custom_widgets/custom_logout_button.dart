@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../login/login.dart';
+import '../screens/login/login.dart';
 
 class CustomLogoutConfirmation extends StatefulWidget {
   const CustomLogoutConfirmation({super.key});
@@ -48,7 +48,6 @@ class _CustomLogoutConfirmationState extends State<CustomLogoutConfirmation> {
                   builder: (context) => const ScreenLogin(),
                 ),
               );
-
             },
             child: const Text(
               'Logout',

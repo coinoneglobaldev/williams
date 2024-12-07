@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:williams/screens/home/home_view.dart';
-
-import 'login/login.dart';
-import 'login/splash.dart';
+import 'package:williams/screens/admin_side/home/home_view.dart';
+import 'package:williams/screens/login/login.dart';
+import 'package:williams/screens/login/splash.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {

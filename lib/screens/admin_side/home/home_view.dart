@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:williams/screens/home/page_cards.dart';
+import 'package:williams/screens/admin_side/home/page_cards.dart';
 
-import '../../custom_widgets/custom_exit_confirmation.dart';
+import '../../../custom_widgets/custom_exit_confirmation.dart';
 import '../buying_sheet/buying_sheet_screen.dart';
 import '../packing/packing_view.dart';
 import 'appbar.dart';

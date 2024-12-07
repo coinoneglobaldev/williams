@@ -9,8 +9,8 @@ import '../../constants.dart';
 import '../../custom_screens/custom_network_error.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../providers/connectivity_status_provider.dart';
-import '../screens/driver_side/delivery_items_list_screen.dart';
-import '../screens/home/home_view.dart';
+import '../admin_side/home/home_view.dart';
+import '../driver_side/delivery_items_list_screen.dart';
 
 class ScreenLogin extends ConsumerStatefulWidget {
   const ScreenLogin({
