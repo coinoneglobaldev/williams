@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
 
 class OrderItemView extends StatefulWidget {
@@ -12,7 +13,10 @@ class _OrderItemViewState extends State<OrderItemView> {
   late List<OrderItem> orderItems;
   late List<TextEditingController> qtyControllers;
   late List<TextEditingController> notesControllers;
+  late List<FocusNode> qtyFocusNodes;
+  late List<FocusNode> notesFocusNodes;
   int selectedRowIndex = 0;
+  bool isQtyFocused = true;
 
   @override
   void initState() {
@@ -50,6 +54,29 @@ class _OrderItemViewState extends State<OrderItemView> {
     notesControllers = orderItems
         .map((item) => TextEditingController(text: item.notes))
         .toList();
+    qtyFocusNodes = List.generate(orderItems.length, (index) => FocusNode());
+    notesFocusNodes = List.generate(orderItems.length, (index) => FocusNode());
+
+    // Add focus listeners
+    for (var i = 0; i < orderItems.length; i++) {
+      qtyFocusNodes[i].addListener(() {
+        if (qtyFocusNodes[i].hasFocus) {
+          setState(() {
+            selectedRowIndex = i;
+            isQtyFocused = true;
+          });
+        }
+      });
+
+      notesFocusNodes[i].addListener(() {
+        if (notesFocusNodes[i].hasFocus) {
+          setState(() {
+            selectedRowIndex = i;
+            isQtyFocused = false;
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -60,7 +87,28 @@ class _OrderItemViewState extends State<OrderItemView> {
     for (var controller in notesControllers) {
       controller.dispose();
     }
+    for (var node in qtyFocusNodes) {
+      node.dispose();
+    }
+    for (var node in notesFocusNodes) {
+      node.dispose();
+    }
     super.dispose();
+  }
+
+  void _handleKeyPress(RawKeyEvent event) {
+    if (event is RawKeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        _moveUp();
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        _moveDown();
+      } else if (event.logicalKey == LogicalKeyboardKey.tab) {
+        setState(() {
+          isQtyFocused = !isQtyFocused;
+        });
+        _updateFocus();
+      }
+    }
   }
 
   void _moveUp() {
@@ -68,6 +116,7 @@ class _OrderItemViewState extends State<OrderItemView> {
       setState(() {
         selectedRowIndex--;
       });
+      _updateFocus();
     }
   }
 
@@ -75,6 +124,34 @@ class _OrderItemViewState extends State<OrderItemView> {
     if (selectedRowIndex < orderItems.length - 1) {
       setState(() {
         selectedRowIndex++;
+      });
+      _updateFocus();
+    }
+  }
+
+  void _updateFocus() {
+    if (isQtyFocused) {
+      qtyFocusNodes[selectedRowIndex].requestFocus();
+    } else {
+      notesFocusNodes[selectedRowIndex].requestFocus();
+    }
+  }
+
+  void _incrementQty() {
+    final currentQty = int.tryParse(qtyControllers[selectedRowIndex].text) ?? 0;
+    qtyControllers[selectedRowIndex].text = (currentQty + 1).toString();
+    setState(() {
+      orderItems[selectedRowIndex].qty = qtyControllers[selectedRowIndex].text;
+    });
+  }
+
+  void _decrementQty() {
+    final currentQty = int.tryParse(qtyControllers[selectedRowIndex].text) ?? 0;
+    if (currentQty > 0) {
+      qtyControllers[selectedRowIndex].text = (currentQty - 1).toString();
+      setState(() {
+        orderItems[selectedRowIndex].qty =
+            qtyControllers[selectedRowIndex].text;
       });
     }
   }
@@ -151,122 +228,135 @@ class _OrderItemViewState extends State<OrderItemView> {
           borderRadius: const BorderRadius.all(Radius.circular(20)),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columnSpacing: 30.0,
-              dataRowColor: WidgetStateProperty.resolveWith<Color>(
-                (Set<WidgetState> states) {
-                  final int index = states.contains(WidgetState.selected)
-                      ? states.contains(WidgetState.selected)
-                          ? data.indexOf(data[selectedRowIndex])
-                          : -1
-                      : -1;
-                  return index == selectedRowIndex
-                      ? Colors.blue.withOpacity(0.3)
-                      : Colors.grey.shade900;
-                },
+            child: RawKeyboardListener(
+              focusNode: FocusNode(),
+              onKey: _handleKeyPress,
+              child: DataTable(
+                columnSpacing: 30.0,
+                dataRowColor: WidgetStateProperty.resolveWith<Color>(
+                  (Set<WidgetState> states) {
+                    final int index = states.contains(WidgetState.selected)
+                        ? states.contains(WidgetState.selected)
+                            ? data.indexOf(data[selectedRowIndex])
+                            : -1
+                        : -1;
+                    return index == selectedRowIndex
+                        ? Colors.blue.withOpacity(0.3)
+                        : Colors.grey.shade900;
+                  },
+                ),
+                headingRowColor: WidgetStateProperty.all(Colors.white),
+                columns: columns
+                    .map((column) => DataColumn(
+                          label: Expanded(
+                            child: Text(
+                              column,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ))
+                    .toList(),
+                rows: [
+                  ...data.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    return DataRow(
+                      selected: index == selectedRowIndex,
+                      cells: [
+                        DataCell(
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 80,
+                                child: TextField(
+                                  controller: qtyControllers[index],
+                                  focusNode: qtyFocusNodes[index],
+                                  keyboardType: TextInputType.number,
+                                  style: const TextStyle(color: Colors.black),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    focusedBorder: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    hintText: 'Enter value',
+                                    hintStyle:
+                                        TextStyle(color: Colors.grey.shade500),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      item.qty = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        DataCell(
+                          Text(
+                            item.packCode,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        DataCell(
+                          Text(
+                            item.description,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        DataCell(
+                          SizedBox(
+                            width: 120,
+                            child: TextField(
+                              controller: notesControllers[index],
+                              focusNode: notesFocusNodes[index],
+                              style: const TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                hintText: 'Enter value',
+                                hintStyle:
+                                    TextStyle(color: Colors.grey.shade500),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 8,
+                                ),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  item.notes = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        DataCell(
+                          Checkbox(
+                            fillColor: WidgetStateProperty.all(Colors.white),
+                            checkColor: Colors.black,
+                            value: item.isChecked,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                item.isChecked = value ?? false;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                ],
               ),
-              headingRowColor: WidgetStateProperty.all(Colors.white),
-              columns: columns
-                  .map((column) => DataColumn(
-                        label: Expanded(
-                          child: Text(
-                            column,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ))
-                  .toList(),
-              rows: [
-                ...data.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final item = entry.value;
-                  return DataRow(
-                    selected: index == selectedRowIndex,
-                    cells: [
-                      DataCell(
-                        SizedBox(
-                          width: 120,
-                          child: TextField(
-                            controller: qtyControllers[index],
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              isDense: true,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              hintText: 'Enter value',
-                              hintStyle: TextStyle(color: Colors.grey.shade500),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 8,
-                              ),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                item.qty = value;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          item.packCode,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          item.description,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      DataCell(
-                        SizedBox(
-                          width: 120,
-                          child: TextField(
-                            controller: notesControllers[index],
-                            style: const TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              isDense: true,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              hintText: 'Enter value',
-                              hintStyle: TextStyle(color: Colors.grey.shade500),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 8,
-                              ),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                item.notes = value;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        Checkbox(
-                          fillColor: WidgetStateProperty.all(Colors.white),
-                          checkColor: Colors.black,
-                          value: item.isChecked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              item.isChecked = value ?? false;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              ],
             ),
           ),
         ),
@@ -284,6 +374,7 @@ class _OrderItemViewState extends State<OrderItemView> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             FloatingActionButton(
+              heroTag: 'btn1',
               onPressed: _moveUp,
               mini: true,
               backgroundColor: Colors.grey.shade900,
@@ -291,6 +382,7 @@ class _OrderItemViewState extends State<OrderItemView> {
             ),
             const SizedBox(height: 10),
             FloatingActionButton(
+              heroTag: 'btn2',
               onPressed: _moveDown,
               mini: true,
               backgroundColor: Colors.grey.shade900,
