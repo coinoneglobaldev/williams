@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:williams/constants.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
 
-import '../../../custom_widgets/custom_snackbar.dart';
+import '../../../custom_widgets/util_class.dart';
 
 class BuyingSheetScreen extends StatefulWidget {
   const BuyingSheetScreen({super.key});
