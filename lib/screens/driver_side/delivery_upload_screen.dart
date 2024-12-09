@@ -32,15 +32,16 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
         print("Error taking photo: $e");
       }
       if (!mounted) return;
-      CustomErrorSnackbar.show(context, "Failed to take photo");
+      Util.customErrorSnackbar(context, "Failed to take photo");
     }
   }
 
   void _uploadPhoto() {
     if (_image != null) {
-      CustomSuccessSnackbar.show(context, "Photo uploaded successfully!");
+      Util.customSuccessSnackbar(context, "Photo uploaded successfully!");
+      Navigator.pop(context);
     } else {
-      CustomErrorSnackbar.show(context, "Please take a photo first!");
+      Util.customErrorSnackbar(context, "Please take a photo first!");
     }
   }
 
@@ -156,16 +157,6 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
                       fontStyle: FontStyle.italic,
                     ),
                   )
-                else
-                  Text(
-                    'Please click on the upload button to upload proof of delivery',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
               ],
             ),
           ),

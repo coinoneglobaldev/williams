@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CustomErrorSnackbar {
-  static void show(BuildContext context, String errorMessage) {
+class Util {
+  static void customErrorSnackbar(BuildContext context, String errorMessage) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 2),
@@ -14,10 +14,8 @@ class CustomErrorSnackbar {
       ),
     );
   }
-}
 
-class CustomSuccessSnackbar {
-  static void show(BuildContext context, String errorMessage) {
+  static void customSuccessSnackbar(BuildContext context, String errorMessage) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 2),
@@ -28,6 +26,34 @@ class CustomSuccessSnackbar {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
+    );
+  }
+
+  static Widget titleAndSubtitleWidget({
+    required String title,
+    required String subTitle,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 5),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+        ),
+        Text(
+          subTitle,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 }

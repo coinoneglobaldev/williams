@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:williams/screens/driver_side/widget/delivery_item_list.dart';
+import 'package:williams/screens/driver_side/widget/driver_home_appbar.dart';
 
-import '../../custom_widgets/custom_logout_button.dart';
 import 'delivery_upload_screen.dart';
 
 class DeliveryItemsListScreen extends StatefulWidget {
@@ -15,22 +15,24 @@ class DeliveryItemsListScreen extends StatefulWidget {
 }
 
 class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
-  // List of delivery items
   final List<Map<String, String>> deliveryItems = [
     {
       'name': 'Samuel',
-      'poNo': '3344',
-      'address': 'Thodupuzha, opposite private stand'
+      'itemCount': '4',
+      'address': 'Thodupuzha, opposite private stand',
+      'orderId': 'TRK001',
     },
     {
       'name': 'Jackson',
-      'poNo': '3455',
-      'address': 'Kottayam, opposite private stand'
+      'itemCount': '3',
+      'address': 'Kottayam, opposite private stand',
+      'orderId': 'TRK002',
     },
     {
       'name': 'Emmanuel',
-      'poNo': '7865',
-      'address': 'Thrissur, opposite private stand'
+      'itemCount': '7',
+      'address': 'Thrissur, opposite private stand',
+      'orderId': 'TRK003',
     },
   ];
 
@@ -45,7 +47,6 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
 
   @override
   void dispose() {
-    // Reset to default (all orientations) when leaving the screen
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -59,50 +60,41 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        title: Text(
-          'Delivery Items',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              SizedBox(height: 10),
+              DriverHomeAppbar(name: 'Ramesh U P'),
+              SizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: deliveryItems.length,
+                  itemBuilder: (context, index) {
+                    final item = deliveryItems[index];
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => DeliveryUploadScreen(),
+                          ),
+                        );
+                      },
+                      child: DeliveryItemList(
+                        name: item['name']!,
+                        itemCount: item['itemCount']!,
+                        address: item['address']!,
+                        orderId: item['orderId']!,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            color: Colors.black,
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => const CustomLogoutConfirmation(),
-              );
-            },
-          ),
-        ],
-      ),
-      body: ListView.builder(
-        itemCount: deliveryItems.length,
-        itemBuilder: (context, index) {
-          final item = deliveryItems[index];
-          return InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (context) => DeliveryUploadScreen(),
-                ),
-              );
-            },
-            child: DeliveryItemList(
-              name: item['name']!,
-              poNo: item['poNo']!,
-              address: item['address']!,
-            ),
-          );
-        },
       ),
     );
   }

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../../../constants.dart';
+import '../../../custom_widgets/custom_snackbar.dart';
 
 class DeliveryItemList extends StatelessWidget {
   final String name;
-  final String poNo;
+  final String itemCount;
   final String address;
+  final String orderId;
 
   const DeliveryItemList({
     required this.name,
-    required this.poNo,
+    required this.itemCount,
     required this.address,
+    required this.orderId,
     super.key,
   });
 
@@ -18,74 +20,34 @@ class DeliveryItemList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.only(top: 4, left: 8, right: 8),
+      margin: const EdgeInsets.only(bottom: 10),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: buttonColor,
+        color: Colors.green,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Name Row
           Row(
             children: [
-              Icon(Icons.person, color: Colors.white, size: 20),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  name,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    letterSpacing: 0.5,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+              Util.titleAndSubtitleWidget(title: 'Name:', subTitle: name),
+              const Spacer(),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ),
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(orderId),
+                ),
+              )
             ],
           ),
-          const SizedBox(height: 10),
-          // PoNo Row
-          Row(
-            children: [
-              Icon(Icons.receipt_long, color: Colors.white70, size: 20),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Po No: $poNo',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.85),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          // Address Row
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.location_on, color: Colors.white70, size: 20),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  address,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.85),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
+          Util.titleAndSubtitleWidget(
+              title: 'Item Count:', subTitle: itemCount),
+          Util.titleAndSubtitleWidget(title: 'Address:', subTitle: address),
         ],
       ),
     );

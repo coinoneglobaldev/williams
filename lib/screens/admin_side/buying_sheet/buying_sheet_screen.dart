@@ -219,13 +219,13 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       child: ElevatedButton(
         onPressed: () {
           if (_selectedCategory == null || _selectedSubcategory == null) {
-            CustomErrorSnackbar.show(
+            Util.customErrorSnackbar(
               context,
               'Please select Category and Subcategory!',
             );
           }
           if (_selectedCategory != null && _selectedSubcategory != null) {
-            CustomErrorSnackbar.show(
+            Util.customErrorSnackbar(
               context,
               'Categories and Subcategories are not yet added!',
             );
@@ -256,14 +256,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 onPressed: () {
                   if (_selectedCategory == null ||
                       _selectedSubcategory == null) {
-                    CustomErrorSnackbar.show(
+                    Util.customErrorSnackbar(
                       context,
                       'Please select Category and Subcategory!',
                     );
                   }
                   if (_selectedCategory != null &&
                       _selectedSubcategory != null) {
-                    CustomErrorSnackbar.show(
+                    Util.customErrorSnackbar(
                       context,
                       'Categories and Subcategories are not yet added!',
                     );
@@ -288,7 +288,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
-                  CustomSuccessSnackbar.show(
+                  Util.customSuccessSnackbar(
                     context,
                     'Order added successfully!',
                   );
