@@ -21,7 +21,7 @@ class DeliveryItemList extends StatelessWidget {
       margin: const EdgeInsets.only(top: 4, left: 8, right: 8),
       width: double.infinity,
       decoration: BoxDecoration(
-       color: buttonColor,
+        color: buttonColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(

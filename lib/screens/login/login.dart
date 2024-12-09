@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../constants.dart';
@@ -106,16 +105,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                             fontSize: 50,
                             fontWeight: FontWeight.bold,
                           ),
-                        )
-                            .animate()
-                            .slideY(
-                              duration: 400.milliseconds,
-                              delay: 200.milliseconds,
-                              curve: Curves.easeInOut,
-                              begin: 0.1,
-                              end: 0.0,
-                            )
-                            .fadeIn(),
+                        ),
                         Text(
                           'of London',
                           style: TextStyle(
@@ -124,16 +114,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                             fontSize: 50,
                             fontWeight: FontWeight.bold,
                           ),
-                        )
-                            .animate()
-                            .slideY(
-                              duration: 400.milliseconds,
-                              delay: 400.milliseconds,
-                              curve: Curves.easeInOut,
-                              begin: 0.1,
-                              end: 0.0,
-                            )
-                            .fadeIn(),
+                        ),
                       ],
                     ),
                   ),
@@ -144,16 +125,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                       fontSize: 12,
                     ),
                     textAlign: TextAlign.center,
-                  )
-                      .animate()
-                      .slideY(
-                        duration: 400.milliseconds,
-                        delay: 600.milliseconds,
-                        curve: Curves.easeInOut,
-                        begin: 0.1,
-                        end: 0.0,
-                      )
-                      .fadeIn(),
+                  ),
                   const Spacer(),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -172,16 +144,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                               fontSize: 14,
                             ),
                             textAlign: TextAlign.center,
-                          )
-                              .animate()
-                              .slideY(
-                                duration: 400.milliseconds,
-                                delay: 1000.milliseconds,
-                                curve: Curves.easeInOut,
-                                begin: 0.1,
-                                end: 0.0,
-                              )
-                              .fadeIn(),
+                          ),
                         ),
                         const SizedBox(
                           height: 10,
@@ -213,16 +176,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                               ),
                             ),
                           ),
-                        )
-                            .animate()
-                            .slideY(
-                              duration: 400.milliseconds,
-                              delay: 1200.milliseconds,
-                              curve: Curves.easeInOut,
-                              begin: 0.1,
-                              end: 0.0,
-                            )
-                            .fadeIn(),
+                        ),
                         const SizedBox(
                           height: 10,
                         ),
@@ -264,16 +218,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                               ),
                             ),
                           ),
-                        )
-                            .animate()
-                            .slideY(
-                              duration: 400.milliseconds,
-                              delay: 1400.milliseconds,
-                              curve: Curves.easeInOut,
-                              begin: 0.1,
-                              end: 0.0,
-                            )
-                            .fadeIn(),
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -313,16 +258,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                               ),
                             ),
                           ],
-                        )
-                            .animate()
-                            .slideY(
-                              duration: 400.milliseconds,
-                              delay: 1600.milliseconds,
-                              curve: Curves.easeInOut,
-                              begin: 0.1,
-                              end: 0.0,
-                            )
-                            .fadeIn(),
+                        ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: buttonColor,
@@ -376,43 +312,17 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                        )
-                            .animate()
-                            .slideY(
-                              duration: 400.milliseconds,
-                              delay: 1800.milliseconds,
-                              curve: Curves.easeInOut,
-                              begin: 0.1,
-                              end: 0.0,
-                            )
-                            .fadeIn(),
+                        ),
                         const SizedBox(
                           height: 5,
                         ),
                       ],
                     ),
-                  )
-                      .animate()
-                      .slideY(
-                        duration: 400.milliseconds,
-                        delay: 800.milliseconds,
-                        curve: Curves.easeInOut,
-                        begin: 0.1,
-                        end: 0.0,
-                      )
-                      .fadeIn(),
+                  ),
                 ],
               ),
             ),
-          )
-              .animate()
-              .slideY(
-                duration: 400.milliseconds,
-                curve: Curves.easeInOut,
-                begin: 0.1,
-                end: 0.0,
-              )
-              .fadeIn(),
+          ),
         ),
       );
     } else {

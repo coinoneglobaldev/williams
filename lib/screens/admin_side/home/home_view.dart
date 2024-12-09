@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:williams/screens/admin_side/home/page_cards.dart';
 
@@ -80,16 +79,7 @@ class _ScreenHomePageState extends ConsumerState<ScreenHomeView> {
                 },
                 cardName: 'PACKING',
                 imagePath: 'assets/images/login_bg.jpg',
-              )
-                  .animate()
-                  .slideY(
-                    duration: 400.milliseconds,
-                    delay: 1000.milliseconds,
-                    curve: Curves.easeInOut,
-                    begin: 0.1,
-                    end: 0.0,
-                  )
-                  .fadeIn(),
+              ),
               const SizedBox(
                 height: 15,
               ),
@@ -103,16 +93,7 @@ class _ScreenHomePageState extends ConsumerState<ScreenHomeView> {
                 },
                 cardName: 'BUYING SHEET',
                 imagePath: 'assets/images/login_bg.jpg',
-              )
-                  .animate()
-                  .slideY(
-                    duration: 400.milliseconds,
-                    delay: 1200.milliseconds,
-                    curve: Curves.easeInOut,
-                    begin: 0.1,
-                    end: 0.0,
-                  )
-                  .fadeIn(),
+              ),
             ],
           ),
         ),

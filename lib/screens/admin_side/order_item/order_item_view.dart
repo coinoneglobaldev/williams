@@ -522,7 +522,7 @@ class _OrderItemViewState extends State<OrderItemView> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(flex:2, child: _buildOrderItemTable(data: orderItems)),
+              Expanded(flex: 2, child: _buildOrderItemTable(data: orderItems)),
               Expanded(
                 child: Column(
                   children: [

@@ -357,7 +357,10 @@ class _PackingViewState extends State<PackingView> {
                                 onPressed: () {
                                   navigateToDetail(item, index);
                                 },
-                                child: Text(item.round,style: TextStyle(color: Colors.white),),
+                                child: Text(
+                                  item.round,
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               )
                             : Text(
                                 i == 1

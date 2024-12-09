@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+
 import '../../constants.dart';
 import 'login.dart';
 
@@ -54,16 +54,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
                     fontSize: 50,
                     fontWeight: FontWeight.bold,
                   ),
-                )
-                    .animate()
-                    .slideY(
-                      duration: 400.milliseconds,
-                      delay: 200.milliseconds,
-                      curve: Curves.easeInOut,
-                      begin: 0.1,
-                      end: 0.0,
-                    )
-                    .fadeIn(),
+                ),
                 Text(
                   'of London',
                   style: TextStyle(
@@ -72,16 +63,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
                     fontSize: 50,
                     fontWeight: FontWeight.bold,
                   ),
-                )
-                    .animate()
-                    .slideY(
-                      duration: 400.milliseconds,
-                      delay: 400.milliseconds,
-                      curve: Curves.easeInOut,
-                      begin: 0.1,
-                      end: 0.0,
-                    )
-                    .fadeIn(),
+                ),
               ],
             ),
           ),
@@ -93,16 +75,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
               fontSize: 10,
               fontWeight: FontWeight.w500,
             ),
-          )
-              .animate()
-              .slideY(
-                duration: 400.milliseconds,
-                delay: 600.milliseconds,
-                curve: Curves.easeInOut,
-                begin: 0.1,
-                end: 0.0,
-              )
-              .fadeIn(),
+          ),
           SizedBox(
             height: 5,
           ),

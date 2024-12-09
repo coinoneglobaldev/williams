@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../constants.dart';
 import '../../login/login.dart';
@@ -21,16 +20,7 @@ class HomeAppBar extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 color: Colors.white,
               ),
-            )
-                .animate()
-                .slideY(
-                  duration: 400.milliseconds,
-                  delay: 200.milliseconds,
-                  curve: Curves.easeInOut,
-                  begin: 0.1,
-                  end: 0.0,
-                )
-                .fadeIn(),
+            ),
             Text(
               'Samuel L Jackson',
               style: TextStyle(
@@ -38,16 +28,7 @@ class HomeAppBar extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 color: Colors.white,
               ),
-            )
-                .animate()
-                .slideY(
-                  duration: 400.milliseconds,
-                  delay: 400.milliseconds,
-                  curve: Curves.easeInOut,
-                  begin: 0.1,
-                  end: 0.0,
-                )
-                .fadeIn(),
+            ),
             Text(
               'Admin',
               style: TextStyle(
@@ -55,16 +36,7 @@ class HomeAppBar extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 color: Colors.white,
               ),
-            )
-                .animate()
-                .slideY(
-                  duration: 400.milliseconds,
-                  delay: 600.milliseconds,
-                  curve: Curves.easeInOut,
-                  begin: 0.1,
-                  end: 0.0,
-                )
-                .fadeIn(),
+            ),
           ],
         ),
         const Spacer(),
@@ -120,16 +92,7 @@ class HomeAppBar extends StatelessWidget {
             Icons.more_horiz_rounded,
             color: Colors.white,
           ),
-        )
-            .animate()
-            .slideY(
-              duration: 400.milliseconds,
-              delay: 800.milliseconds,
-              curve: Curves.easeInOut,
-              begin: 0.1,
-              end: 0.0,
-            )
-            .fadeIn(),
+        ),
       ],
     );
   }

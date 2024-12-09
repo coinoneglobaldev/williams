@@ -150,8 +150,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: buttonColor,
                   minimumSize: Size(
-                      MediaQuery.of(context).size.width * 0.4,
-                      MediaQuery.of(context).size.height * 0.06,
+                    MediaQuery.of(context).size.width * 0.4,
+                    MediaQuery.of(context).size.height * 0.06,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
