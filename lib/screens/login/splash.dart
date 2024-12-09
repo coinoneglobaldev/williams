@@ -1,7 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter/services.dart';
 
-import '../constants.dart';
+import '../../constants.dart';
 import 'login.dart';
 
 class ScreenSplash extends StatefulWidget {
@@ -26,9 +27,13 @@ class _ScreenSplashState extends State<ScreenSplash> {
   void _fnCheckIfSignedIn() async {
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (context) => const ScreenLogin(),
       ),
     );
@@ -37,7 +42,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -51,38 +56,20 @@ class _ScreenSplashState extends State<ScreenSplash> {
                   'Williams',
                   style: TextStyle(
                     height: 0.9,
-                    color: Colors.white,
+                    color: buttonColor,
                     fontSize: 50,
                     fontWeight: FontWeight.bold,
                   ),
-                )
-                    .animate()
-                    .slideY(
-                      duration: 400.milliseconds,
-                      delay: 200.milliseconds,
-                      curve: Curves.easeInOut,
-                      begin: 0.1,
-                      end: 0.0,
-                    )
-                    .fadeIn(),
+                ),
                 Text(
                   'of London',
                   style: TextStyle(
                     height: 0.9,
-                    color: Colors.white,
+                    color: buttonColor,
                     fontSize: 50,
                     fontWeight: FontWeight.bold,
                   ),
-                )
-                    .animate()
-                    .slideY(
-                      duration: 400.milliseconds,
-                      delay: 400.milliseconds,
-                      curve: Curves.easeInOut,
-                      begin: 0.1,
-                      end: 0.0,
-                    )
-                    .fadeIn(),
+                ),
               ],
             ),
           ),
@@ -90,22 +77,13 @@ class _ScreenSplashState extends State<ScreenSplash> {
           Text(
             appVersion,
             style: TextStyle(
-              color: Colors.white,
+              color: buttonColor,
               fontSize: 10,
               fontWeight: FontWeight.w500,
             ),
-          )
-              .animate()
-              .slideY(
-                duration: 400.milliseconds,
-                delay: 600.milliseconds,
-                curve: Curves.easeInOut,
-                begin: 0.1,
-                end: 0.0,
-              )
-              .fadeIn(),
+          ),
           SizedBox(
-            height: 5,
+            height: 10,
           ),
         ],
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../custom_widgets/custom_scaffold.dart';
+import '../../../custom_widgets/custom_scaffold.dart';
 import '../order_item/order_item_view.dart';
 
 class PackingView extends StatefulWidget {
@@ -16,6 +16,7 @@ class _PackingViewState extends State<PackingView> {
   DateTime? endDate;
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
+  final TextEditingController roundController = TextEditingController();
   final List<TableData> stitchingData = [
     TableData(
       round: "First Round",
@@ -112,13 +113,13 @@ class _PackingViewState extends State<PackingView> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
+      resizeToAvoidBottomInset: false,
       title: 'Packing',
       bodyWidget: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -160,6 +161,94 @@ class _PackingViewState extends State<PackingView> {
                     ],
                   ),
                 ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(' ',
+                          style: TextStyle(fontSize: 16, color: Colors.black)),
+                      TextField(
+                        decoration: const InputDecoration(
+                          label: Text('Round'),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 16),
+                        ),
+                        controller: roundController,
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      const Text(' '),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          minimumSize: const Size(150, 55),
+                        ),
+                        onPressed: () {},
+                        child: Text(
+                          'Fetch',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            SizedBox(height: 16),
+                            _colorMatchingData(
+                              title: 'Hold\t\t\t\t',
+                              colors: Colors.red.shade500,
+                            ),
+                            const SizedBox(height: 6),
+                            _colorMatchingData(
+                              title: 'Rlease',
+                              colors: Colors.green.shade500,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            SizedBox(height: 16),
+                            _colorMatchingData(
+                              title: 'Zero Rate\t\t\t\t\t',
+                              colors: Colors.blue.shade500,
+                            ),
+                            const SizedBox(height: 6),
+                            _colorMatchingData(
+                              title: 'Part Release',
+                              colors: Colors.orange.shade500,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            SizedBox(height: 16),
+                            _colorMatchingData(
+                              title: 'Processing',
+                              colors: Colors.yellow.shade500,
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
             const SizedBox(height: 10),
@@ -170,10 +259,37 @@ class _PackingViewState extends State<PackingView> {
     );
   }
 
+  Row _colorMatchingData({
+    required String title,
+    required Color colors,
+  }) {
+    return Row(
+      children: [
+        Container(
+          height: 20,
+          width: 20,
+          decoration: BoxDecoration(
+            color: colors,
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        const SizedBox(width: 5),
+        Text(
+          title,
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildStitchingEstimateTable({
     required List<TableData> data,
   }) {
     final columns = ['Order', 'Round', 'Date', 'PO No.', 'Customer', 'Address'];
+
+    final kWidth = MediaQuery.of(context).size.width;
 
     void navigateToDetail(TableData item, int index) {
       Navigator.push(
@@ -190,18 +306,20 @@ class _PackingViewState extends State<PackingView> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Table(
-          defaultColumnWidth: const FixedColumnWidth(100.0),
+          border: TableBorder.all(color: Colors.black),
+          defaultColumnWidth: FixedColumnWidth(kWidth / 2),
           columnWidths: const {
-            0: FixedColumnWidth(80),
-            1: FixedColumnWidth(80),
-            2: FixedColumnWidth(100),
-            3: FixedColumnWidth(80),
-            4: FixedColumnWidth(100),
+            0: FixedColumnWidth(180),
+            1: FixedColumnWidth(180),
+            2: FixedColumnWidth(180),
+            3: FixedColumnWidth(150),
+            4: FixedColumnWidth(160),
+            5: FixedColumnWidth(400),
           },
           children: [
             TableRow(
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: Colors.grey,
               ),
               children: columns
                   .map(
@@ -223,7 +341,7 @@ class _PackingViewState extends State<PackingView> {
               final item = entry.value;
               return TableRow(
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade900,
+                  color: Colors.white,
                 ),
                 children: [
                   for (var i = 0; i < columns.length; i++)
@@ -231,21 +349,31 @@ class _PackingViewState extends State<PackingView> {
                       onTap: () => navigateToDetail(item, index),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          i == 0
-                              ? '${index + 1}'
-                              : i == 1
-                                  ? item.round
-                                  : i == 2
-                                      ? item.date
-                                      : i == 3
-                                          ? item.poNo
-                                          : i == 4
-                                              ? item.customerName
-                                              : item.address,
-                          style: const TextStyle(color: Colors.white),
-                          textAlign: i == 4 ? TextAlign.end : TextAlign.start,
-                        ),
+                        child: i == 0
+                            ? ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                ),
+                                onPressed: () {
+                                  navigateToDetail(item, index);
+                                },
+                                child: Text(
+                                  item.round,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              )
+                            : Text(
+                                i == 1
+                                    ? item.round
+                                    : i == 2
+                                        ? item.date
+                                        : i == 3
+                                            ? item.poNo
+                                            : i == 4
+                                                ? item.customerName
+                                                : item.address,
+                                style: const TextStyle(color: Colors.black),
+                              ),
                       ),
                     ),
                 ],
