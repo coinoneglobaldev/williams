@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../constants.dart';
 import '../../custom_widgets/custom_scaffold_driver.dart';
-import '../../custom_widgets/custom_snackbar.dart';
+import '../../custom_widgets/util_class.dart';
 
 class DeliveryUploadScreen extends StatefulWidget {
   const DeliveryUploadScreen({super.key});

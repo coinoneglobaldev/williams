@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../custom_widgets/custom_snackbar.dart';
+import '../../../custom_widgets/util_class.dart';
 
 class DeliveryItemList extends StatelessWidget {
   final String name;
