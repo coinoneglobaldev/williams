@@ -1,5 +1,5 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../../constants.dart';
 import 'login.dart';
 
@@ -27,7 +27,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (context) => const ScreenLogin(),
       ),
     );
@@ -36,7 +36,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,7 +50,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
                   'Williams',
                   style: TextStyle(
                     height: 0.9,
-                    color: Colors.white,
+                    color: buttonColor,
                     fontSize: 50,
                     fontWeight: FontWeight.bold,
                   ),
@@ -59,7 +59,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
                   'of London',
                   style: TextStyle(
                     height: 0.9,
-                    color: Colors.white,
+                    color: buttonColor,
                     fontSize: 50,
                     fontWeight: FontWeight.bold,
                   ),
@@ -71,13 +71,13 @@ class _ScreenSplashState extends State<ScreenSplash> {
           Text(
             appVersion,
             style: TextStyle(
-              color: Colors.white,
+              color: buttonColor,
               fontSize: 10,
               fontWeight: FontWeight.w500,
             ),
           ),
           SizedBox(
-            height: 5,
+            height: 10,
           ),
         ],
       ),

@@ -74,250 +74,238 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     var connectivityStatusProvider = ref.watch(connectivityStatusProviders);
     if (connectivityStatusProvider == ConnectivityStatus.isConnected) {
       return Scaffold(
-        backgroundColor: Colors.black,
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
           child: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/login_bg.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
             height: MediaQuery.of(context).size.height,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            decoration: BoxDecoration(
+             image: DecorationImage(
+               image: const AssetImage('assets/images/login_background.jpg'),
+               fit: BoxFit.cover,
+             )
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Spacer(),
-                  const Spacer(),
-                  Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Williams',
-                          style: TextStyle(
-                            height: 0.9,
-                            color: Colors.white,
-                            fontSize: 50,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  Column(
+                    children: [
+                      Text(
+                        'Williams',
+                        style: TextStyle(
+                          height: 0.9,
+                          color: buttonColor,
+                          fontSize: 50,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Text(
-                          'of London',
-                          style: TextStyle(
-                            height: 0.9,
-                            color: Colors.white,
-                            fontSize: 50,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      Text(
+                        'of London',
+                        style: TextStyle(
+                          height: 0.9,
+                          color: buttonColor,
+                          fontSize: 50,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                  ),
-                  const Text(
-                    'Since 1999',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                    textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        'Since 1999',
+                        style: TextStyle(
+                          color: buttonColor,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                    ],
                   ),
                   const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(
-                          height: 15,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: const Text(
+                          ' Enter your login details',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: const Text(
-                            ' Enter your login details',
-                            style: TextStyle(
-                              color: Colors.white,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Form(
+                        key: _eMailKey,
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter a valid email';
+                            } else if (!value.contains('@') &&
+                                value.contains('.') &&
+                                value.length < 5) {
+                              return 'Please enter valid email';
+                            }
+                            return null;
+                          },
+                          controller: _usernameController,
+                          decoration: InputDecoration(
+                            hintText: 'Email',
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
                               fontSize: 14,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Form(
-                          key: _eMailKey,
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Please enter a valid email';
-                              } else if (!value.contains('@') &&
-                                  value.contains('.') &&
-                                  value.length < 5) {
-                                return 'Please enter valid email';
-                              }
-                              return null;
-                            },
-                            controller: _usernameController,
-                            decoration: InputDecoration(
-                              hintText: 'Email',
-                              hintStyle: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 14,
-                              ),
-                              prefixIcon: Icon(
-                                Icons.person,
-                                color: themeColor,
-                                size: 20,
-                              ),
+                            prefixIcon: Icon(
+                              Icons.person,
+                              color: themeColor,
+                              size: 20,
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Form(
-                          key: _passwordKey,
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Please enter password';
-                              }
-                              return null;
-                            },
-                            controller: _passwordController,
-                            obscureText: !_isVisibility,
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                              hintStyle: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 14,
-                              ),
-                              prefixIcon: Icon(
-                                Icons.lock,
-                                color: themeColor,
-                                size: 20,
-                              ),
-                              suffixIcon: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _isVisibility = !_isVisibility;
-                                  });
-                                },
-                                child: Icon(
-                                  _isVisibility
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  color: themeColor,
-                                  size: 20,
-                                ),
-                              ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Form(
+                        key: _passwordKey,
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter password';
+                            }
+                            return null;
+                          },
+                          controller: _passwordController,
+                          obscureText: !_isVisibility,
+                          decoration: InputDecoration(
+                            hintText: 'Password',
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
                             ),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Checkbox(
-                              value: _isRememberMe,
-                              onChanged: (value) {
+                            prefixIcon: Icon(
+                              Icons.lock,
+                              color: themeColor,
+                              size: 20,
+                            ),
+                            suffixIcon: InkWell(
+                              onTap: () {
                                 setState(() {
-                                  _isRememberMe = value!;
+                                  _isVisibility = !_isVisibility;
                                 });
                               },
-                              activeColor: Colors.white,
-                              checkColor: themeColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              side: const BorderSide(
-                                color: Colors.grey,
-                                width: 2,
+                              child: Icon(
+                                _isVisibility
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: themeColor,
+                                size: 20,
                               ),
                             ),
-                            const Text(
-                              'Remember me',
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Checkbox(
+                            value: _isRememberMe,
+                            onChanged: (value) {
+                              setState(() {
+                                _isRememberMe = value!;
+                              });
+                            },
+                            activeColor: Colors.black,
+                            checkColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            side: const BorderSide(
+                              color: Colors.grey,
+                              width: 2,
+                            ),
+                          ),
+                          const Text(
+                            'Remember me',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const Spacer(),
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text(
+                              'Forgot Password ?',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Colors.black,
                                 fontSize: 12,
                               ),
                             ),
-                            const Spacer(),
-                            TextButton(
-                              onPressed: () {},
-                              child: const Text(
-                                'Forgot Password',
+                          ),
+                        ],
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: buttonColor,
+                        ),
+                        onPressed: () async {
+                          if (!_eMailKey.currentState!.validate() ||
+                              !_passwordKey.currentState!.validate()) {
+                            return;
+                          }
+                          setState(() {
+                            _isButtonLoading = true;
+                          });
+                          String username = _usernameController.text.trim();
+                          String password = _passwordController.text.trim();
+                          await Future.delayed(
+                            const Duration(seconds: 2),
+                            () {
+                              if (username == 'admin' && password == 'admin') {
+                                _fnNavigateToHomePage();
+                              } else if (username == 'driver' &&
+                                  password == 'driver') {
+                                _fnNavigateToDriverPage();
+                              } else {
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                        Text('Invalid username or password'),
+                                  ),
+                                );
+                                setState(() {
+                                  _isButtonLoading = false;
+                                });
+                              }
+                            },
+                          );
+                        },
+                        child: _isButtonLoading
+                            ? const CustomLogoSpinner(
+                                oneSize: 10,
+                                roundSize: 30,
+                              )
+                            : const Text(
+                                'LOGIN',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 12,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                            ),
-                          ],
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonColor,
-                          ),
-                          onPressed: () async {
-                            if (!_eMailKey.currentState!.validate() ||
-                                !_passwordKey.currentState!.validate()) {
-                              return;
-                            }
-                            setState(() {
-                              _isButtonLoading = true;
-                            });
-
-                            String username = _usernameController.text.trim();
-                            String password = _passwordController.text.trim();
-
-                            await Future.delayed(
-                              const Duration(seconds: 2),
-                              () {
-                                if (username == 'admin' &&
-                                    password == 'admin') {
-                                  _fnNavigateToHomePage();
-                                } else if (username == 'driver' &&
-                                    password == 'driver') {
-                                  _fnNavigateToDriverPage();
-                                } else {
-                                  if (!context.mounted) return;
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'Invalid username or password')),
-                                  );
-                                  setState(() {
-                                    _isButtonLoading = false;
-                                  });
-                                }
-                              },
-                            );
-                          },
-                          child: _isButtonLoading
-                              ? const CustomLogoSpinner(
-                                  oneSize: 10,
-                                  roundSize: 30,
-                                )
-                              : const Text(
-                                  'LOGIN',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                    ],
                   ),
                 ],
               ),

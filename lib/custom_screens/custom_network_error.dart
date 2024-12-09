@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../custom_widgets/custom_exit_confirmation.dart';
 
 class ScreenCustomNetworkError extends StatefulWidget {
