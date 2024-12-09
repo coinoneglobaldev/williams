@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -79,11 +77,10 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
           child: Container(
             height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
-             image: DecorationImage(
-               image: const AssetImage('assets/images/login_background.jpg'),
-               fit: BoxFit.cover,
-             )
-            ),
+                image: DecorationImage(
+              image: const AssetImage('assets/images/login_background.jpg'),
+              fit: BoxFit.cover,
+            )),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Column(

@@ -42,11 +42,12 @@ class _CustomLogoutConfirmationState extends State<CustomLogoutConfirmation> {
           height: 35,
           child: TextButton(
             onPressed: () {
-              Navigator.pushReplacement(
+              Navigator.pushAndRemoveUntil(
                 context,
                 CupertinoPageRoute(
                   builder: (context) => const ScreenLogin(),
                 ),
+                (route) => false,
               );
             },
             child: const Text(

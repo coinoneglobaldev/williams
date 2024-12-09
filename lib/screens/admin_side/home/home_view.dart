@@ -7,7 +7,7 @@ import 'package:williams/screens/admin_side/home/page_cards.dart';
 import '../../../custom_widgets/custom_exit_confirmation.dart';
 import '../buying_sheet/buying_sheet_screen.dart';
 import '../packing/packing_view.dart';
-import 'appbar.dart';
+import 'home_appbar.dart';
 
 class ScreenHomeView extends ConsumerStatefulWidget {
   const ScreenHomeView({super.key});
@@ -28,7 +28,6 @@ class _ScreenHomePageState extends ConsumerState<ScreenHomeView> {
 
   @override
   void dispose() {
-    // Reset to default (all orientations) when leaving the screen
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -43,7 +42,7 @@ class _ScreenHomePageState extends ConsumerState<ScreenHomeView> {
     BuildContext context,
   ) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: PopScope(
           canPop: false,
@@ -57,44 +56,44 @@ class _ScreenHomePageState extends ConsumerState<ScreenHomeView> {
               builder: (context) => const ScreenCustomExitConfirmation(),
             );
           },
-          child: ListView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 20,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  HomeAppBar(),
+                  const SizedBox(height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      HomeCards(
+                        cardName: 'PACKING',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => const PackingView(),
+                              settings: const RouteSettings(name: '/home'),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 10),
+                      HomeCards(
+                        cardName: 'BUYING SHEET',
+                        onTap: () {
+                          Navigator.of(context).push(
+                            CupertinoPageRoute(
+                              builder: (context) => const BuyingSheetScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
-            children: [
-              HomeAppBar(),
-              const SizedBox(
-                height: 25,
-              ),
-              HomeCards(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (context) => const PackingView(),
-                      settings: const RouteSettings(name: '/home'),
-                    ),
-                  );
-                },
-                cardName: 'PACKING',
-                imagePath: 'assets/images/login_bg.jpg',
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              HomeCards(
-                onTap: () {
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(
-                      builder: (context) => const BuyingSheetScreen(),
-                    ),
-                  );
-                },
-                cardName: 'BUYING SHEET',
-                imagePath: 'assets/images/login_bg.jpg',
-              ),
-            ],
           ),
         ),
       ),

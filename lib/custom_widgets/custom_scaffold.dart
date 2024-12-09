@@ -50,7 +50,7 @@ class _ScreenHomePageState extends ConsumerState<ScreenCustomScaffold> {
         // ),
         key: _scaffoldKey,
         body: Padding(
-          padding: const EdgeInsets.only(left: 8, right: 8),
+          padding: const EdgeInsets.only(left: 10, right: 10),
           child: SafeArea(child: widget.bodyWidget),
         ),
       );

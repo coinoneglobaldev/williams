@@ -254,13 +254,15 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
-                  if (_selectedCategory == null || _selectedSubcategory == null) {
+                  if (_selectedCategory == null ||
+                      _selectedSubcategory == null) {
                     CustomErrorSnackbar.show(
                       context,
                       'Please select Category and Subcategory!',
                     );
                   }
-                  if (_selectedCategory != null && _selectedSubcategory != null) {
+                  if (_selectedCategory != null &&
+                      _selectedSubcategory != null) {
                     CustomErrorSnackbar.show(
                       context,
                       'Categories and Subcategories are not yet added!',
