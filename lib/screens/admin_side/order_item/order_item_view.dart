@@ -286,7 +286,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                 minimumSize: const Size(150, 60),
               ),
               onPressed: _selectAll,
-              child: Text(isAllSelected ? "Unselect all" : "Select all"),
+              child: Text(isAllSelected ? "Unselect All" : "Select All"),
             ),
             const Spacer(),
           ],
