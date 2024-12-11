@@ -10,6 +10,7 @@ class OrderItemView extends StatefulWidget {
 }
 
 class _OrderItemViewState extends State<OrderItemView> {
+  bool isShortMode = false;
   late List<OrderItem> orderItems;
   late List<TextEditingController> qtyControllers;
   late List<TextEditingController> notesControllers;
@@ -31,123 +32,34 @@ class _OrderItemViewState extends State<OrderItemView> {
       OrderItem(
         packCode: 'PC002',
         description: 'Red Polo Medium',
-        qty: '',
+        qty: '4',
         notes: 'Express delivery',
       ),
       OrderItem(
         packCode: 'PC003',
         description: 'Black Hoodie XL',
-        qty: '',
+        qty: '5',
         notes: '',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
-      ),
-      OrderItem(
-        packCode: 'PC004',
-        description: 'White Shirt Small',
-        qty: '',
-        notes: 'Fragile items',
       ),
     ];
 
-    qtyControllers = orderItems
-        .map((item) => TextEditingController(text: item.qty))
-        .toList();
+    qtyControllers = orderItems.map((item) => TextEditingController()).toList();
     notesControllers = orderItems
         .map((item) => TextEditingController(text: item.notes))
         .toList();
-    qtyFocusNodes = List.generate(orderItems.length, (index) => FocusNode());
-    notesFocusNodes = List.generate(orderItems.length, (index) => FocusNode());
     shortControllers =
         List.generate(orderItems.length, (index) => TextEditingController());
+
+    // Then initialize focus nodes
+    qtyFocusNodes = List.generate(orderItems.length, (index) => FocusNode());
+    notesFocusNodes = List.generate(orderItems.length, (index) => FocusNode());
+
+    // Now add listeners after all controllers are initialized
+    for (var controller in shortControllers) {
+      controller.addListener(() {
+        setState(() {});
+      });
+    }
 
     // Add focus listeners
     for (var i = 0; i < orderItems.length; i++) {
@@ -169,6 +81,37 @@ class _OrderItemViewState extends State<OrderItemView> {
         }
       });
     }
+  }
+
+  void _handleShortButtonClick(int index) {
+    setState(() {
+      selectedRowIndex = index;
+      isShortMode = true;
+      isQtyFocused = false;
+      // Clear focus from other fields
+      qtyFocusNodes[index].unfocus();
+      notesFocusNodes[index].unfocus();
+
+      // Force keyboard to show for short input
+      FocusScope.of(context).requestFocus(FocusNode());
+      Future.delayed(const Duration(milliseconds: 50), () {
+        setState(() {});
+      });
+    });
+  }
+
+  void _switchToQtyMode() {
+    setState(() {
+      isShortMode = false;
+      isQtyFocused = true;
+    });
+  }
+
+  void _switchToShortMode() {
+    setState(() {
+      isShortMode = true;
+      isQtyFocused = false;
+    });
   }
 
   @override
@@ -319,7 +262,7 @@ class _OrderItemViewState extends State<OrderItemView> {
           child: const Text(
             ' Order Items',
             style: TextStyle(
-              fontSize: 18.0,
+              fontSize: 20.0,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
@@ -384,6 +327,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   _updateFocus();
                                   notesFocusNodes[index].unfocus();
                                 });
+                                _switchToQtyMode();
                               },
                               Text(
                                 item.qty,
@@ -398,6 +342,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   _updateFocus();
                                   notesFocusNodes[index].unfocus();
                                 });
+                                _switchToQtyMode();
                               },
                               Text(
                                 item.packCode,
@@ -412,6 +357,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   _updateFocus();
                                   notesFocusNodes[index].unfocus();
                                 });
+                                _switchToQtyMode();
                               },
                               Text(
                                 item.description,
@@ -477,6 +423,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   _updateFocus();
                                   notesFocusNodes[index].unfocus();
                                 });
+                                _switchToQtyMode();
                               },
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -517,13 +464,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   minimumSize: const Size(100, 80),
                                 ),
                                 child: const Text('Short'),
-                                onPressed: () {
-                                  setState(() {
-                                    selectedRowIndex = index;
-                                    _updateFocus();
-                                    notesFocusNodes[index].unfocus();
-                                  });
-                                },
+                                onPressed: () => _handleShortButtonClick(index),
                               ),
                             ),
                           ],
@@ -704,6 +645,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                           context: context,
                           title: 'Quantity',
                           data: qtyControllers[selectedRowIndex].text,
+                          onTab: _switchToQtyMode,
                         ),
                       ),
                       SizedBox(width: 5),
@@ -713,6 +655,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                           title: 'Shorts',
                           data: shortControllers[selectedRowIndex].text,
                           color: Colors.red,
+                          onTab: _switchToShortMode,
                         ),
                       ),
                     ],
@@ -823,13 +766,19 @@ class _OrderItemViewState extends State<OrderItemView> {
     required String data,
     bool isReadOnly = true,
     Color color = Colors.black,
+    GestureTapCallback? onTab,
   }) {
+    final bool isShortField = title == 'Shorts';
+    final controller = isShortField
+        ? shortControllers[selectedRowIndex]
+        : TextEditingController(text: data);
     return Column(
       children: [
         TextFormField(
           readOnly: isReadOnly,
           enableIMEPersonalizedLearning: true,
-          controller: TextEditingController(text: data),
+          controller: controller,
+          onTap: onTab,
           style: TextStyle(color: color, fontSize: 20),
           decoration: InputDecoration(
             isDense: true,
@@ -866,24 +815,26 @@ class _OrderItemViewState extends State<OrderItemView> {
     return GestureDetector(
       onTap: () {
         setState(() {
+          final controller = isShortMode
+              ? shortControllers[selectedRowIndex]
+              : qtyControllers[selectedRowIndex];
           if (value == 'C') {
-            final currentText = qtyControllers[selectedRowIndex].text;
+            final currentText = controller.text;
             if (currentText.isNotEmpty) {
-              qtyControllers[selectedRowIndex].text =
+              controller.text =
                   currentText.substring(0, currentText.length - 1);
             }
           } else if (value == '.') {
-            final currentText = qtyControllers[selectedRowIndex].text;
+            final currentText = controller.text;
             // Only add decimal point if there isn't one already
             if (!currentText.contains('.')) {
-              qtyControllers[selectedRowIndex].text = currentText + value;
+              controller.text = currentText + value;
             }
           } else {
-            final currentText = qtyControllers[selectedRowIndex].text;
-            qtyControllers[selectedRowIndex].text = currentText + value;
+            final currentText = controller.text;
+            controller.text = currentText + value;
           }
-          orderItems[selectedRowIndex].qty =
-              qtyControllers[selectedRowIndex].text;
+          // orderItems[selectedRowIndex].qty = controller.text;
         });
       },
       child: Transform.scale(
