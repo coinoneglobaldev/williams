@@ -17,6 +17,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   late List<TextEditingController> shortControllers;
   late List<FocusNode> qtyFocusNodes;
   late List<FocusNode> notesFocusNodes;
+  bool isAllSelected = false;
   int selectedRowIndex = 0;
   bool isQtyFocused = true;
   @override
@@ -81,6 +82,16 @@ class _OrderItemViewState extends State<OrderItemView> {
         }
       });
     }
+  }
+
+  void _selectAll() {
+    setState(() {
+      isAllSelected = !isAllSelected;
+
+      for (var item in orderItems) {
+        item.isChecked = isAllSelected;
+      }
+    });
   }
 
   void _handleShortButtonClick(int index) {
@@ -257,16 +268,28 @@ class _OrderItemViewState extends State<OrderItemView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          height: 30,
-          child: const Text(
-            ' Order Items',
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Text(
+              ' Order Items',
+              style: TextStyle(
+                fontSize: 50.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-          ),
+            const Spacer(),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                minimumSize: const Size(150, 60),
+              ),
+              onPressed: _selectAll,
+              child: Text(isAllSelected ? "Unselect all" : "Select all"),
+            ),
+            const Spacer(),
+          ],
         ),
         const SizedBox(height: 10),
         Expanded(
