@@ -26,6 +26,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     orderItems = [
       OrderItem(
         packCode: 'PC001',
+        short: '',
         description: 'Blue T-Shirt ',
         qty: '5',
         notes: 'Check quality',
@@ -33,12 +34,14 @@ class _OrderItemViewState extends State<OrderItemView> {
       OrderItem(
         packCode: 'PC002',
         description: 'Red Polo Medium',
+        short: '',
         qty: '4',
         notes: 'Express delivery',
       ),
       OrderItem(
         packCode: 'PC003',
         description: 'Black Hoodie XL',
+        short: '2',
         qty: '5',
         notes: '',
       ),
@@ -307,8 +310,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                       color: Colors.black,
                     )),
                     horizontalMargin: 10,
-                    dataRowMaxHeight: 50,
-                    dataRowMinHeight: 50,
+                    dataRowMaxHeight: 60,
+                    dataRowMinHeight: 60,
                     columnSpacing: 15,
                     dataRowColor: WidgetStateProperty.resolveWith<Color>(
                       (Set<WidgetState> states) {
@@ -450,13 +453,13 @@ class _OrderItemViewState extends State<OrderItemView> {
                               },
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
+                                  backgroundColor: Colors.blue,
                                   padding: const EdgeInsets.only(
                                       left: 10, right: 10),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  minimumSize: const Size(100, 80),
+                                  minimumSize: const Size(100, 50),
                                 ),
                                 child: const Text('Done'),
                                 onPressed: () {
@@ -478,15 +481,18 @@ class _OrderItemViewState extends State<OrderItemView> {
                               },
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
+                                  backgroundColor: item.short == ''
+                                      ? Colors.grey
+                                      : Colors.red,
                                   padding: const EdgeInsets.only(
                                       left: 10, right: 10),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  minimumSize: const Size(100, 80),
+                                  minimumSize: const Size(100, 50),
                                 ),
-                                child: const Text('Short'),
+                                child: Text(
+                                    item.short == '' ? 'Short' : item.short),
                                 onPressed: () => _handleShortButtonClick(index),
                               ),
                             ),
@@ -742,7 +748,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                             // onPressed: isValidToSave ? _handleSave : null,
                             onPressed: () {
                               FocusScope.of(context).unfocus();
-                              _handleSave();
+                              // _handleSave();
                               _moveDown();
                             },
                             style: ElevatedButton.styleFrom(
@@ -867,7 +873,7 @@ class _OrderItemViewState extends State<OrderItemView> {
           height: 60,
           width: 60,
           decoration: BoxDecoration(
-            color: Colors.yellow.shade900,
+            color: Colors.blue.shade900,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
@@ -890,6 +896,7 @@ class _OrderItemViewState extends State<OrderItemView> {
 class OrderItem {
   final String packCode;
   final String description;
+  final String short;
   String qty;
   String notes;
   bool isChecked;
@@ -897,6 +904,7 @@ class OrderItem {
   OrderItem({
     required this.packCode,
     required this.description,
+    required this.short,
     this.qty = '',
     this.notes = '',
     this.isChecked = false,
