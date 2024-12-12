@@ -1,17 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../../custom_widgets/custom_scaffold.dart';
+import 'order_item_view.dart';
 
-import '../../../custom_widgets/custom_scaffold.dart';
-import '../order_item/order_item_view.dart';
-
-class PackingView extends StatefulWidget {
-  const PackingView({super.key});
+class SalesOrderList extends StatefulWidget {
+  const SalesOrderList({super.key});
 
   @override
-  State<PackingView> createState() => _PackingViewState();
+  State<SalesOrderList> createState() => _SalesOrderListState();
 }
 
-class _PackingViewState extends State<PackingView> {
+class _SalesOrderListState extends State<SalesOrderList> {
   DateTime? startDate;
   DateTime? endDate;
   final TextEditingController startDateController = TextEditingController();
@@ -33,6 +32,9 @@ class _PackingViewState extends State<PackingView> {
       customerName: "Kumar Enterprises",
     ),
   ];
+  List<String> rounds = ['Round 1', 'Round 2', 'Round 3'];
+  String? selectedRound;
+
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class _PackingViewState extends State<PackingView> {
     super.initState();
     startDateController.text = _formatDate(DateTime.now());
     endDateController.text = _formatDate(DateTime.now());
+    selectedRound = rounds[0];
   }
 
   @override
@@ -120,6 +123,15 @@ class _PackingViewState extends State<PackingView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text(
+              'Sales Order List',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -166,37 +178,33 @@ class _PackingViewState extends State<PackingView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(' ',
-                          style: TextStyle(fontSize: 16, color: Colors.black)),
-                      TextField(
+                      const Text(
+                        ' ',
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                      DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
-                          label: Text('Round'),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 16),
+                          labelText: 'Round',
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                         ),
-                        controller: roundController,
+                        value: selectedRound, // Ensure this variable holds the initial selected value or is null
+                        items: rounds.map((String round) {
+                          return DropdownMenuItem<String>(
+                            value: round,
+                            child: Text(round),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedRound = newValue;
+                          });
+                        },
                       ),
                     ],
                   ),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    children: [
-                      const Text(' '),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          minimumSize: const Size(150, 55),
-                        ),
-                        onPressed: () {},
-                        child: Text(
-                          'Fetch',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+
+                Spacer(),
                 Expanded(
                   flex: 2,
                   child: Row(
@@ -212,7 +220,7 @@ class _PackingViewState extends State<PackingView> {
                             ),
                             const SizedBox(height: 6),
                             _colorMatchingData(
-                              title: 'Rlease',
+                              title: 'Release',
                               colors: Colors.green.shade500,
                             ),
                           ],

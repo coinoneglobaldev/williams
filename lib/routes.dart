@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:williams/screens/admin_side/home/home_view.dart';
 import 'package:williams/screens/login/login.dart';
 import 'package:williams/screens/login/splash.dart';
 
@@ -16,15 +15,10 @@ class Routes {
           settings: settings,
           builder: (_) => const ScreenLogin(),
         );
-      case '/home': // ScreenHomePage
-        return CupertinoPageRoute(
-          settings: settings,
-          builder: (_) => const ScreenHomeView(),
-        );
       default:
         return CupertinoPageRoute(
           settings: settings,
-          builder: (_) => const ScreenHomeView(),
+          builder: (_) => const ScreenLogin(),
         );
     }
   }
