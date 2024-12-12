@@ -20,6 +20,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   bool isAllSelected = false;
   int selectedRowIndex = 0;
   bool isQtyFocused = true;
+
   @override
   void initState() {
     super.initState();
