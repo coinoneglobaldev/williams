@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../../../custom_widgets/custom_scaffold.dart';
-import '../order_item/order_item_view.dart';
+import '../../custom_widgets/custom_scaffold.dart';
+import 'order_item/order_item_view.dart';
 
 class PackingView extends StatefulWidget {
   const PackingView({super.key});

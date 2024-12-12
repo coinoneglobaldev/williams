@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:williams/screens/admin_side/packing/packing_view.dart';
 import '../../constants.dart';
 import '../../custom_screens/custom_network_error.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../providers/connectivity_status_provider.dart';
-import '../admin_side/buying_sheet/buying_sheet_screen.dart';
-import '../driver_side/delivery_items_list_screen.dart';
+import '../buying_flow/buying_sheet_screen.dart';
+import '../driver_flow/delivery_items_list_screen.dart';
+import '../packing_flow/packing_view.dart';
 
 class ScreenLogin extends ConsumerStatefulWidget {
   const ScreenLogin({
