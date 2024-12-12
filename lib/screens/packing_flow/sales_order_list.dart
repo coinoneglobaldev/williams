@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import '../../custom_widgets/custom_scaffold.dart';
 import 'order_item_view.dart';
 
@@ -16,10 +17,10 @@ class _SalesOrderListState extends State<SalesOrderList> {
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
   final TextEditingController roundController = TextEditingController();
-  final List<TableData> stitchingData = [
+  final List<TableData> salesOrderData = [
     TableData(
       order: 'Samuel',
-      round: "First Round",
+      round: "Round 1",
       date: "2024-02-15",
       poNo: "PO-789",
       address: "123 Main Street, Mumbai, Maharashtra",
@@ -27,7 +28,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
     ),
     TableData(
       order: 'John',
-      round: "Second Round",
+      round: "Round 1",
       date: "2024-02-20",
       poNo: "PO-790",
       address: "456 Park Avenue, Delhi, New Delhi",
@@ -132,7 +133,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
                 color: Colors.black,
               ),
             ),
-            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -185,12 +185,11 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                       DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
-                          labelText: 'Round',
+                          hintText: 'Round',
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 12, vertical: 16),
                         ),
-                        value:
-                            selectedRound, // Ensure this variable holds the initial selected value or is null
+                        value: selectedRound,
                         items: rounds.map((String round) {
                           return DropdownMenuItem<String>(
                             value: round,
@@ -262,7 +261,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
               ],
             ),
             const SizedBox(height: 10),
-            _buildStitchingEstimateTable(data: stitchingData),
+            _buildSalesOrderTable(data: salesOrderData),
           ],
         ),
       ),
@@ -294,13 +293,11 @@ class _SalesOrderListState extends State<SalesOrderList> {
     );
   }
 
-  Widget _buildStitchingEstimateTable({
+  Widget _buildSalesOrderTable({
     required List<TableData> data,
   }) {
     final columns = ['Order', 'Round', 'Date', 'PO No.', 'Customer', 'Address'];
-
     final kWidth = MediaQuery.of(context).size.width;
-
     void navigateToDetail(TableData item, int index) {
       Navigator.push(
         context,
