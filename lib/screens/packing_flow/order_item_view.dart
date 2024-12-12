@@ -453,13 +453,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                               },
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 10),
+                                  backgroundColor: Colors.blue.shade900,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(0),
                                   ),
-                                  minimumSize: const Size(100, 50),
+                                  minimumSize: const Size(100, 100),
                                 ),
                                 child: const Text('Done'),
                                 onPressed: () {
@@ -481,15 +479,14 @@ class _OrderItemViewState extends State<OrderItemView> {
                               },
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: item.short == ''
-                                      ? Colors.grey
-                                      : Colors.red,
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 10),
+                                  backgroundColor:
+                                      item.short == '' || item.short == '0'
+                                          ? Colors.grey
+                                          : Colors.red,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(0),
                                   ),
-                                  minimumSize: const Size(100, 50),
+                                  minimumSize: const Size(100, 100),
                                 ),
                                 child: Text(
                                     item.short == '' ? 'Short' : item.short),
@@ -749,6 +746,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                             onPressed: () {
                               FocusScope.of(context).unfocus();
                               // _handleSave();
+                              orderItems[selectedRowIndex].short =
+                                  shortControllers[selectedRowIndex].text;
                               _moveDown();
                             },
                             style: ElevatedButton.styleFrom(
@@ -896,7 +895,7 @@ class _OrderItemViewState extends State<OrderItemView> {
 class OrderItem {
   final String packCode;
   final String description;
-  final String short;
+  String short;
   String qty;
   String notes;
   bool isChecked;

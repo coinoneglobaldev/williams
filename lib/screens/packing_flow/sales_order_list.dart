@@ -18,6 +18,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
   final TextEditingController roundController = TextEditingController();
   final List<TableData> stitchingData = [
     TableData(
+      order: 'Samuel',
       round: "First Round",
       date: "2024-02-15",
       poNo: "PO-789",
@@ -25,6 +26,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
       customerName: "Raj Industries",
     ),
     TableData(
+      order: 'John',
       round: "Second Round",
       date: "2024-02-20",
       poNo: "PO-790",
@@ -34,7 +36,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
   ];
   List<String> rounds = ['Round 1', 'Round 2', 'Round 3'];
   String? selectedRound;
-
 
   @override
   void initState() {
@@ -185,9 +186,11 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
                           labelText: 'Round',
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 16),
                         ),
-                        value: selectedRound, // Ensure this variable holds the initial selected value or is null
+                        value:
+                            selectedRound, // Ensure this variable holds the initial selected value or is null
                         items: rounds.map((String round) {
                           return DropdownMenuItem<String>(
                             value: round,
@@ -203,7 +206,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     ],
                   ),
                 ),
-
                 Spacer(),
                 Expanded(
                   flex: 2,
@@ -314,7 +316,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Table(
-          border: TableBorder.all(color: Colors.black),
+          border: TableBorder.all(color: Colors.transparent),
           defaultColumnWidth: FixedColumnWidth(kWidth / 2),
           columnWidths: const {
             0: FixedColumnWidth(180),
@@ -360,13 +362,17 @@ class _SalesOrderListState extends State<SalesOrderList> {
                         child: i == 0
                             ? ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
+                                  backgroundColor: Colors.blue.shade900,
+                                  minimumSize: const Size(double.infinity, 50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(0),
+                                  ),
                                 ),
                                 onPressed: () {
                                   navigateToDetail(item, index);
                                 },
                                 child: Text(
-                                  item.round,
+                                  item.order,
                                   style: TextStyle(color: Colors.white),
                                 ),
                               )
@@ -395,6 +401,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
 }
 
 class TableData {
+  final String order;
   final String round;
   final String date;
   final String poNo;
@@ -402,6 +409,7 @@ class TableData {
   final String customerName; // You might want to add this
 
   TableData({
+    required this.order,
     required this.round,
     required this.date,
     required this.poNo,
