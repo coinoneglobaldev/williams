@@ -8,7 +8,7 @@ import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../providers/connectivity_status_provider.dart';
 import '../buying_flow/buying_sheet_screen.dart';
 import '../driver_flow/delivery_items_list_screen.dart';
-import '../packing_flow/packing_view.dart';
+import '../packing_flow/sales_order_list.dart';
 
 class ScreenLogin extends ConsumerStatefulWidget {
   const ScreenLogin({
@@ -44,7 +44,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     Navigator.pushReplacement(
       context,
       CupertinoPageRoute(
-        builder: (context) => const PackingView(),
+        builder: (context) => const SalesOrderList(),
       ),
     );
   }
