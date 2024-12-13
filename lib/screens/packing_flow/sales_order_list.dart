@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../../custom_widgets/custom_scaffold.dart';
 import 'order_item_view.dart';
 
@@ -17,18 +16,18 @@ class _SalesOrderListState extends State<SalesOrderList> {
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
   final TextEditingController roundController = TextEditingController();
-  final List<TableData> salesOrderData = [
+  final List<TableData> stitchingData = [
     TableData(
-      order: 'Samuel',
-      round: "Round 1",
+      order: 'po-01',
+      round: "First Round",
       date: "2024-02-15",
       poNo: "PO-789",
       address: "123 Main Street, Mumbai, Maharashtra",
       customerName: "Raj Industries",
     ),
     TableData(
-      order: 'John',
-      round: "Round 1",
+      order: 'po-02',
+      round: "Second Round",
       date: "2024-02-20",
       poNo: "PO-790",
       address: "456 Park Avenue, Delhi, New Delhi",
@@ -128,7 +127,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
             const Text(
               'Sales Order List',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 50.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
@@ -136,73 +135,53 @@ class _SalesOrderListState extends State<SalesOrderList> {
             Row(
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(' Start Date',
-                          style: TextStyle(fontSize: 16, color: Colors.white)),
-                      TextField(
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          suffixIcon: Icon(Icons.calendar_today),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 16),
-                        ),
-                        controller: startDateController,
-                        onTap: _selectStartDate,
-                      ),
-                    ],
+                  child: TextField(
+                    readOnly: true,
+                    decoration: const InputDecoration(
+                      suffixIcon: Icon(Icons.calendar_today),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                      label: Text('Start Date'),
+                    ),
+                    controller: startDateController,
+                    onTap: _selectStartDate,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(' End Date',
-                          style: TextStyle(fontSize: 16, color: Colors.white)),
-                      TextField(
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          suffixIcon: Icon(Icons.calendar_today),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 16),
-                        ),
-                        controller: endDateController,
-                        onTap: _selectEndDate,
-                      ),
-                    ],
+                  child: TextField(
+                    readOnly: true,
+                    decoration: const InputDecoration(
+                      suffixIcon: Icon(Icons.calendar_today),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                      label: Text('End Date'),
+                    ),
+                    controller: endDateController,
+                    onTap: _selectEndDate,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        ' ',
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-                      DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          hintText: 'Round',
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 16),
-                        ),
-                        value: selectedRound,
-                        items: rounds.map((String round) {
-                          return DropdownMenuItem<String>(
-                            value: round,
-                            child: Text(round),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedRound = newValue;
-                          });
-                        },
-                      ),
-                    ],
+                  child: DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      labelText: 'Round',
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    ),
+                    value:
+                        selectedRound, // Ensure this variable holds the initial selected value or is null
+                    items: rounds.map((String round) {
+                      return DropdownMenuItem<String>(
+                        value: round,
+                        child: Text(round),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedRound = newValue;
+                      });
+                    },
                   ),
                 ),
                 Spacer(),
@@ -261,7 +240,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
               ],
             ),
             const SizedBox(height: 10),
-            _buildSalesOrderTable(data: salesOrderData),
+            _buildStitchingEstimateTable(data: stitchingData),
           ],
         ),
       ),
@@ -293,11 +272,13 @@ class _SalesOrderListState extends State<SalesOrderList> {
     );
   }
 
-  Widget _buildSalesOrderTable({
+  Widget _buildStitchingEstimateTable({
     required List<TableData> data,
   }) {
-    final columns = ['Order', 'Round', 'Date', 'PO No.', 'Customer', 'Address'];
+    final columns = ['Customer', 'Round', 'Date', 'PO No.', 'Order', 'Address'];
+
     final kWidth = MediaQuery.of(context).size.width;
+
     void navigateToDetail(TableData item, int index) {
       Navigator.push(
         context,
@@ -308,89 +289,114 @@ class _SalesOrderListState extends State<SalesOrderList> {
       );
     }
 
-    return ClipRRect(
-      borderRadius: const BorderRadius.all(Radius.circular(20)),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Table(
-          border: TableBorder.all(color: Colors.transparent),
-          defaultColumnWidth: FixedColumnWidth(kWidth / 2),
-          columnWidths: const {
-            0: FixedColumnWidth(180),
-            1: FixedColumnWidth(180),
-            2: FixedColumnWidth(180),
-            3: FixedColumnWidth(150),
-            4: FixedColumnWidth(160),
-            5: FixedColumnWidth(400),
-          },
-          children: [
-            TableRow(
-              decoration: const BoxDecoration(
-                color: Colors.grey,
-              ),
-              children: columns
-                  .map(
-                    (column) => Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        column,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15.0),
+        border: Border.all(color: Colors.black),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15.0),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Table(
+            border: TableBorder.symmetric(
+                inside: const BorderSide(color: Colors.black)),
+            defaultColumnWidth: FixedColumnWidth(kWidth / 2),
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            columnWidths: const {
+              0: FixedColumnWidth(180),
+              1: FixedColumnWidth(180),
+              2: FixedColumnWidth(180),
+              3: FixedColumnWidth(150),
+              4: FixedColumnWidth(160),
+              5: FixedColumnWidth(400),
+            },
+            children: [
+              TableRow(
+                decoration: const BoxDecoration(
+                  color: Colors.grey,
+                ),
+                children: columns
+                    .map(
+                      (column) => Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          column,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                  .toList(),
-            ),
-            ...data.asMap().entries.map((entry) {
-              final index = entry.key;
-              final item = entry.value;
-              return TableRow(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                ),
-                children: [
-                  for (var i = 0; i < columns.length; i++)
-                    TableRowInkWell(
-                      onTap: () => navigateToDetail(item, index),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: i == 0
-                            ? ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue.shade900,
-                                  minimumSize: const Size(double.infinity, 50),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(0),
+                    )
+                    .toList(),
+              ),
+              ...data.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                return TableRow(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  children: [
+                    for (var i = 0; i < columns.length; i++)
+                      TableRowInkWell(
+                        onTap: () => navigateToDetail(item, index),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: i == 0
+                              ? ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue.shade900,
+                                    minimumSize:
+                                        const Size(double.infinity, 50),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
                                   ),
+                                  onPressed: () {
+                                    navigateToDetail(item, index);
+                                  },
+                                  child: Text(
+                                    item.customerName,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                )
+                              : Text(
+                                  textAlign: TextAlign.center,
+                                  i == 1
+                                      ? item.round
+                                      : i == 2
+                                          ? item.date
+                                          : i == 3
+                                              ? item.poNo
+                                              : i == 4
+                                                  ? item.order
+                                                  : item.address,
+                                  style: const TextStyle(color: Colors.black),
                                 ),
-                                onPressed: () {
-                                  navigateToDetail(item, index);
-                                },
-                                child: Text(
-                                  item.order,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              )
-                            : Text(
-                                i == 1
-                                    ? item.round
-                                    : i == 2
-                                        ? item.date
-                                        : i == 3
-                                            ? item.poNo
-                                            : i == 4
-                                                ? item.customerName
-                                                : item.address,
-                                style: const TextStyle(color: Colors.black),
-                              ),
+                        ),
                       ),
-                    ),
-                ],
-              );
-            }),
-          ],
+                  ],
+                );
+              }),
+            ],
+          ),
         ),
       ),
     );
