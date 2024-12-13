@@ -17,14 +17,17 @@ class _OrderItemViewState extends State<OrderItemView> {
   late List<TextEditingController> shortControllers;
   late List<FocusNode> qtyFocusNodes;
   late List<FocusNode> notesFocusNodes;
+  bool isAllSelected = false;
   int selectedRowIndex = 0;
   bool isQtyFocused = true;
+
   @override
   void initState() {
     super.initState();
     orderItems = [
       OrderItem(
         packCode: 'PC001',
+        short: '',
         description: 'Blue T-Shirt ',
         qty: '5',
         notes: 'Check quality',
@@ -32,12 +35,14 @@ class _OrderItemViewState extends State<OrderItemView> {
       OrderItem(
         packCode: 'PC002',
         description: 'Red Polo Medium',
+        short: '',
         qty: '4',
         notes: 'Express delivery',
       ),
       OrderItem(
         packCode: 'PC003',
         description: 'Black Hoodie XL',
+        short: '2',
         qty: '5',
         notes: '',
       ),
@@ -81,6 +86,16 @@ class _OrderItemViewState extends State<OrderItemView> {
         }
       });
     }
+  }
+
+  void _selectAll() {
+    setState(() {
+      isAllSelected = !isAllSelected;
+
+      for (var item in orderItems) {
+        item.isChecked = isAllSelected;
+      }
+    });
   }
 
   void _handleShortButtonClick(int index) {
@@ -257,220 +272,252 @@ class _OrderItemViewState extends State<OrderItemView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          height: 30,
-          child: const Text(
-            ' Order Items',
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Text(
+              ' Order Items',
+              style: TextStyle(
+                fontSize: 50.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-          ),
+            const Spacer(),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                minimumSize: const Size(150, 50),
+              ),
+              onPressed: _selectAll,
+              child: Text(isAllSelected ? "Unselect All" : "Select All"),
+            ),
+            const Spacer(),
+          ],
         ),
-        const SizedBox(height: 10),
         Expanded(
-          child: ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(15)),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+          child: Container(
+            clipBehavior: Clip.antiAlias,
+            margin: const EdgeInsets.only(bottom: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15.0),
+              border: Border.all(color: Colors.black),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withValues(alpha: 0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15.0),
               child: SingleChildScrollView(
-                child: KeyboardListener(
-                  focusNode: FocusNode(),
-                  onKeyEvent: _handleKeyPress,
-                  child: DataTable(
-                    border: TableBorder.symmetric(
-                        inside: BorderSide(
-                      color: Colors.black,
-                    )),
-                    horizontalMargin: 10,
-                    dataRowMaxHeight: 50,
-                    dataRowMinHeight: 50,
-                    columnSpacing: 15,
-                    dataRowColor: WidgetStateProperty.resolveWith<Color>(
-                      (Set<WidgetState> states) {
-                        final int index = states.contains(WidgetState.selected)
-                            ? states.contains(WidgetState.selected)
-                                ? data.indexOf(data[selectedRowIndex])
-                                : -1
-                            : -1;
-                        return index == selectedRowIndex
-                            ? Colors.blue.withOpacity(0.6)
-                            : Colors.white;
-                      },
-                    ),
-                    headingRowColor: WidgetStateProperty.all(Colors.grey),
-                    columns: columns
-                        .map((column) => DataColumn(
-                              label: Expanded(
-                                child: Text(
-                                  column,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                scrollDirection: Axis.horizontal,
+                child: SingleChildScrollView(
+                  child: KeyboardListener(
+                    focusNode: FocusNode(),
+                    onKeyEvent: _handleKeyPress,
+                    child: DataTable(
+                      border: TableBorder.symmetric(
+                          inside: BorderSide(
+                        color: Colors.black,
+                      )),
+                      horizontalMargin: 10,
+                      dataRowMaxHeight: 80,
+                      dataRowMinHeight: 80,
+                      columnSpacing: 15,
+                      dataRowColor: WidgetStateProperty.resolveWith<Color>(
+                        (Set<WidgetState> states) {
+                          final int index =
+                              states.contains(WidgetState.selected)
+                                  ? states.contains(WidgetState.selected)
+                                      ? data.indexOf(data[selectedRowIndex])
+                                      : -1
+                                  : -1;
+                          return index == selectedRowIndex
+                              ? Colors.blue.withValues(alpha: 0.6)
+                              : Colors.white;
+                        },
+                      ),
+                      headingRowColor: WidgetStateProperty.all(Colors.grey),
+                      columns: columns
+                          .map((column) => DataColumn(
+                                label: Expanded(
+                                  child: Text(
+                                    column,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ))
-                        .toList(),
-                    rows: [
-                      ...data.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final item = entry.value;
-                        return DataRow(
-                          selected: index == selectedRowIndex,
-                          cells: [
-                            DataCell(
-                              onTap: () {
-                                setState(() {
-                                  selectedRowIndex = index;
-                                  _updateFocus();
-                                  notesFocusNodes[index].unfocus();
-                                });
-                                _switchToQtyMode();
-                              },
-                              Text(
-                                item.qty,
-                                style: const TextStyle(color: Colors.black),
-                                maxLines: 1,
-                              ),
-                            ),
-                            DataCell(
-                              onTap: () {
-                                setState(() {
-                                  selectedRowIndex = index;
-                                  _updateFocus();
-                                  notesFocusNodes[index].unfocus();
-                                });
-                                _switchToQtyMode();
-                              },
-                              Text(
-                                item.packCode,
-                                style: const TextStyle(color: Colors.black),
-                                maxLines: 2,
-                              ),
-                            ),
-                            DataCell(
-                              onTap: () {
-                                setState(() {
-                                  selectedRowIndex = index;
-                                  _updateFocus();
-                                  notesFocusNodes[index].unfocus();
-                                });
-                                _switchToQtyMode();
-                              },
-                              Text(
-                                item.description,
-                                style: const TextStyle(color: Colors.black),
-                                maxLines: 2,
-                              ),
-                            ),
-                            DataCell(
-                              TextField(
-                                controller: notesControllers[index],
-                                focusNode: notesFocusNodes[index],
-                                style: const TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                  isDense: true,
-                                  hintText: 'Enter value',
-                                  hintStyle:
-                                      TextStyle(color: Colors.grey.shade500),
-                                  border: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 8,
-                                  ),
-                                ),
-                                onChanged: (value) {
+                              ))
+                          .toList(),
+                      rows: [
+                        ...data.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final item = entry.value;
+                          return DataRow(
+                            selected: index == selectedRowIndex,
+                            cells: [
+                              DataCell(
+                                onTap: () {
                                   setState(() {
-                                    item.notes = value;
+                                    selectedRowIndex = index;
+                                    _updateFocus();
+                                    notesFocusNodes[index].unfocus();
                                   });
+                                  _switchToQtyMode();
                                 },
+                                Text(
+                                  item.qty,
+                                  style: const TextStyle(color: Colors.black),
+                                  maxLines: 1,
+                                ),
                               ),
-                            ),
-                            DataCell(
-                              onTap: () {
-                                setState(() {
-                                  selectedRowIndex = index;
-                                  _updateFocus();
-                                  notesFocusNodes[index].unfocus();
-                                });
-                              },
-                              Transform.scale(
-                                scale: 2.5,
-                                child: Checkbox(
-                                  activeColor: Colors.black,
-                                  checkColor: Colors.black,
-                                  fillColor:
-                                      WidgetStateProperty.all(Colors.white),
-                                  value: item.isChecked,
-                                  side:
-                                      BorderSide(color: Colors.black, width: 1),
-                                  onChanged: (bool? value) {
+                              DataCell(
+                                onTap: () {
+                                  setState(() {
+                                    selectedRowIndex = index;
+                                    _updateFocus();
+                                    notesFocusNodes[index].unfocus();
+                                  });
+                                  _switchToQtyMode();
+                                },
+                                Text(
+                                  item.packCode,
+                                  style: const TextStyle(color: Colors.black),
+                                  maxLines: 2,
+                                ),
+                              ),
+                              DataCell(
+                                onTap: () {
+                                  setState(() {
+                                    selectedRowIndex = index;
+                                    _updateFocus();
+                                    notesFocusNodes[index].unfocus();
+                                  });
+                                  _switchToQtyMode();
+                                },
+                                Text(
+                                  item.description,
+                                  style: const TextStyle(color: Colors.black),
+                                  maxLines: 2,
+                                ),
+                              ),
+                              DataCell(
+                                TextField(
+                                  controller: notesControllers[index],
+                                  focusNode: notesFocusNodes[index],
+                                  style: const TextStyle(color: Colors.black),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    hintText: 'Enter value',
+                                    hintStyle:
+                                        TextStyle(color: Colors.grey.shade500),
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  onChanged: (value) {
                                     setState(() {
-                                      item.isChecked = value ?? false;
+                                      item.notes = value;
                                     });
                                   },
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              onTap: () {
-                                setState(() {
-                                  selectedRowIndex = index;
-                                  _updateFocus();
-                                  notesFocusNodes[index].unfocus();
-                                });
-                                _switchToQtyMode();
-                              },
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 10),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  minimumSize: const Size(100, 80),
-                                ),
-                                child: const Text('Done'),
-                                onPressed: () {
+                              DataCell(
+                                onTap: () {
                                   setState(() {
                                     selectedRowIndex = index;
                                     _updateFocus();
                                     notesFocusNodes[index].unfocus();
                                   });
                                 },
-                              ),
-                            ),
-                            DataCell(
-                              onTap: () {
-                                setState(() {
-                                  selectedRowIndex = index;
-                                  _updateFocus();
-                                  notesFocusNodes[index].unfocus();
-                                });
-                              },
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 10),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                Transform.scale(
+                                  scale: 2.5,
+                                  child: Checkbox(
+                                    activeColor: Colors.black,
+                                    checkColor: Colors.black,
+                                    fillColor:
+                                        WidgetStateProperty.all(Colors.white),
+                                    value: item.isChecked,
+                                    side: BorderSide(
+                                        color: Colors.black, width: 1),
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        item.isChecked = value ?? false;
+                                      });
+                                    },
                                   ),
-                                  minimumSize: const Size(100, 80),
                                 ),
-                                child: const Text('Short'),
-                                onPressed: () => _handleShortButtonClick(index),
                               ),
-                            ),
-                          ],
-                        );
-                      }),
-                    ],
+                              DataCell(
+                                onTap: () {
+                                  setState(() {
+                                    selectedRowIndex = index;
+                                    _updateFocus();
+                                    notesFocusNodes[index].unfocus();
+                                  });
+                                  _switchToQtyMode();
+                                },
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: index == 1
+                                        ? Colors.green
+                                        : Colors.orange,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    minimumSize: const Size(100, 70),
+                                  ),
+                                  child: const Text('Done'),
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedRowIndex = index;
+                                      _updateFocus();
+                                      notesFocusNodes[index].unfocus();
+                                    });
+                                  },
+                                ),
+                              ),
+                              DataCell(
+                                onTap: () {
+                                  setState(() {
+                                    selectedRowIndex = index;
+                                    _updateFocus();
+                                    notesFocusNodes[index].unfocus();
+                                  });
+                                },
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        item.short == '' || item.short == '0'
+                                            ? Colors.grey
+                                            : Colors.red,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    minimumSize: const Size(100, 70),
+                                  ),
+                                  child: Text(
+                                      item.short == '' ? 'Short' : item.short),
+                                  onPressed: () =>
+                                      _handleShortButtonClick(index),
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -694,15 +741,13 @@ class _OrderItemViewState extends State<OrderItemView> {
                           child: ElevatedButton(
                             // onPressed: isValidToSave ? _handleSave : null,
                             onPressed: () {
-                              _handleSave();
-                              _moveDown();
-                              FocusScope.of(context).unfocus();
+                              Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(
                               // backgroundColor: isValidToSave
                               //     ? Colors.blue
                               //     : Colors.grey,
-                              backgroundColor: Colors.blue,
+                              backgroundColor: Colors.blue.shade900,
                               minimumSize: const Size(100, 50),
                             ),
                             child: const Text('BACK'),
@@ -719,7 +764,9 @@ class _OrderItemViewState extends State<OrderItemView> {
                             // onPressed: isValidToSave ? _handleSave : null,
                             onPressed: () {
                               FocusScope.of(context).unfocus();
-                              _handleSave();
+                              // _handleSave();
+                              orderItems[selectedRowIndex].short =
+                                  shortControllers[selectedRowIndex].text;
                               _moveDown();
                             },
                             style: ElevatedButton.styleFrom(
@@ -844,7 +891,7 @@ class _OrderItemViewState extends State<OrderItemView> {
           height: 60,
           width: 60,
           decoration: BoxDecoration(
-            color: Colors.yellow.shade900,
+            color: Colors.blue.shade900,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
@@ -867,6 +914,7 @@ class _OrderItemViewState extends State<OrderItemView> {
 class OrderItem {
   final String packCode;
   final String description;
+  String short;
   String qty;
   String notes;
   bool isChecked;
@@ -874,6 +922,7 @@ class OrderItem {
   OrderItem({
     required this.packCode,
     required this.description,
+    required this.short,
     this.qty = '',
     this.notes = '',
     this.isChecked = false,

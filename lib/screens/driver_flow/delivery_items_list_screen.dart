@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:williams/screens/driver_side/widget/delivery_item_list.dart';
-import 'package:williams/screens/driver_side/widget/driver_home_appbar.dart';
+import 'package:williams/screens/driver_flow/widget/delivery_item_list.dart';
+import 'package:williams/screens/driver_flow/widget/driver_home_appbar.dart';
 
 import 'delivery_upload_screen.dart';
 
