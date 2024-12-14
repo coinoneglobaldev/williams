@@ -11,7 +11,6 @@ class OrderItemView extends StatefulWidget {
 
 class _OrderItemViewState extends State<OrderItemView> {
   bool isShortMode = false;
-  late List<OrderItem> orderItems;
   late List<TextEditingController> qtyControllers;
   late List<TextEditingController> notesControllers;
   late List<TextEditingController> shortControllers;
@@ -21,32 +20,40 @@ class _OrderItemViewState extends State<OrderItemView> {
   int selectedRowIndex = 0;
   bool isQtyFocused = true;
 
+  List<String> packs = ['retail', 'unit sale'];
+  List<String?> selectedPack = [];
+
+  List<OrderItem> orderItems = [
+    OrderItem(
+      pack: 'PC001',
+      code: 'Code 12',
+      short: '',
+      description: 'Blue T-Shirt ',
+      qty: '5',
+      notes: 'Check quality',
+    ),
+    OrderItem(
+      pack: 'PC002',
+      code: 'Code 13',
+      description: 'Red Polo Medium',
+      short: '',
+      qty: '4',
+      notes: 'Express delivery',
+    ),
+    OrderItem(
+      pack: 'PC003',
+      code: 'Code 14',
+      description: 'Black Hoodie XL',
+      short: '2',
+      qty: '5',
+      notes: '',
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
-    orderItems = [
-      OrderItem(
-        packCode: 'PC001',
-        short: '',
-        description: 'Blue T-Shirt ',
-        qty: '5',
-        notes: 'Check quality',
-      ),
-      OrderItem(
-        packCode: 'PC002',
-        description: 'Red Polo Medium',
-        short: '',
-        qty: '4',
-        notes: 'Express delivery',
-      ),
-      OrderItem(
-        packCode: 'PC003',
-        description: 'Black Hoodie XL',
-        short: '2',
-        qty: '5',
-        notes: '',
-      ),
-    ];
+    selectedPack = List<String?>.filled(orderItems.length, 'retail');
 
     qtyControllers = orderItems.map((item) => TextEditingController()).toList();
     notesControllers = orderItems
@@ -235,7 +242,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Pack Code: ${item.packCode}'),
+                          Text('Pack: ${item.pack}'),
+                          Text('Code: ${item.code}'),
                           Text('Description: ${item.description}'),
                           Text('Quantity: ${item.qty}'),
                           Text('Notes: ${item.notes}'),
@@ -262,7 +270,8 @@ class _OrderItemViewState extends State<OrderItemView> {
   }) {
     final columns = [
       'Qty',
-      'Pack Code',
+      'Pack',
+      'Code',
       'Description',
       'Notes',
       'Check box',
@@ -325,10 +334,9 @@ class _OrderItemViewState extends State<OrderItemView> {
                           inside: BorderSide(
                         color: Colors.black,
                       )),
-                      horizontalMargin: 10,
+                      horizontalMargin: 30,
                       dataRowMaxHeight: 80,
                       dataRowMinHeight: 80,
-                      columnSpacing: 15,
                       dataRowColor: WidgetStateProperty.resolveWith<Color>(
                         (Set<WidgetState> states) {
                           final int index =
@@ -342,16 +350,16 @@ class _OrderItemViewState extends State<OrderItemView> {
                               : Colors.white;
                         },
                       ),
-                      headingRowColor: WidgetStateProperty.all(Colors.grey),
+                      headingRowColor:
+                          WidgetStateProperty.all(Colors.grey.shade400),
                       columns: columns
                           .map((column) => DataColumn(
-                                label: Expanded(
-                                  child: Text(
-                                    column,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
+                                label: Text(
+                                  column,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ))
@@ -374,8 +382,36 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 },
                                 Text(
                                   item.qty,
-                                  style: const TextStyle(color: Colors.black),
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                   maxLines: 1,
+                                ),
+                              ),
+                              DataCell(
+                                ButtonTheme(
+                                  alignedDropdown: true,
+                                  child: DropdownButtonFormField<String>(
+                                    decoration: const InputDecoration(
+                                      hintText: 'Pack Type',
+                                      contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 16),
+                                    ),
+                                    value: selectedPack[index],
+                                    items: packs.map((String pack) {
+                                      return DropdownMenuItem<String>(
+                                        value: pack,
+                                        child: Text(pack),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        selectedPack[index] = newValue;
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
                               DataCell(
@@ -388,8 +424,12 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   _switchToQtyMode();
                                 },
                                 Text(
-                                  item.packCode,
-                                  style: const TextStyle(color: Colors.black),
+                                  item.code,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                   maxLines: 2,
                                 ),
                               ),
@@ -404,7 +444,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 },
                                 Text(
                                   item.description,
-                                  style: const TextStyle(color: Colors.black),
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                   maxLines: 2,
                                 ),
                               ),
@@ -478,7 +522,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                                     ),
                                     minimumSize: const Size(100, 70),
                                   ),
-                                  child: const Text('Done'),
+                                  child: const Text(
+                                    'Done',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
                                   onPressed: () {
                                     setState(() {
                                       selectedRowIndex = index;
@@ -508,7 +556,15 @@ class _OrderItemViewState extends State<OrderItemView> {
                                     minimumSize: const Size(100, 70),
                                   ),
                                   child: Text(
-                                      item.short == '' ? 'Short' : item.short),
+                                    item.short == '' ? 'Short' : item.short,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          item.short == '' || item.short == '0'
+                                              ? Colors.black
+                                              : Colors.white,
+                                    ),
+                                  ),
                                   onPressed: () =>
                                       _handleShortButtonClick(index),
                                 ),
@@ -677,11 +733,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                     children: [
                       Expanded(
                         child: _itemDetails(
-                          context: context,
-                          title: 'Item Details',
-                          data:
-                              '${orderItems[selectedRowIndex].description}, ${orderItems[selectedRowIndex].packCode}',
-                        ),
+                            context: context,
+                            title: 'Item Details',
+                            data:
+                                '${orderItems[selectedRowIndex].description}, ${orderItems[selectedRowIndex].pack}',
+                            fillColor: Colors.white),
                       ),
                     ],
                   ),
@@ -689,11 +745,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                     children: [
                       Expanded(
                         child: _itemDetails(
-                          context: context,
-                          title: 'Quantity',
-                          data: qtyControllers[selectedRowIndex].text,
-                          onTab: _switchToQtyMode,
-                        ),
+                            context: context,
+                            title: 'Quantity',
+                            data: qtyControllers[selectedRowIndex].text,
+                            onTab: _switchToQtyMode,
+                            fillColor: Colors.white),
                       ),
                       SizedBox(width: 5),
                       Expanded(
@@ -701,7 +757,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                           context: context,
                           title: 'Shorts',
                           data: shortControllers[selectedRowIndex].text,
-                          color: Colors.red,
+                          color: orderItems[selectedRowIndex].short == '' ? Colors.black : Colors.white,
+                          fillColor: orderItems[selectedRowIndex].short == '' ? Colors.grey : Colors.red,
                           onTab: _switchToShortMode,
                         ),
                       ),
@@ -811,6 +868,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     required BuildContext context,
     required String title,
     required String data,
+    required Color fillColor,
     bool isReadOnly = true,
     Color color = Colors.black,
     GestureTapCallback? onTab,
@@ -828,9 +886,10 @@ class _OrderItemViewState extends State<OrderItemView> {
           onTap: onTab,
           style: TextStyle(color: color, fontSize: 20),
           decoration: InputDecoration(
+            fillColor: fillColor,
+            filled: true,
             isDense: true,
             contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-            hintText: title,
             label: Text(
               title,
               style: TextStyle(
@@ -838,9 +897,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
-            ),
-            hintStyle: TextStyle(
-              color: color,
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: color, width: 2.0),
@@ -912,7 +968,8 @@ class _OrderItemViewState extends State<OrderItemView> {
 }
 
 class OrderItem {
-  final String packCode;
+  final String pack;
+  final String code;
   final String description;
   String short;
   String qty;
@@ -920,7 +977,8 @@ class OrderItem {
   bool isChecked;
 
   OrderItem({
-    required this.packCode,
+    required this.pack,
+    required this.code,
     required this.description,
     required this.short,
     this.qty = '',
