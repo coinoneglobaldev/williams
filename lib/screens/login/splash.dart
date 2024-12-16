@@ -27,10 +27,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
   void _fnCheckIfSignedIn() async {
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+
     Navigator.pushReplacement(
       context,
       CupertinoPageRoute(

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../common/orientation_setup.dart';
+import '../../common/responsive.dart';
 import '../../constants.dart';
 import '../../custom_screens/custom_network_error.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
@@ -84,248 +86,474 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
   ) {
     var connectivityStatusProvider = ref.watch(connectivityStatusProviders);
     if (connectivityStatusProvider == ConnectivityStatus.isConnected) {
-      return Scaffold(
-        body: Container(
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-            image: const AssetImage('assets/images/login_background.jpg'),
-            fit: BoxFit.cover,
-          )),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Williams',
-                        style: TextStyle(
-                          height: 0.9,
-                          color: buttonColor,
-                          fontSize: 50,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'of London',
-                        style: TextStyle(
-                          height: 0.9,
-                          color: buttonColor,
-                          fontSize: 50,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Since 1999',
-                        style: TextStyle(
-                          color: buttonColor,
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: const Text(
-                        ' Enter your login details',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Form(
-                      key: _eMailKey,
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter a valid email';
-                          } else if (!value.contains('@') &&
-                              value.contains('.') &&
-                              value.length < 5) {
-                            return 'Please enter valid email';
-                          }
-                          return null;
-                        },
-                        controller: _usernameController,
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          hintStyle: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
-                          prefixIcon: Icon(
-                            Icons.person,
-                            color: themeColor,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Form(
-                      key: _passwordKey,
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter password';
-                          }
-                          return null;
-                        },
-                        controller: _passwordController,
-                        obscureText: !_isVisibility,
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
-                          prefixIcon: Icon(
-                            Icons.lock,
-                            color: themeColor,
-                            size: 20,
-                          ),
-                          suffixIcon: InkWell(
-                            onTap: () {
-                              setState(() {
-                                _isVisibility = !_isVisibility;
-                              });
-                            },
-                            child: Icon(
-                              _isVisibility
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: themeColor,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Checkbox(
-                          value: _isRememberMe,
-                          onChanged: (value) {
-                            setState(() {
-                              _isRememberMe = value!;
-                            });
-                          },
-                          activeColor: Colors.black,
-                          checkColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          side: const BorderSide(
-                            color: Colors.grey,
-                            width: 2,
-                          ),
-                        ),
-                        const Text(
-                          'Remember me',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                          ),
-                        ),
-                        const Spacer(),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            'Forgot Password ?',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonColor,
-                      ),
-                      onPressed: () async {
-                        if (!_eMailKey.currentState!.validate() ||
-                            !_passwordKey.currentState!.validate()) {
-                          return;
-                        }
-                        setState(() {
-                          _isButtonLoading = true;
-                        });
-                        String username = _usernameController.text.trim();
-                        String password = _passwordController.text.trim();
-                        await Future.delayed(
-                          const Duration(seconds: 2),
-                          () {
-                            if (username == 'p' && password == 'p') {
-                              _fnNavigateToHomePage();
-                            } else if (username == 'd' && password == 'd') {
-                              _fnNavigateToDriverPage();
-                            } else if (username == 'b' && password == 'b') {
-                              _fnNavigateToBuyerPage();
-                            } else {
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Invalid username or password'),
-                                ),
-                              );
-                              setState(() {
-                                _isButtonLoading = false;
-                              });
-                            }
-                          },
-                        );
-                      },
-                      child: _isButtonLoading
-                          ? const CustomLogoSpinner(
-                              oneSize: 10,
-                              roundSize: 30,
-                            )
-                          : const Text(
-                              'LOGIN',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                  ],
-                ),
-              ],
-            ),
+      return OrientationSetup(
+        child: Scaffold(
+          body: Responsive(
+            mobile: _mobileView(context),
+            tablet: _tabletView(context),
           ),
         ),
       );
     } else {
       return const ScreenCustomNetworkError();
     }
+  }
+
+  Widget _mobileView(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: const AssetImage('assets/images/login_background.jpg'),
+        fit: BoxFit.cover,
+      )),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Williams',
+                    style: TextStyle(
+                      height: 0.9,
+                      color: buttonColor,
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'of London',
+                    style: TextStyle(
+                      height: 0.9,
+                      color: buttonColor,
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Since 1999',
+                    style: TextStyle(
+                      color: buttonColor,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(
+                  height: 15,
+                ),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: const Text(
+                    ' Enter your login details',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Form(
+                  key: _eMailKey,
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter a valid email';
+                      } else if (!value.contains('@') &&
+                          value.contains('.') &&
+                          value.length < 5) {
+                        return 'Please enter valid email';
+                      }
+                      return null;
+                    },
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      hintStyle: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.person,
+                        color: themeColor,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Form(
+                  key: _passwordKey,
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter password';
+                      }
+                      return null;
+                    },
+                    controller: _passwordController,
+                    obscureText: !_isVisibility,
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      hintStyle: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.lock,
+                        color: themeColor,
+                        size: 20,
+                      ),
+                      suffixIcon: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _isVisibility = !_isVisibility;
+                          });
+                        },
+                        child: Icon(
+                          _isVisibility
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: themeColor,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Checkbox(
+                      value: _isRememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          _isRememberMe = value!;
+                        });
+                      },
+                      activeColor: Colors.black,
+                      checkColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      side: const BorderSide(
+                        color: Colors.grey,
+                        width: 2,
+                      ),
+                    ),
+                    const Text(
+                      'Remember me',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        'Forgot Password ?',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: buttonColor,
+                  ),
+                  onPressed: () async {
+                    if (!_eMailKey.currentState!.validate() ||
+                        !_passwordKey.currentState!.validate()) {
+                      return;
+                    }
+                    setState(() {
+                      _isButtonLoading = true;
+                    });
+                    String username = _usernameController.text.trim();
+                    String password = _passwordController.text.trim();
+                    await Future.delayed(
+                      const Duration(seconds: 2),
+                      () {
+                        if (username == 'p' && password == 'p') {
+                          _fnNavigateToHomePage();
+                        } else if (username == 'd' && password == 'd') {
+                          _fnNavigateToDriverPage();
+                        } else if (username == 'b' && password == 'b') {
+                          _fnNavigateToBuyerPage();
+                        } else {
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Invalid username or password'),
+                            ),
+                          );
+                          setState(() {
+                            _isButtonLoading = false;
+                          });
+                        }
+                      },
+                    );
+                  },
+                  child: _isButtonLoading
+                      ? const CustomLogoSpinner(
+                          oneSize: 10,
+                          roundSize: 30,
+                        )
+                      : const Text(
+                          'LOGIN',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _tabletView(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/login_background.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Left side - Logo and Company Name
+            Expanded(
+              flex: 1,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Williams',
+                    style: TextStyle(
+                      height: 0.9,
+                      color: buttonColor,
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'of London',
+                    style: TextStyle(
+                      height: 0.9,
+                      color: buttonColor,
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Since 1999',
+                    style: TextStyle(
+                      color: buttonColor,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Right side - Login Form
+            Expanded(
+              flex: 1,
+              child: Container(
+                margin: const EdgeInsets.only(top: 50),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withValues(alpha: 0.5),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'Enter your login details',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Form(
+                        key: _eMailKey,
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter a valid email';
+                            } else if (!value.contains('@') &&
+                                value.contains('.') &&
+                                value.length < 5) {
+                              return 'Please enter valid email';
+                            }
+                            return null;
+                          },
+                          controller: _usernameController,
+                          decoration: InputDecoration(
+                            hintText: 'Email',
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.person,
+                              color: themeColor,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Form(
+                        key: _passwordKey,
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter password';
+                            }
+                            return null;
+                          },
+                          controller: _passwordController,
+                          obscureText: !_isVisibility,
+                          decoration: InputDecoration(
+                            hintText: 'Password',
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock,
+                              color: themeColor,
+                              size: 20,
+                            ),
+                            suffixIcon: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _isVisibility = !_isVisibility;
+                                });
+                              },
+                              child: Icon(
+                                _isVisibility
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: themeColor,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: buttonColor,
+                        ),
+                        onPressed: () async {
+                          if (!_eMailKey.currentState!.validate() ||
+                              !_passwordKey.currentState!.validate()) {
+                            return;
+                          }
+                          setState(() {
+                            _isButtonLoading = true;
+                          });
+                          String username = _usernameController.text.trim();
+                          String password = _passwordController.text.trim();
+                          await Future.delayed(
+                            const Duration(seconds: 2),
+                            () {
+                              if (username == 'p' && password == 'p') {
+                                _fnNavigateToHomePage();
+                              } else if (username == 'd' && password == 'd') {
+                                _fnNavigateToDriverPage();
+                              } else if (username == 'b' && password == 'b') {
+                                _fnNavigateToBuyerPage();
+                              } else {
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                        Text('Invalid username or password'),
+                                  ),
+                                );
+                                setState(() {
+                                  _isButtonLoading = false;
+                                });
+                              }
+                            },
+                          );
+                        },
+                        child: _isButtonLoading
+                            ? const CustomLogoSpinner(
+                                oneSize: 10,
+                                roundSize: 30,
+                              )
+                            : const Text(
+                                'LOGIN',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

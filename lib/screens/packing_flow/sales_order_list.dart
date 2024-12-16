@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:williams/screens/login/login.dart';
 import '../../custom_widgets/custom_scaffold.dart';
 import 'order_item_view.dart';
 
@@ -16,25 +17,54 @@ class _SalesOrderListState extends State<SalesOrderList> {
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
   final TextEditingController roundController = TextEditingController();
-  final List<TableData> stitchingData = [
+  final List<TableData> salesOrderData = [
     TableData(
-      order: 'po-01',
-      round: "First Round",
-      date: "2024-02-15",
-      poNo: "PO-789",
-      address: "123 Main Street, Mumbai, Maharashtra",
+      order: '01',
+      round: "Round 1",
+      orderDate: "10-Mar-2024",
+      poNo: "5665",
+      deliveryDate: "15-Mar-2024",
       customerName: "Raj Industries",
+      address: "123 Main Street, Mumbai, Maharashtra",
     ),
     TableData(
-      order: 'po-02',
-      round: "Second Round",
-      date: "2024-02-20",
-      poNo: "PO-790",
-      address: "456 Park Avenue, Delhi, New Delhi",
+      order: '02',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
       customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
+    ),
+    TableData(
+      order: '03',
+      round: "Round 3",
+      orderDate: "30-May-2024",
+      poNo: "5667",
+      deliveryDate: "05-Jun-2024",
+      customerName: "Raj Industries",
+      address: "789 Main Street, Mumbai, Maharashtra",
+    ),
+    TableData(
+      order: '04',
+      round: "Round 1",
+      orderDate: "10-Mar-2024",
+      poNo: "5665",
+      deliveryDate: "15-Mar-2024",
+      customerName: "Raj Industries",
+      address: "123 Main Street, Mumbai, Maharashtra",
+    ),
+    TableData(
+      order: '05',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
+      customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
     ),
   ];
-  List<String> rounds = ['Round 1', 'Round 2', 'Round 3'];
+  List<String> rounds = ['All Rounds', 'Round 1', 'Round 2', 'Round 3'];
   String? selectedRound;
 
   @override
@@ -124,13 +154,33 @@ class _SalesOrderListState extends State<SalesOrderList> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Sales Order List',
-              style: TextStyle(
-                fontSize: 50.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+            Row(
+              children: [
+                const Text(
+                  'Sales Order List',
+                  style: TextStyle(
+                    fontSize: 50.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(
+                    Icons.login_outlined,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ScreenLogin(),
+                      ),
+                      (route) => false,
+                    );
+                  },
+                ),
+              ],
             ),
             Row(
               children: [
@@ -169,8 +219,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                     ),
-                    value:
-                        selectedRound, // Ensure this variable holds the initial selected value or is null
+                    value: selectedRound,
                     items: rounds.map((String round) {
                       return DropdownMenuItem<String>(
                         value: round,
@@ -228,7 +277,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                             SizedBox(height: 16),
                             _colorMatchingData(
                               title: 'Processing',
-                              colors: Colors.yellow.shade500,
+                              colors: Colors.black,
                             ),
                             const SizedBox(height: 20),
                           ],
@@ -240,7 +289,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
               ],
             ),
             const SizedBox(height: 10),
-            _buildStitchingEstimateTable(data: stitchingData),
+            _buildSalesOrderTable(data: salesOrderData),
           ],
         ),
       ),
@@ -272,13 +321,18 @@ class _SalesOrderListState extends State<SalesOrderList> {
     );
   }
 
-  Widget _buildStitchingEstimateTable({
+  Widget _buildSalesOrderTable({
     required List<TableData> data,
   }) {
-    final columns = ['Customer', 'Round', 'Date', 'PO No.', 'Order', 'Address'];
-
-    final kWidth = MediaQuery.of(context).size.width;
-
+    final tableHeadings = [
+      'Order',
+      'Round',
+      'Order Date',
+      'PO No.',
+      'Delivery Date',
+      'Customer',
+      'Address'
+    ];
     void navigateToDetail(TableData item, int index) {
       Navigator.push(
         context,
@@ -308,96 +362,126 @@ class _SalesOrderListState extends State<SalesOrderList> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15.0),
         child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Table(
-            border: TableBorder.symmetric(
-                inside: const BorderSide(color: Colors.black)),
-            defaultColumnWidth: FixedColumnWidth(kWidth / 2),
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            columnWidths: const {
-              0: FixedColumnWidth(180),
-              1: FixedColumnWidth(180),
-              2: FixedColumnWidth(180),
-              3: FixedColumnWidth(150),
-              4: FixedColumnWidth(160),
-              5: FixedColumnWidth(400),
-            },
-            children: [
-              TableRow(
-                decoration: const BoxDecoration(
-                  color: Colors.grey,
-                ),
-                children: columns
-                    .map(
-                      (column) => Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          textAlign: TextAlign.center,
-                          column,
-                          style: const TextStyle(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              dataRowMinHeight: 80,
+              dataRowMaxHeight: 80,
+              horizontalMargin: 30,
+              headingRowColor: WidgetStateProperty.all(Colors.grey.shade400),
+              border: TableBorder.symmetric(
+                inside: const BorderSide(color: Colors.black, width: 1.0),
+              ),
+              columns: tableHeadings
+                  .map(
+                    (column) => DataColumn(
+                      label: Text(
+                        column,
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
-                          ),
-                        ),
+                            fontSize: 16),
+                        textAlign: TextAlign.center,
                       ),
-                    )
-                    .toList(),
-              ),
-              ...data.asMap().entries.map((entry) {
+                    ),
+                  )
+                  .toList(),
+              rows: data.asMap().entries.map((entry) {
                 final index = entry.key;
                 final item = entry.value;
-                return TableRow(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  children: [
-                    for (var i = 0; i < columns.length; i++)
-                      TableRowInkWell(
-                        onTap: () => navigateToDetail(item, index),
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: i == 0
-                              ? ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue.shade900,
-                                    minimumSize:
-                                        const Size(double.infinity, 50),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    navigateToDetail(item, index);
-                                  },
-                                  child: Text(
-                                    item.customerName,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                )
-                              : Text(
-                                  textAlign: TextAlign.center,
-                                  i == 1
-                                      ? item.round
-                                      : i == 2
-                                          ? item.date
-                                          : i == 3
-                                              ? item.poNo
-                                              : i == 4
-                                                  ? item.order
-                                                  : item.address,
-                                  style: const TextStyle(color: Colors.black),
-                                ),
+                return DataRow(
+                  color: WidgetStateProperty.resolveWith<Color>(
+                      (Set<WidgetState> states) {
+                    return index.isEven ? Colors.white : Colors.purple.shade50;
+                  }),
+                  cells: [
+                    DataCell(
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.order,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
+                    ),
+                    DataCell(
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.round,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    DataCell(
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.orderDate,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    DataCell(
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.poNo,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    DataCell(
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.deliveryDate,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    DataCell(
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.customerName,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    DataCell(
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.address,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ],
                 );
-              }),
-            ],
-          ),
-        ),
+              }).toList(),
+            )),
       ),
     );
   }
@@ -406,17 +490,19 @@ class _SalesOrderListState extends State<SalesOrderList> {
 class TableData {
   final String order;
   final String round;
-  final String date;
+  final String orderDate;
   final String poNo;
+  final String deliveryDate;
+  final String customerName;
   final String address;
-  final String customerName; // You might want to add this
 
   TableData({
     required this.order,
     required this.round,
-    required this.date,
+    required this.orderDate,
     required this.poNo,
-    required this.address,
+    required this.deliveryDate,
     required this.customerName,
+    required this.address,
   });
 }
