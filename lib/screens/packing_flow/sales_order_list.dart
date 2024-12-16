@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:williams/screens/login/login.dart';
 import '../../custom_widgets/custom_scaffold.dart';
 import 'order_item_view.dart';
 
@@ -153,13 +154,33 @@ class _SalesOrderListState extends State<SalesOrderList> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Sales Order List',
-              style: TextStyle(
-                fontSize: 50.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+            Row(
+              children: [
+                const Text(
+                  'Sales Order List',
+                  style: TextStyle(
+                    fontSize: 50.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(
+                    Icons.login_outlined,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ScreenLogin(),
+                      ),
+                      (route) => false,
+                    );
+                  },
+                ),
+              ],
             ),
             Row(
               children: [
@@ -368,109 +389,93 @@ class _SalesOrderListState extends State<SalesOrderList> {
                 final index = entry.key;
                 final item = entry.value;
                 return DataRow(
-
                   color: WidgetStateProperty.resolveWith<Color>(
                       (Set<WidgetState> states) {
                     return index.isEven ? Colors.white : Colors.purple.shade50;
                   }),
                   cells: [
                     DataCell(
-
-                      InkWell(
-                        onTap: () => navigateToDetail(item, index),
-                        child: Text(
-                          item.order,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.order,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     DataCell(
-                      InkWell(
-                        onTap: () => navigateToDetail(item, index),
-                        child: Text(
-                          item.round,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.round,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     DataCell(
-                      InkWell(
-                        onTap: () => navigateToDetail(item, index),
-                        child: Text(
-                          item.orderDate,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.orderDate,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     DataCell(
-                      InkWell(
-                        onTap: () => navigateToDetail(item, index),
-                        child: Text(
-                          item.poNo,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.poNo,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     DataCell(
-                      InkWell(
-                        onTap: () => navigateToDetail(item, index),
-                        child: Text(
-                          item.deliveryDate,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.deliveryDate,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     DataCell(
-                      InkWell(
-                        onTap: () => navigateToDetail(item, index),
-                        child: Text(
-                          item.customerName,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.customerName,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     DataCell(
-                      InkWell(
-                        onTap: () => navigateToDetail(item, index),
-                        child: Text(
-                          item.address,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                      onTap: () => navigateToDetail(item, index),
+                      Text(
+                        item.address,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ],
