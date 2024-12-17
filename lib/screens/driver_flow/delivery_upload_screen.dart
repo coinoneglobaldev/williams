@@ -93,13 +93,13 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
                                   Icon(
                                     Icons.camera_alt,
                                     size: 80,
-                                    color: Colors.white.withOpacity(0.8),
+                                    color: Colors.white.withValues(alpha: 0.8),
                                   ),
                                   const SizedBox(height: 10),
                                   Text(
                                     'Tap to Capture',
                                     style: TextStyle(
-                                      color: Colors.white.withOpacity(0.8),
+                                      color: Colors.white.withValues(alpha:0.8),
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                     ),

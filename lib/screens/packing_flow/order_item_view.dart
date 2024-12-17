@@ -707,7 +707,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
       resizeToAvoidBottomInset: false,
-      title: 'Order Item',
+
       // floatingActionButton: Container(
       //   margin: const EdgeInsets.only(left: 30),
       //   child: Column(
