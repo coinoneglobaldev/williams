@@ -28,7 +28,8 @@ class _OrderItemViewState extends State<OrderItemView> {
       pack: 'EA',
       code: '222',
       short: '',
-      description: 'Pears',
+      description:
+          'Pears  fdsgdfsgfgdsdfgfgdfgdfgdfdgsfgdsgfdfgdfgdsfgdfgdfgfgdsfgdsfdgfgdfdg',
       qty: '10.00',
       notes: '',
     ),
@@ -419,19 +420,22 @@ class _OrderItemViewState extends State<OrderItemView> {
                             : -1;
                         return index == selectedRowIndex
                             ? Colors.blue.withValues(alpha: 0.6)
-                            : Colors.white;
+                            : Colors.brown.withValues(alpha: 0.2);
                       },
                     ),
                     headingRowColor:
                         WidgetStateProperty.all(Colors.grey.shade400),
                     columns: columns
                         .map((column) => DataColumn(
-                              label: Text(
-                                column,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                              headingRowAlignment: MainAxisAlignment.center,
+                              label: Center(
+                                child: Text(
+                                  column,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
                             ))
@@ -452,15 +456,30 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 });
                                 _switchToQtyMode();
                               },
-                              Center(
-                                child: Text(
-                                  item.qty,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: double.maxFinite,
+                                  child: Material(
+                                    elevation: 5.0,
+                                    color: Colors.yellow,
+                                    shadowColor: Colors.black,
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Center(
+                                      child: Text(
+                                        item.qty,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 1,
+                                      ),
+                                    ),
                                   ),
-                                  maxLines: 1,
                                 ),
                               ),
                             ),
@@ -518,14 +537,30 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 _switchToQtyMode();
                               },
                               Center(
-                                child: Text(
-                                  item.description,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: SizedBox(
+                                    width: 110,
+                                    height: double.maxFinite,
+                                    child: Material(
+                                      elevation: 5.0,
+                                      color: Colors.yellow,
+                                      shadowColor: Colors.black,
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Center(
+                                        child: Text(
+                                          item.description,
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          maxLines: 2,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  maxLines: 2,
                                 ),
                               ),
                             ),
@@ -672,7 +707,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
       resizeToAvoidBottomInset: false,
-      title: 'Order Item',
+
       // floatingActionButton: Container(
       //   margin: const EdgeInsets.only(left: 30),
       //   child: Column(

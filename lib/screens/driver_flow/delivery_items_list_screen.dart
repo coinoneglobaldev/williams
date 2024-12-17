@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:williams/screens/driver_flow/widget/delivery_item_list.dart';
 import 'package:williams/screens/driver_flow/widget/driver_home_appbar.dart';
-
 import 'delivery_upload_screen.dart';
 
 class DeliveryItemsListScreen extends StatefulWidget {
@@ -20,43 +18,27 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
       'name': 'Samuel',
       'itemCount': '4',
       'address': 'Thodupuzha, opposite private stand',
-      'orderId': 'TRK001',
+      'orderId': 'PO-123',
+      'latitude': '9.894183109019716',
+      'longitude': '76.70783179259858',
     },
     {
       'name': 'Jackson',
       'itemCount': '3',
       'address': 'Kottayam, opposite private stand',
-      'orderId': 'TRK002',
+      'orderId': 'PO-124',
+      'latitude': '9.589109092853803',
+      'longitude': '76.52249389864747',
     },
     {
       'name': 'Emmanuel',
       'itemCount': '7',
       'address': 'Thrissur, opposite private stand',
-      'orderId': 'TRK003',
+      'orderId': 'PO-125',
+      'latitude': '10.530959122993927',
+      'longitude': '76.2147063396627',
     },
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +71,8 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
                         itemCount: item['itemCount']!,
                         address: item['address']!,
                         orderId: item['orderId']!,
+                        latitude: item['latitude']!,
+                        longitude: item['longitude']!,
                       ),
                     );
                   },

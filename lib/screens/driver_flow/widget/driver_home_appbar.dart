@@ -44,6 +44,14 @@ class DriverHomeAppbar extends StatelessWidget {
           ],
         ),
         const Spacer(),
+        GestureDetector(
+          onTap: () {},
+          child: const Image(
+            image: AssetImage('assets/icons/appbar_map.png'),
+            height: 30,
+          ),
+        ),
+        SizedBox(width: 10),
         IconButton(
           icon: Icon(Icons.logout),
           color: Colors.black,

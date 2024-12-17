@@ -148,7 +148,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
       resizeToAvoidBottomInset: false,
-      title: 'Packing',
       bodyWidget: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

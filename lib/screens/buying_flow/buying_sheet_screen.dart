@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:williams/constants.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
-
+import 'package:williams/screens/buying_flow/widgets/buying_sheet_appbar.dart';
 import '../../custom_widgets/util_class.dart';
 
 class BuyingSheetScreen extends StatefulWidget {
@@ -14,6 +14,7 @@ class BuyingSheetScreen extends StatefulWidget {
 class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   String? _selectedCategory;
   String? _selectedSubcategory;
+  String? _selectedPreviousOrder;
 
   final List<String> _categories = [
     'Category 1',
@@ -25,6 +26,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     'Subcategory A',
     'Subcategory B',
     'Subcategory C',
+  ];
+
+  final List<String> _previousOrders = [
+    'Order 1',
+    'Order 2',
+    'Order 3',
   ];
 
   final List<Map<String, dynamic>> _dummyTableData = [
@@ -132,11 +139,13 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
-      title: 'Buying Sheet',
       bodyWidget: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            BuyingSheetAppbar(),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
@@ -147,6 +156,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 Expanded(
                   flex: 2,
                   child: _buildSupplierDropdown(),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 2,
+                  child: _buildPreviousOrderDropdown(),
                 ),
                 const SizedBox(width: 10),
                 Expanded(child: _buildSearchButton()),
@@ -164,52 +178,86 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   }
 
   Widget _buildCategoryDropdown() {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        hintText: 'Category',
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+    return ButtonTheme(
+      alignedDropdown: true,
+      child: DropdownButtonFormField<String>(
+        decoration: InputDecoration(
+          hintText: 'Category',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
+        value: _selectedCategory,
+        items: _categories
+            .map(
+              (category) => DropdownMenuItem(
+                value: category,
+                child: Text(category),
+              ),
+            )
+            .toList(),
+        onChanged: (value) {
+          setState(() {
+            _selectedCategory = value;
+          });
+        },
       ),
-      value: _selectedCategory,
-      items: _categories
-          .map(
-            (category) => DropdownMenuItem(
-              value: category,
-              child: Text(category),
-            ),
-          )
-          .toList(),
-      onChanged: (value) {
-        setState(() {
-          _selectedCategory = value;
-        });
-      },
     );
   }
 
   Widget _buildSupplierDropdown() {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        hintText: 'Supplier',
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+    return ButtonTheme(
+      alignedDropdown: true,
+      child: DropdownButtonFormField<String>(
+        decoration: InputDecoration(
+          hintText: 'Supplier',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
+        value: _selectedSubcategory,
+        items: _subcategories
+            .map(
+              (subcategory) => DropdownMenuItem(
+                value: subcategory,
+                child: Text(subcategory),
+              ),
+            )
+            .toList(),
+        onChanged: (value) {
+          setState(() {
+            _selectedSubcategory = value;
+          });
+        },
       ),
-      value: _selectedSubcategory,
-      items: _subcategories
-          .map(
-            (subcategory) => DropdownMenuItem(
-              value: subcategory,
-              child: Text(subcategory),
-            ),
-          )
-          .toList(),
-      onChanged: (value) {
-        setState(() {
-          _selectedSubcategory = value;
-        });
-      },
+    );
+  }
+
+  Widget _buildPreviousOrderDropdown() {
+    return ButtonTheme(
+      alignedDropdown: true,
+      child: DropdownButtonFormField<String>(
+        decoration: InputDecoration(
+          hintText: 'Previous order',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        value: _selectedPreviousOrder,
+        items: _previousOrders
+            .map(
+              (previousOrder) => DropdownMenuItem(
+            value: previousOrder,
+            child: Text(previousOrder),
+          ),
+        )
+            .toList(),
+        onChanged: (value) {
+          setState(() {
+            _selectedPreviousOrder = value;
+          });
+        },
+      ),
     );
   }
 
@@ -341,7 +389,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             SizedBox.shrink(),
             SizedBox.shrink(),
             SizedBox.shrink(),
-            _buildTableHeader('Stock'),
+            _buildTableHeader('Short'),
             _buildTableHeader('Order'),
           ],
         ),

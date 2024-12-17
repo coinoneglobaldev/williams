@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../common/orientation_setup.dart';
 import '../../common/responsive.dart';
 import '../../constants.dart';
@@ -67,10 +66,10 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
   }
 
   _fnNavigateToBuyerPage() {
-    // Set portrait orientation for driver
+    // Set landscape orientation for buyer
     SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
     ]);
     Navigator.pushReplacement(
       context,

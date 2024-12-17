@@ -5,14 +5,12 @@ import '../custom_screens/custom_network_error.dart';
 import '../providers/connectivity_status_provider.dart';
 
 class ScreenCustomScaffold extends ConsumerStatefulWidget {
-  final String title;
   final Widget bodyWidget;
   final bool resizeToAvoidBottomInset;
   final Widget? floatingActionButton;
 
   const ScreenCustomScaffold({
     super.key,
-    required this.title,
     required this.bodyWidget,
     this.floatingActionButton,
     this.resizeToAvoidBottomInset = true,
