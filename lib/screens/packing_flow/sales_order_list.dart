@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:williams/screens/login/login.dart';
+import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
 import 'order_item_view.dart';
 
@@ -166,16 +166,13 @@ class _SalesOrderListState extends State<SalesOrderList> {
                 const Spacer(),
                 IconButton(
                   icon: const Icon(
-                    Icons.login_outlined,
+                    Icons.logout,
                     color: Colors.black,
                   ),
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ScreenLogin(),
-                      ),
-                      (route) => false,
+                    showDialog(
+                      context: context,
+                      builder: (context) => const CustomLogoutConfirmation(),
                     );
                   },
                 ),
