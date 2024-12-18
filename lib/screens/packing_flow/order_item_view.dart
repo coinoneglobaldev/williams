@@ -407,7 +407,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                         inside: BorderSide(
                       color: Colors.black,
                     )),
-                    columnSpacing: 10,
+                    columnSpacing: 5,
                     horizontalMargin: 5,
                     dataRowMaxHeight: 80,
                     dataRowMinHeight: 80,
@@ -420,7 +420,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                             : -1;
                         return index == selectedRowIndex
                             ? Colors.blue.withValues(alpha: 0.6)
-                            : Colors.brown.withValues(alpha: 0.2);
+                            : Colors.purple.shade100.withValues(alpha: 0.75);
                       },
                     ),
                     headingRowColor:
@@ -455,33 +455,35 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   notesFocusNodes[index].unfocus();
                                 });
                                 _switchToQtyMode();
-                              },
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  height: double.maxFinite,
-                                  child: Material(
-                                    elevation: 5.0,
+                              },Center(
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                width: 60,
+                                height: 70,
+                                decoration: BoxDecoration(
                                     color: Colors.yellow,
-                                    shadowColor: Colors.black,
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Center(
-                                      child: Text(
-                                        item.qty,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        maxLines: 1,
+                                    borderRadius: BorderRadius.circular(5),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.3),
+                                        blurRadius: 15,
                                       ),
+                                    ]
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    item.qty,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
+                                    maxLines: 1,
                                   ),
                                 ),
                               ),
+                            ),
                             ),
                             DataCell(
                               Center(
@@ -537,57 +539,62 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 _switchToQtyMode();
                               },
                               Center(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: SizedBox(
-                                    width: 110,
-                                    height: double.maxFinite,
-                                    child: Material(
-                                      elevation: 5.0,
-                                      color: Colors.yellow,
-                                      shadowColor: Colors.black,
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Center(
-                                        child: Text(
-                                          item.description,
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          maxLines: 2,
-                                        ),
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  width: 140,
+                                  height: 70,
+                                  decoration: BoxDecoration(
+                                    color: Colors.yellow,
+                                    borderRadius: BorderRadius.circular(5),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.3),
+                                        blurRadius: 15,
                                       ),
+                                    ]
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      item.description,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      maxLines: 2,
                                     ),
                                   ),
                                 ),
                               ),
                             ),
                             DataCell(
-                              Center(
-                                child: TextField(
-                                  controller: notesControllers[index],
-                                  focusNode: notesFocusNodes[index],
-                                  style: const TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    hintText: 'Enter value',
-                                    hintStyle:
-                                        TextStyle(color: Colors.grey.shade500),
-                                    border: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 8,
+                              Container(
+                                height: 70,
+                                color: Colors.white,
+                                child: Center(
+                                  child: TextField(
+                                    controller: notesControllers[index],
+                                    focusNode: notesFocusNodes[index],
+                                    style: const TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      isDense: true,
+                                      hintText: 'Enter value',
+                                      hintStyle:
+                                          TextStyle(color: Colors.grey.shade500),
+                                      border: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 8,
+                                      ),
                                     ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        item.notes = value;
+                                      });
+                                    },
                                   ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      item.notes = value;
-                                    });
-                                  },
                                 ),
                               ),
                             ),
