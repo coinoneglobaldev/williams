@@ -390,7 +390,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                 return DataRow(
                   color: WidgetStateProperty.resolveWith<Color>(
                       (Set<WidgetState> states) {
-                    return index.isEven ? Colors.white : Colors.purple.shade50;
+                    return index.isEven ? Colors.purple.shade100 : Colors.purple.shade50;
                   }),
                   cells: [
                     DataCell(
