@@ -64,18 +64,16 @@ class DeliveryItemList extends StatelessWidget {
           ),
           Util.titleAndSubtitleWidget(
               title: 'Item Count:', subTitle: itemCount),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Util.titleAndSubtitleWidget(title: 'Address:', subTitle: address),
-              GestureDetector(
-                onTap: _launchGoogleMaps,
-                child: const Image(
-                  image: AssetImage('assets/icons/map.png'),
-                  height: 50,
-                ),
+          Util.titleAndSubtitleWidget(title: 'Address:', subTitle: address),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: GestureDetector(
+              onTap: _launchGoogleMaps,
+              child: const Image(
+                image: AssetImage('assets/icons/map.png'),
+                height: 50,
               ),
-            ],
+            ),
           ),
         ],
       ),

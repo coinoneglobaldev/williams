@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../custom_widgets/custom_logout_button.dart';
+import '../map/route_map_screen.dart';
 
 class DriverHomeAppbar extends StatelessWidget {
   final String name;
@@ -45,7 +47,14 @@ class DriverHomeAppbar extends StatelessWidget {
         ),
         const Spacer(),
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => const RouteMapScreen(),
+              ),
+            );
+          },
           child: const Image(
             image: AssetImage('assets/icons/appbar_map.png'),
             height: 30,
