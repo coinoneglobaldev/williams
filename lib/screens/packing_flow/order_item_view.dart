@@ -127,7 +127,9 @@ class _OrderItemViewState extends State<OrderItemView> {
     super.initState();
     selectedPack = List<String?>.filled(orderItems.length, 'retail');
 
-    qtyControllers = orderItems.map((item) => TextEditingController()).toList();
+    qtyControllers = orderItems
+        .map((item) => TextEditingController(text: item.qty))
+        .toList();
     notesControllers = orderItems
         .map((item) => TextEditingController(text: item.notes))
         .toList();
@@ -362,7 +364,7 @@ class _OrderItemViewState extends State<OrderItemView> {
             const Text(
               ' Order Items',
               style: TextStyle(
-                fontSize: 50.0,
+                fontSize: 40.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
@@ -455,35 +457,36 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   notesFocusNodes[index].unfocus();
                                 });
                                 _switchToQtyMode();
-                              },Center(
-                              child: Container(
-                                padding: const EdgeInsets.all(5),
-                                width: 60,
-                                height: 70,
-                                decoration: BoxDecoration(
-                                    color: Colors.yellow,
-                                    borderRadius: BorderRadius.circular(5),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.3),
-                                        blurRadius: 15,
+                              },
+                              Center(
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  width: 60,
+                                  height: 70,
+                                  decoration: BoxDecoration(
+                                      color: Colors.yellow,
+                                      borderRadius: BorderRadius.circular(5),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black
+                                              .withValues(alpha: 0.3),
+                                          blurRadius: 15,
+                                        ),
+                                      ]),
+                                  child: Center(
+                                    child: Text(
+                                      item.qty,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                    ]
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    item.qty,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                      maxLines: 1,
                                     ),
-                                    maxLines: 1,
                                   ),
                                 ),
                               ),
-                            ),
                             ),
                             DataCell(
                               Center(
@@ -544,15 +547,15 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   width: 140,
                                   height: 70,
                                   decoration: BoxDecoration(
-                                    color: Colors.yellow,
-                                    borderRadius: BorderRadius.circular(5),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.3),
-                                        blurRadius: 15,
-                                      ),
-                                    ]
-                                  ),
+                                      color: Colors.yellow,
+                                      borderRadius: BorderRadius.circular(5),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black
+                                              .withValues(alpha: 0.3),
+                                          blurRadius: 15,
+                                        ),
+                                      ]),
                                   child: Center(
                                     child: Text(
                                       item.description,
@@ -579,12 +582,13 @@ class _OrderItemViewState extends State<OrderItemView> {
                                     decoration: InputDecoration(
                                       isDense: true,
                                       hintText: 'Enter value',
-                                      hintStyle:
-                                          TextStyle(color: Colors.grey.shade500),
+                                      hintStyle: TextStyle(
+                                          color: Colors.grey.shade500),
                                       border: InputBorder.none,
                                       enabledBorder: InputBorder.none,
                                       focusedBorder: InputBorder.none,
-                                      contentPadding: const EdgeInsets.symmetric(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
                                         horizontal: 8,
                                         vertical: 8,
                                       ),
@@ -1040,13 +1044,13 @@ class _OrderItemViewState extends State<OrderItemView> {
             label: Text(
               title,
               style: TextStyle(
-                color: color,
+                color: Colors.black,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: color, width: 2.0),
+              borderSide: BorderSide(color: Colors.black, width: 2.0),
               borderRadius: BorderRadius.circular(8.0),
             ),
             focusedBorder: OutlineInputBorder(
