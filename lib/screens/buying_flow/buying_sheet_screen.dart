@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:williams/constants.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
-import 'package:williams/screens/buying_flow/widgets/buying_sheet_appbar.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
+import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/util_class.dart';
 
 class BuyingSheetScreen extends StatefulWidget {
@@ -67,14 +67,73 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       'BulkSplit': 'Bulk',
       'orderQty': '30',
     },
+    {
+      'code': 'Chemia EHI0422',
+      'name': '20 Silk Cut Sliver',
+      'uom': 'NET',
+      'conVal': '1.00',
+      'Bulk': '2.00',
+      'Split': '0.00',
+      'BulkSplit': 'Bulk',
+      'orderQty': '10',
+    },
+    {
+      'code': 'Frozen EHI1244',
+      'name': 'Abramczyk Fliety Z Mintaja 400G',
+      'uom': 'NET',
+      'conVal': '1.00',
+      'Bulk': '2.00',
+      'Split': '0.00',
+      'BulkSplit': 'Bulk',
+      'orderQty': '20',
+    },
+    {
+      'code': 'Gazeta EHI3074',
+      'name': '100 Panaramicznych',
+      'uom': 'NET',
+      'conVal': '1.00',
+      'Bulk': '7.00',
+      'Split': '0.00',
+      'BulkSplit': 'Bulk',
+      'orderQty': '30',
+    },
+    {
+      'code': 'Chemia EHI0422',
+      'name': '20 Silk Cut Sliver',
+      'uom': 'NET',
+      'conVal': '1.00',
+      'Bulk': '2.00',
+      'Split': '0.00',
+      'BulkSplit': 'Bulk',
+      'orderQty': '10',
+    },
+    {
+      'code': 'Frozen EHI1244',
+      'name': 'Abramczyk Fliety Z Mintaja 400G',
+      'uom': 'NET',
+      'conVal': '1.00',
+      'Bulk': '2.00',
+      'Split': '0.00',
+      'BulkSplit': 'Bulk',
+      'orderQty': '20',
+    },
+    {
+      'code': 'Gazeta EHI3074',
+      'name': '100 Panaramicznych',
+      'uom': 'NET',
+      'conVal': '1.00',
+      'Bulk': '7.00',
+      'Split': '0.00',
+      'BulkSplit': 'Bulk',
+      'orderQty': '30',
+    },
   ];
 
   @override
   void initState() {
     super.initState();
-    orderQtyControllers = _dummyTableData
-        .map((item) => TextEditingController())
-        .toList();
+    orderQtyControllers =
+        _dummyTableData.map((item) => TextEditingController()).toList();
   }
 
   @override
@@ -101,46 +160,152 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           );
         },
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              const BuyingSheetAppbar(),
-              const SizedBox(height: 10),
-              dropDownAndSearch(),
-              const SizedBox(height: 10),
-              _buyingSheetTable(data: _dummyTableData),
-              const SizedBox(height: 10),
-              _buildSaveButton(),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Row(
+                  children: [
+                    const Text(
+                      'Buying Sheet',
+                      style: TextStyle(
+                        fontSize: 40.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    _buildSearchRow(),
+                    const SizedBox(width: 16),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.logout,
+                        color: Colors.black,
+                        size: 40.0,
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) =>
+                              const CustomLogoutConfirmation(),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Divider(
+                  color: Colors.black,
+                  thickness: 2,
+                ),
+                const SizedBox(height: 2),
+                Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Code',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        flex: 2,
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Description',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        flex: 1,
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Order',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        flex: 1,
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: 'KG/E',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        flex: 1,
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Rate',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 50),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: buttonColor,
+                          minimumSize: const Size(100, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: Text('Add'),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _buyingSheetTable(data: _dummyTableData),
+                const SizedBox(height: 10),
+                _buildSaveButton(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget dropDownAndSearch() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: _buildCategoryDropdown(),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          flex: 2,
-          child: _buildSupplierDropdown(),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          flex: 2,
-          child: _buildPreviousOrderDropdown(),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: _buildSearchButton(),
-        ),
-      ],
+  Widget _buildSearchRow() {
+    return Expanded(
+      child: Row(
+        children: [
+          Flexible(
+            flex: 3,
+            child: _buildCategoryDropdown(),
+          ),
+          const SizedBox(width: 10),
+          Flexible(
+            flex: 3,
+            child: _buildSupplierDropdown(),
+          ),
+          const SizedBox(width: 10),
+          Flexible(
+            flex: 3,
+            child: _buildPreviousOrderDropdown(),
+          ),
+          Spacer(),
+          _buildSearchButton(),
+        ],
+      ),
     );
   }
 
@@ -189,39 +354,47 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     required List<String> items,
     required void Function(String?) onChanged,
   }) {
-    return ButtonTheme(
-      alignedDropdown: true,
-      child: DropdownButtonFormField<String>(
-        decoration: InputDecoration(
-          hintText: hint,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+    return SizedBox(
+      height: 50,
+      child: ButtonTheme(
+        alignedDropdown: true,
+        child: DropdownButtonFormField<String>(
+          isExpanded: true,
+          decoration: InputDecoration(
+            hintText: hint,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
+          value: value,
+          items: items
+              .map(
+                (item) => DropdownMenuItem(
+                  value: item,
+                  child: Text(item),
+                ),
+              )
+              .toList(),
+          onChanged: onChanged,
         ),
-        value: value,
-        items: items
-            .map(
-              (item) => DropdownMenuItem(
-            value: item,
-            child: Text(item),
-          ),
-        )
-            .toList(),
-        onChanged: onChanged,
       ),
     );
   }
 
   Widget _buildSearchButton() {
     return SizedBox(
-      height: 60,
+      height: 50,
       child: ElevatedButton(
         onPressed: _handleSearch,
         style: ElevatedButton.styleFrom(
+          foregroundColor: Colors.white,
           backgroundColor: buttonColor,
-          minimumSize: const Size(double.infinity, 50),
+          maximumSize: const Size(100, 50),
+          minimumSize: const Size(100, 50),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
         child: const Text('Search'),
@@ -267,16 +440,25 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
                 child: DataTable(
-                  dataRowMinHeight: 80,
-                  dataRowMaxHeight: 80,
-                  horizontalMargin: 10,
+                  headingRowHeight: 30,
+                  dataRowMinHeight: 60,
+                  dataRowMaxHeight: 60,
+                  horizontalMargin: 5,
                   columnSpacing: 10,
-                  headingRowColor: WidgetStateProperty.all(Colors.grey.shade400),
+                  headingRowColor: WidgetStateProperty.all(
+                    Colors.grey.shade400.withValues(alpha: 0.5),
+                  ),
                   border: TableBorder.symmetric(
-                    inside: const BorderSide(color: Colors.black, width: 1.0),
+                    inside: const BorderSide(
+                      color: Colors.black,
+                      width: 1.0,
+                    ),
                   ),
                   columns: _getTableColumns(),
-                  rows: data.map((item) => _buildDataRow(item)).toList(),
+                  rows: List<DataRow>.generate(
+                    data.length,
+                    (index) => _buildDataRow(data[index], index),
+                  ),
                 ),
               ),
             ),
@@ -288,8 +470,15 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   List<DataColumn> _getTableColumns() {
     return [
-      'Code', 'Name', 'UOM', 'Con Val', 'Short Bulk',
-      'Short Split', 'Order UOM', 'Order Qty', 'Select'
+      'Code',
+      'Name',
+      'UOM',
+      'Con Val',
+      'Short Bulk',
+      'Short Split',
+      'Order UOM',
+      'Order Qty',
+      'Select'
     ].map(_buildDataColumn).toList();
   }
 
@@ -309,13 +498,15 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  DataRow _buildDataRow(Map<String, dynamic> item) {
+  DataRow _buildDataRow(Map<String, dynamic> item, int index) {
     item['isSelected'] ??= false;
     item['bulkSplitValue'] ??= 'Bulk';
 
     return DataRow(
       color: WidgetStateProperty.resolveWith<Color>(
-            (Set<WidgetState> states) => Colors.purple.shade50,
+        (Set<WidgetState> states) {
+          return index.isEven ? Colors.amber.shade50 : Colors.amber.shade100;
+        },
       ),
       cells: [
         _buildDataCell(item['code']),
@@ -334,7 +525,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   DataCell _buildDataCell(String? text) {
     return DataCell(
       SizedBox(
-        height: 50,
+        height: 20,
         child: Center(
           child: Text(
             text ?? '',
@@ -390,12 +581,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               suffixIcon: GestureDetector(
-                onTap: () => _decrementValue(controller),
-                child: const Icon(Icons.remove,size: 30),
+                onTap: () => _incrementValue(controller),
+                child: const Icon(Icons.add, size: 30),
               ),
               prefixIcon: GestureDetector(
-                onTap: () => _incrementValue(controller),
-                child: const Icon(Icons.add,size: 30),
+                onTap: () => _decrementValue(controller),
+                child: const Icon(Icons.remove, size: 30),
               ),
               hintText: 'Enter value',
               hintStyle: TextStyle(color: Colors.grey.shade500),
@@ -459,7 +650,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      child: const Text('Save'),
+      child: const Text('Order Now'),
     );
   }
 }
