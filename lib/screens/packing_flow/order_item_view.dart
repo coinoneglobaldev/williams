@@ -1044,13 +1044,13 @@ class _OrderItemViewState extends State<OrderItemView> {
             label: Text(
               title,
               style: TextStyle(
-                color: color,
+                color: Colors.black,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: color, width: 2.0),
+              borderSide: BorderSide(color: Colors.black, width: 2.0),
               borderRadius: BorderRadius.circular(8.0),
             ),
             focusedBorder: OutlineInputBorder(
