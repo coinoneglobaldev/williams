@@ -64,6 +64,96 @@ class _SalesOrderListState extends State<SalesOrderList> {
       customerName: "Kumar Enterprises",
       address: "456 Park Avenue, Delhi, New Delhi",
     ),
+    TableData(
+      order: '05',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
+      customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
+    ),
+    TableData(
+      order: '05',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
+      customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
+    ),
+    TableData(
+      order: '05',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
+      customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
+    ),
+    TableData(
+      order: '05',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
+      customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
+    ),
+    TableData(
+      order: '05',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
+      customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
+    ),
+    TableData(
+      order: '05',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
+      customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
+    ),
+    TableData(
+      order: '05',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
+      customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
+    ),
+    TableData(
+      order: '05',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
+      customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
+    ),
+    TableData(
+      order: '05',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
+      customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
+    ),
+    TableData(
+      order: '05',
+      round: "Round 2",
+      orderDate: "20-Apr-2024",
+      poNo: "5666",
+      deliveryDate: "25-Apr-2024",
+      customerName: "Kumar Enterprises",
+      address: "456 Park Avenue, Delhi, New Delhi",
+    ),
   ];
   List<String> rounds = ['All Rounds', 'Round 1', 'Round 2', 'Round 3'];
   String? selectedRound;
@@ -163,143 +253,145 @@ class _SalesOrderListState extends State<SalesOrderList> {
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Text(
-                    'Sales Order List',
-                    style: TextStyle(
-                      fontSize: 50.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.logout,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const CustomLogoutConfirmation(),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        suffixIcon: Icon(Icons.calendar_today),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                        label: Text('Start Date'),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Sales Order',
+                      style: TextStyle(
+                        fontSize: 40.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      controller: startDateController,
-                      onTap: _selectStartDate,
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextField(
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        suffixIcon: Icon(Icons.calendar_today),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                        label: Text('End Date'),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          suffixIcon: Icon(Icons.calendar_today),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 16),
+                          label: Text('Start Date'),
+                        ),
+                        controller: startDateController,
+                        onTap: _selectStartDate,
                       ),
-                      controller: endDateController,
-                      onTap: _selectEndDate,
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                        labelText: 'Round',
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          suffixIcon: Icon(Icons.calendar_today),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 16),
+                          label: Text('End Date'),
+                        ),
+                        controller: endDateController,
+                        onTap: _selectEndDate,
                       ),
-                      value: selectedRound,
-                      items: rounds.map((String round) {
-                        return DropdownMenuItem<String>(
-                          value: round,
-                          child: Text(round),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Round',
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 16),
+                        ),
+                        value: selectedRound,
+                        items: rounds.map((String round) {
+                          return DropdownMenuItem<String>(
+                            value: round,
+                            child: Text(round),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedRound = newValue;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 2,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              children: [
+                                SizedBox(height: 5),
+                                _colorMatchingData(
+                                  title: 'Hold\t\t\t\t',
+                                  colors: Colors.red.shade500,
+                                ),
+                                const SizedBox(height: 6),
+                                _colorMatchingData(
+                                  title: 'Release',
+                                  colors: Colors.green.shade500,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                SizedBox(height: 5),
+                                _colorMatchingData(
+                                  title: 'Zero Rate\t\t\t\t\t',
+                                  colors: Colors.blue.shade500,
+                                ),
+                                const SizedBox(height: 6),
+                                _colorMatchingData(
+                                  title: 'Part Release',
+                                  colors: Colors.orange.shade500,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                SizedBox(height: 5),
+                                _colorMatchingData(
+                                  title: 'Processing',
+                                  colors: Colors.black,
+                                ),
+                                const SizedBox(height: 20),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.logout,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) =>
+                              const CustomLogoutConfirmation(),
                         );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedRound = newValue;
-                        });
                       },
                     ),
-                  ),
-                  Spacer(),
-                  Expanded(
-                    flex: 2,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              SizedBox(height: 16),
-                              _colorMatchingData(
-                                title: 'Hold\t\t\t\t',
-                                colors: Colors.red.shade500,
-                              ),
-                              const SizedBox(height: 6),
-                              _colorMatchingData(
-                                title: 'Release',
-                                colors: Colors.green.shade500,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              SizedBox(height: 16),
-                              _colorMatchingData(
-                                title: 'Zero Rate\t\t\t\t\t',
-                                colors: Colors.blue.shade500,
-                              ),
-                              const SizedBox(height: 6),
-                              _colorMatchingData(
-                                title: 'Part Release',
-                                colors: Colors.orange.shade500,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              SizedBox(height: 16),
-                              _colorMatchingData(
-                                title: 'Processing',
-                                colors: Colors.black,
-                              ),
-                              const SizedBox(height: 20),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(height: 10),
-              _buildSalesOrderTable(data: salesOrderData),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 10),
+                _buildSalesOrderTable(data: salesOrderData),
+              ],
+            ),
           ),
         ),
       ),
@@ -374,8 +466,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
         child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(
-              dataRowMinHeight: 80,
-              dataRowMaxHeight: 80,
+              dataRowMinHeight: 50,
+              dataRowMaxHeight: 50,
               horizontalMargin: 30,
               headingRowColor: WidgetStateProperty.all(Colors.grey.shade400),
               border: TableBorder.symmetric(
@@ -401,7 +493,9 @@ class _SalesOrderListState extends State<SalesOrderList> {
                 return DataRow(
                   color: WidgetStateProperty.resolveWith<Color>(
                       (Set<WidgetState> states) {
-                    return index.isEven ? Colors.purple.shade100 : Colors.purple.shade50;
+                    return index.isEven
+                        ? Colors.purple.shade100
+                        : Colors.purple.shade50;
                   }),
                   cells: [
                     DataCell(
