@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
 import 'order_item_view.dart';
@@ -148,145 +149,158 @@ class _SalesOrderListState extends State<SalesOrderList> {
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
       resizeToAvoidBottomInset: false,
-      bodyWidget: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Text(
-                  'Sales Order List',
-                  style: TextStyle(
-                    fontSize: 50.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(
-                    Icons.logout,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => const CustomLogoutConfirmation(),
-                    );
-                  },
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    readOnly: true,
-                    decoration: const InputDecoration(
-                      suffixIcon: Icon(Icons.calendar_today),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                      label: Text('Start Date'),
+      bodyWidget: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, dynamic result) {
+          if (didPop) {
+            return;
+          }
+          showDialog(
+            barrierColor: Colors.black.withValues(alpha: 0.8),
+            context: context,
+            builder: (context) => const ScreenCustomExitConfirmation(),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text(
+                    'Sales Order List',
+                    style: TextStyle(
+                      fontSize: 50.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
-                    controller: startDateController,
-                    onTap: _selectStartDate,
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    readOnly: true,
-                    decoration: const InputDecoration(
-                      suffixIcon: Icon(Icons.calendar_today),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                      label: Text('End Date'),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.logout,
+                      color: Colors.black,
                     ),
-                    controller: endDateController,
-                    onTap: _selectEndDate,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                      labelText: 'Round',
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                    ),
-                    value: selectedRound,
-                    items: rounds.map((String round) {
-                      return DropdownMenuItem<String>(
-                        value: round,
-                        child: Text(round),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const CustomLogoutConfirmation(),
                       );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedRound = newValue;
-                      });
                     },
                   ),
-                ),
-                Spacer(),
-                Expanded(
-                  flex: 2,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            SizedBox(height: 16),
-                            _colorMatchingData(
-                              title: 'Hold\t\t\t\t',
-                              colors: Colors.red.shade500,
-                            ),
-                            const SizedBox(height: 6),
-                            _colorMatchingData(
-                              title: 'Release',
-                              colors: Colors.green.shade500,
-                            ),
-                          ],
-                        ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      readOnly: true,
+                      decoration: const InputDecoration(
+                        suffixIcon: Icon(Icons.calendar_today),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                        label: Text('Start Date'),
                       ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            SizedBox(height: 16),
-                            _colorMatchingData(
-                              title: 'Zero Rate\t\t\t\t\t',
-                              colors: Colors.blue.shade500,
-                            ),
-                            const SizedBox(height: 6),
-                            _colorMatchingData(
-                              title: 'Part Release',
-                              colors: Colors.orange.shade500,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            SizedBox(height: 16),
-                            _colorMatchingData(
-                              title: 'Processing',
-                              colors: Colors.black,
-                            ),
-                            const SizedBox(height: 20),
-                          ],
-                        ),
-                      ),
-                    ],
+                      controller: startDateController,
+                      onTap: _selectStartDate,
+                    ),
                   ),
-                )
-              ],
-            ),
-            const SizedBox(height: 10),
-            _buildSalesOrderTable(data: salesOrderData),
-          ],
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      readOnly: true,
+                      decoration: const InputDecoration(
+                        suffixIcon: Icon(Icons.calendar_today),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                        label: Text('End Date'),
+                      ),
+                      controller: endDateController,
+                      onTap: _selectEndDate,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        labelText: 'Round',
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                      ),
+                      value: selectedRound,
+                      items: rounds.map((String round) {
+                        return DropdownMenuItem<String>(
+                          value: round,
+                          child: Text(round),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedRound = newValue;
+                        });
+                      },
+                    ),
+                  ),
+                  Spacer(),
+                  Expanded(
+                    flex: 2,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              SizedBox(height: 16),
+                              _colorMatchingData(
+                                title: 'Hold\t\t\t\t',
+                                colors: Colors.red.shade500,
+                              ),
+                              const SizedBox(height: 6),
+                              _colorMatchingData(
+                                title: 'Release',
+                                colors: Colors.green.shade500,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              SizedBox(height: 16),
+                              _colorMatchingData(
+                                title: 'Zero Rate\t\t\t\t\t',
+                                colors: Colors.blue.shade500,
+                              ),
+                              const SizedBox(height: 6),
+                              _colorMatchingData(
+                                title: 'Part Release',
+                                colors: Colors.orange.shade500,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              SizedBox(height: 16),
+                              _colorMatchingData(
+                                title: 'Processing',
+                                colors: Colors.black,
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 10),
+              _buildSalesOrderTable(data: salesOrderData),
+            ],
+          ),
         ),
       ),
     );

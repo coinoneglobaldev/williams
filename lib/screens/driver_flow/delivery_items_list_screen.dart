@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:williams/screens/driver_flow/widget/delivery_item_list.dart';
 import 'package:williams/screens/driver_flow/widget/driver_home_appbar.dart';
+import '../../custom_widgets/custom_exit_confirmation.dart';
 import 'delivery_upload_screen.dart';
 
 class DeliveryItemsListScreen extends StatefulWidget {
@@ -110,44 +111,57 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              const DriverHomeAppbar(name: 'Ramesh U P'),
-              const SizedBox(height: 10),
-              Expanded(
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: deliveryItems.length,
-                        itemBuilder: (context, index) {
-                          final item = deliveryItems[index];
-                          return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                  builder: (context) =>
-                                      const DeliveryUploadScreen(),
-                                ),
-                              );
-                            },
-                            child: DeliveryItemList(
-                              name: item['name']!,
-                              itemCount: item['itemCount']!,
-                              address: item['address']!,
-                              orderId: item['orderId']!,
-                              latitude: item['latitude']!,
-                              longitude: item['longitude']!,
-                            ),
-                          );
-                        },
-                      ),
-              ),
-            ],
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, dynamic result) {
+          if (didPop) {
+            return;
+          }
+          showDialog(
+            barrierColor: Colors.black.withValues(alpha: 0.8),
+            context: context,
+            builder: (context) => const ScreenCustomExitConfirmation(),
+          );
+        },
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                const DriverHomeAppbar(name: 'Ramesh U P'),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          itemCount: deliveryItems.length,
+                          itemBuilder: (context, index) {
+                            final item = deliveryItems[index];
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                    builder: (context) =>
+                                        const DeliveryUploadScreen(),
+                                  ),
+                                );
+                              },
+                              child: DeliveryItemList(
+                                name: item['name']!,
+                                itemCount: item['itemCount']!,
+                                address: item['address']!,
+                                orderId: item['orderId']!,
+                                latitude: item['latitude']!,
+                                longitude: item['longitude']!,
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

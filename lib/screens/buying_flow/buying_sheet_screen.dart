@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:williams/constants.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
 import 'package:williams/screens/buying_flow/widgets/buying_sheet_appbar.dart';
+import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/util_class.dart';
 
 class BuyingSheetScreen extends StatefulWidget {
@@ -87,19 +88,32 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
-      bodyWidget: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            const BuyingSheetAppbar(),
-            const SizedBox(height: 10),
-            dropDownAndSearch(),
-            const SizedBox(height: 10),
-            _buyingSheetTable(data: _dummyTableData),
-            const SizedBox(height: 10),
-            _buildSaveButton(),
-          ],
+      bodyWidget: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, dynamic result) {
+          if (didPop) {
+            return;
+          }
+          showDialog(
+            barrierColor: Colors.black.withValues(alpha: 0.8),
+            context: context,
+            builder: (context) => const ScreenCustomExitConfirmation(),
+          );
+        },
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const BuyingSheetAppbar(),
+              const SizedBox(height: 10),
+              dropDownAndSearch(),
+              const SizedBox(height: 10),
+              _buyingSheetTable(data: _dummyTableData),
+              const SizedBox(height: 10),
+              _buildSaveButton(),
+            ],
+          ),
         ),
       ),
     );
