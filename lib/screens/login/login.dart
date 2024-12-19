@@ -6,6 +6,7 @@ import '../../common/orientation_setup.dart';
 import '../../common/responsive.dart';
 import '../../constants.dart';
 import '../../custom_screens/custom_network_error.dart';
+import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../providers/connectivity_status_provider.dart';
 import '../buying_flow/buying_sheet_screen.dart';
@@ -87,9 +88,22 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     if (connectivityStatusProvider == ConnectivityStatus.isConnected) {
       return OrientationSetup(
         child: Scaffold(
-          body: Responsive(
-            mobile: _mobileView(context),
-            tablet: _tabletView(context),
+          body: PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (bool didPop, dynamic result) {
+              if (didPop) {
+                return;
+              }
+              showDialog(
+                barrierColor: Colors.black.withValues(alpha: 0.8),
+                context: context,
+                builder: (context) => const ScreenCustomExitConfirmation(),
+              );
+            },
+            child: Responsive(
+              mobile: _mobileView(context),
+              tablet: _tabletView(context),
+            ),
           ),
         ),
       );
