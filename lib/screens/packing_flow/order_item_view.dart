@@ -19,6 +19,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   bool isAllSelected = false;
   int selectedRowIndex = 0;
   bool isQtyFocused = true;
+  bool isFirstDigitAfterFocus = true;
 
   List<String> packs = ['retail', 'unit sale'];
   List<String?> selectedPack = [];
@@ -28,8 +29,7 @@ class _OrderItemViewState extends State<OrderItemView> {
       pack: 'EA',
       code: '222',
       short: '',
-      description:
-          'Pears  fdsgdfsgfgdsdfgfgdfgdfgdfdgsfgdsgfdfgdfgdsfgdfgdfgfgdsfgdsfdgfgdfdg',
+      description: 'Pears',
       qty: '10.00',
       notes: '',
     ),
@@ -264,6 +264,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   void _updateFocus() {
     if (isQtyFocused) {
       qtyFocusNodes[selectedRowIndex].requestFocus();
+      isFirstDigitAfterFocus = true; // Reset the flag when focus changes
     } else {
       qtyFocusNodes[selectedRowIndex].requestFocus();
     }
@@ -1072,6 +1073,7 @@ class _OrderItemViewState extends State<OrderItemView> {
           final controller = isShortMode
               ? shortControllers[selectedRowIndex]
               : qtyControllers[selectedRowIndex];
+
           if (value == 'C') {
             final currentText = controller.text;
             if (currentText.isNotEmpty) {
@@ -1085,10 +1087,15 @@ class _OrderItemViewState extends State<OrderItemView> {
               controller.text = currentText + value;
             }
           } else {
-            final currentText = controller.text;
-            controller.text = currentText + value;
+            // Only clear if it's the first digit after focus
+            if (isQtyFocused && isFirstDigitAfterFocus) {
+              controller.text = value;
+              isFirstDigitAfterFocus =
+                  false; // Reset the flag after first digit
+            } else {
+              controller.text = controller.text + value;
+            }
           }
-          // orderItems[selectedRowIndex].qty = controller.text;
         });
       },
       child: Container(

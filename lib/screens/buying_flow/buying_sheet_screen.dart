@@ -222,7 +222,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         flex: 2,
                         child: TextField(
                           decoration: InputDecoration(
-                            labelText: 'Description',
+                            labelText: 'Name',
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -232,7 +232,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         flex: 1,
                         child: TextField(
                           decoration: InputDecoration(
-                            labelText: 'Order',
+                            labelText: 'Con Val',
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -242,7 +242,17 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         flex: 1,
                         child: TextField(
                           decoration: InputDecoration(
-                            labelText: 'KG/E',
+                            labelText: 'Order Qty',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        flex: 1,
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: 'UOM',
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -512,7 +522,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         _buildDataCell(item['code']),
         _buildDataCell(item['name']),
         _buildDataCell(item['uom']),
-        _buildDataCell(item['conVal']),
+        _buildEditTextDataCell(TextEditingController(text: item['conVal'])),
         _buildDataCell(item['Bulk']),
         _buildDataCell(item['Split']),
         _buildBulkSplitDropdownCell(item),
@@ -588,6 +598,29 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 onTap: () => _decrementValue(controller),
                 child: const Icon(Icons.remove, size: 30),
               ),
+              hintText: 'Enter value',
+              hintStyle: TextStyle(color: Colors.grey.shade500),
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+            ),
+            keyboardType: TextInputType.number,
+          ),
+        ),
+      ),
+    );
+  }
+
+  DataCell _buildEditTextDataCell(TextEditingController controller) {
+    return DataCell(
+      Center(
+        child: SizedBox(
+          width: 80,
+          child: TextField(
+            controller: controller,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.black),
+            decoration: InputDecoration(
               hintText: 'Enter value',
               hintStyle: TextStyle(color: Colors.grey.shade500),
               border: InputBorder.none,
