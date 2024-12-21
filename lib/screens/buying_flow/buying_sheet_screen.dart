@@ -292,8 +292,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         ),
                         onPressed: () {
                           setState(() {
-                            _selectAll = !_selectAll; // Toggle select all state
-                            // Update all items' selection state
+                            _selectAll = !_selectAll;
                             for (var item in _dummyTableData) {
                               item['isSelected'] = _selectAll;
                             }
@@ -488,7 +487,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   headingRowHeight: 30,
                   dataRowMinHeight: 60,
                   dataRowMaxHeight: 60,
-                  horizontalMargin: 5,
+                  horizontalMargin: 10,
                   columnSpacing: 10,
                   headingRowColor: WidgetStateProperty.all(
                     Colors.grey.shade400.withValues(alpha: 0.5),
