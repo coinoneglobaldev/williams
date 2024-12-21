@@ -16,6 +16,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   String? _selectedCategory;
   String? _selectedSubcategory;
   String? _selectedPreviousOrder;
+  String? _selectedOrderUom;
   late List<TextEditingController> orderQtyControllers;
 
   final List<String> _categories = [
@@ -34,6 +35,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     'Order 1',
     'Order 2',
     'Order 3',
+  ];
+
+  final List<String> _uom = [
+    'Bulk',
+    'Split',
   ];
 
   final List<Map<String, dynamic>> _dummyTableData = [
@@ -248,14 +254,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         ),
                       ),
                       SizedBox(width: 8),
-                      Expanded(
+                      Flexible(
                         flex: 1,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'UOM',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
+                        child: _buildOrderUomDropdown(),
                       ),
                       SizedBox(width: 8),
                       Expanded(
@@ -327,6 +328,19 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       onChanged: (value) {
         setState(() {
           _selectedCategory = value;
+        });
+      },
+    );
+  }
+
+  Widget _buildOrderUomDropdown() {
+    return _buildDropdownButtonFormField(
+      hint: 'UOM',
+      value: _selectedOrderUom,
+      items: _uom,
+      onChanged: (value) {
+        setState(() {
+          _selectedOrderUom = value;
         });
       },
     );
@@ -585,26 +599,32 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       Center(
         child: SizedBox(
           width: 150,
-          child: TextField(
-            controller: controller,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.black),
-            decoration: InputDecoration(
-              suffixIcon: GestureDetector(
-                onTap: () => _incrementValue(controller),
-                child: const Icon(Icons.add, size: 30),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  onPressed: () => _decrementValue(controller),
+                  icon: const Icon(Icons.remove)),
+              SizedBox(
+                width: 100,
+                child: TextField(
+                  controller: controller,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                    hintText: 'Enter value',
+                    hintStyle: TextStyle(color: Colors.grey.shade500),
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
               ),
-              prefixIcon: GestureDetector(
-                onTap: () => _decrementValue(controller),
-                child: const Icon(Icons.remove, size: 30),
-              ),
-              hintText: 'Enter value',
-              hintStyle: TextStyle(color: Colors.grey.shade500),
-              border: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              enabledBorder: InputBorder.none,
-            ),
-            keyboardType: TextInputType.number,
+              IconButton(
+                  onPressed: () => _incrementValue(controller),
+                  icon: const Icon(Icons.add)),
+            ],
           ),
         ),
       ),
