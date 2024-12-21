@@ -18,6 +18,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   String? _selectedPreviousOrder;
   String? _selectedOrderUom;
   late List<TextEditingController> orderQtyControllers;
+  bool _selectAll = false;
 
   final List<String> _categories = [
     'Category 1',
@@ -268,17 +269,37 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 50),
+                      SizedBox(width: 8),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: buttonColor,
-                          minimumSize: const Size(100, 50),
+                          minimumSize: const Size(150, 50),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
                         onPressed: () {},
                         child: Text('Add'),
+                      ),
+                      SizedBox(width: 25),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          minimumSize: const Size(100, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _selectAll = !_selectAll; // Toggle select all state
+                            // Update all items' selection state
+                            for (var item in _dummyTableData) {
+                              item['isSelected'] = _selectAll;
+                            }
+                          });
+                        },
+                        child: Text(_selectAll ? 'Deselect All' : 'Select All'),
                       ),
                     ],
                   ),
@@ -598,7 +619,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return DataCell(
       Center(
         child: SizedBox(
-          width: 150,
+          width: 180,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -606,7 +627,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   onPressed: () => _decrementValue(controller),
                   icon: const Icon(Icons.remove)),
               SizedBox(
-                width: 100,
+                width: 80,
                 child: TextField(
                   controller: controller,
                   textAlign: TextAlign.center,
