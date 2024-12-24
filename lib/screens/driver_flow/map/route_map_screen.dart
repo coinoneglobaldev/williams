@@ -22,9 +22,8 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
   Map<LatLng, String> placeNames = {};
 
   List<LatLng> locations = [
-    const LatLng(9.898527, 76.7001913),
-    const LatLng(9.888103, 76.7046459),
-    const LatLng(9.9097024, 76.6984963),
+    const LatLng(51.37750568211757, -0.0891340311298947),
+    const LatLng(51.536192084511725, 0.012880652817674898),
   ];
 
   Map<MarkerId, Marker> markers = {};
