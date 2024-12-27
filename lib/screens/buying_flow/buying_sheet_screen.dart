@@ -516,12 +516,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return [
       'Code',
       'Name',
-      'UOM',
       'Con Val',
       'Short Bulk',
       'Short Split',
       'Order UOM',
       'Order Qty',
+      'Rate',
       'Select'
     ].map(_buildDataColumn).toList();
   }
@@ -555,12 +555,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       cells: [
         _buildDataCell(item['code']),
         _buildDataCell(item['name']),
-        _buildDataCell(item['uom']),
         _buildEditTextDataCell(TextEditingController(text: item['conVal'])),
         _buildDataCell(item['Bulk']),
         _buildDataCell(item['Split']),
         _buildBulkSplitDropdownCell(item),
         _buildEditableDataCell(TextEditingController(text: item['orderQty'])),
+        _buildEditTextDataCell(TextEditingController(text: item['conVal'])),
         _buildCheckboxDataCell(item),
       ],
     );
@@ -655,7 +655,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return DataCell(
       Center(
         child: SizedBox(
-          width: 80,
+          width: 70,
           child: TextField(
             controller: controller,
             textAlign: TextAlign.center,
