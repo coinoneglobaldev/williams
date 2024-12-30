@@ -69,9 +69,14 @@ class DeliveryItemList extends StatelessWidget {
             alignment: Alignment.bottomRight,
             child: GestureDetector(
               onTap: _launchGoogleMaps,
-              child: const Image(
-                image: AssetImage('assets/icons/map.png'),
-                height: 50,
+              child: Container(
+                color: Colors.green,
+                height: 80,
+                width: 80,
+                child: const Image(
+                  image: AssetImage('assets/icons/map.png'),
+                  height: 80,
+                ),
               ),
             ),
           ),
