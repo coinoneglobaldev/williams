@@ -71,7 +71,7 @@ class DeliveryItemList extends StatelessWidget {
               onTap: _launchGoogleMaps,
               child: const Image(
                 image: AssetImage('assets/icons/map.png'),
-                height: 50,
+                height: 80,
               ),
             ),
           ),
