@@ -1,14 +1,19 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../common/orientation_setup.dart';
 import '../../common/responsive.dart';
 import '../../constants.dart';
 import '../../custom_screens/custom_network_error.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
+import '../../custom_widgets/util_class.dart';
+import '../../models/login_model.dart';
 import '../../providers/connectivity_status_provider.dart';
+import '../../services/api_services.dart';
 import '../buying_flow/buying_sheet_screen.dart';
 import '../driver_flow/delivery_items_list_screen.dart';
 import '../packing_flow/sales_order_list.dart';
@@ -23,6 +28,7 @@ class ScreenLogin extends ConsumerStatefulWidget {
 }
 
 class _ScreenLoginState extends ConsumerState<ScreenLogin> {
+  ApiServices apiServices = ApiServices();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isRememberMe = true;
@@ -36,6 +42,77 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  //todo: change to this when usertype is set
+  Future<void> _handleLogin() async {
+    try {
+      LoginModel loginData = await apiServices.getUserLogIn(
+        prmUsername: _usernameController.text.trim(),
+        prmPassword: _passwordController.text.trim(),
+        prmMacAddress: '',
+        prmIpAddress: '',
+        prmLat: '',
+        prmLong: '',
+        prmAppType: '',
+      );
+      if (loginData.errorCode == 0) {
+        await _saveUserData(loginData);
+        if (!mounted) return;
+        _navigateToBackground(loginData.data[0].userType);
+      } else {
+        if (!mounted) return;
+        Util.customErrorSnackbar(
+          context,
+          "Error !: ${loginData.message.toString()}",
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Login error: $e');
+      }
+    }
+  }
+
+  Future<void> _saveUserData(LoginModel loginData) async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    final userData = loginData.data[0];
+    await Future.wait([
+      pref.setString('userId', userData.id.toString()),
+      pref.setString('groupId', userData.grpid.toString()),
+      pref.setString('userImage', userData.usrImage.toString()),
+      pref.setString('cmpId', userData.cmpId.toString()),
+      pref.setString('brId', userData.brid.toString()),
+      pref.setString('faId', userData.faid.toString()),
+      pref.setString('appPageName', userData.appPageName.toString()),
+      pref.setString('accId', userData.staffId.toString()),
+      pref.setString('isAdmin', userData.isAdmin.toString()),
+      pref.setString('designId', userData.desgId.toString()),
+      pref.setString('userType', userData.userType.toString()),
+      pref.setString('userName', _usernameController.text.trim()),
+    ]);
+  }
+
+  void _navigateToBackground(String userType) {
+    Widget dashboard;
+    switch (userType) {
+      case 'Buyer':
+        dashboard = _fnNavigateToBuyerPage();
+        break;
+      case 'Packer':
+        dashboard = _fnNavigateToHomePage();
+        break;
+      case 'Driver':
+        dashboard = _fnNavigateToDriverPage();
+        break;
+      default:
+        dashboard = const ScreenLogin();
+    }
+    Navigator.pushAndRemoveUntil(
+      context,
+      CupertinoPageRoute(builder: (context) => dashboard),
+      (route) => false,
+    );
   }
 
   _fnNavigateToHomePage() {
@@ -52,20 +129,6 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     );
   }
 
-  _fnNavigateToDriverPage() {
-    // Set portrait orientation for driver
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    Navigator.pushReplacement(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => const DeliveryItemsListScreen(),
-      ),
-    );
-  }
-
   _fnNavigateToBuyerPage() {
     // Set landscape orientation for buyer
     SystemChrome.setPreferredOrientations([
@@ -76,6 +139,20 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
       context,
       CupertinoPageRoute(
         builder: (context) => const BuyingSheetScreen(),
+      ),
+    );
+  }
+
+  _fnNavigateToDriverPage() {
+    // Set portrait orientation for driver
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    Navigator.pushReplacement(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const DeliveryItemsListScreen(),
       ),
     );
   }
@@ -315,10 +392,9 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                           _fnNavigateToBuyerPage();
                         } else {
                           if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Invalid username or password'),
-                            ),
+                          Util.customErrorSnackbar(
+                            context,
+                            'Invalid username or password',
                           );
                           setState(() {
                             _isButtonLoading = false;

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:williams/services/api_services.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
@@ -15,6 +16,7 @@ class SalesOrderList extends StatefulWidget {
 class _SalesOrderListState extends State<SalesOrderList> {
   DateTime? startDate;
   DateTime? endDate;
+  ApiServices apiServices = ApiServices();
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
   final TextEditingController roundController = TextEditingController();
@@ -235,6 +237,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
@@ -272,6 +276,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
+                      flex: 3,
                       child: TextField(
                         readOnly: true,
                         decoration: const InputDecoration(
@@ -286,6 +291,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
+                      flex: 3,
                       child: TextField(
                         readOnly: true,
                         decoration: const InputDecoration(
@@ -300,6 +306,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
+                      flex: 3,
                       child: DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
                           labelText: 'Round',
@@ -322,7 +329,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      flex: 2,
+                      flex: 7,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,7 +339,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                               children: [
                                 SizedBox(height: 5),
                                 _colorMatchingData(
-                                  title: 'Hold\t\t\t\t',
+                                  title: 'Hold',
                                   colors: Colors.red.shade500,
                                 ),
                                 const SizedBox(height: 6),
@@ -348,7 +355,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                               children: [
                                 SizedBox(height: 5),
                                 _colorMatchingData(
-                                  title: 'Zero Rate\t\t\t\t\t',
+                                  title: 'Zero Rate',
                                   colors: Colors.blue.shade500,
                                 ),
                                 const SizedBox(height: 6),

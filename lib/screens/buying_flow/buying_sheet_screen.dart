@@ -1,9 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:williams/constants.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/util_class.dart';
+import '../../models/category_list_model.dart';
+import '../../models/supplier_list_model.dart';
+import '../../models/uom_list_model.dart';
+import '../../services/api_services.dart';
 
 class BuyingSheetScreen extends StatefulWidget {
   const BuyingSheetScreen({super.key});
@@ -14,33 +19,21 @@ class BuyingSheetScreen extends StatefulWidget {
 
 class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   String? _selectedCategory;
-  String? _selectedSubcategory;
+  String? _selectedSupplier;
   String? _selectedPreviousOrder;
   String? _selectedOrderUom;
   late List<TextEditingController> orderQtyControllers;
   bool _selectAll = false;
 
-  final List<String> _categories = [
-    'Category 1',
-    'Category 2',
-    'Category 3',
-  ];
-
-  final List<String> _subcategories = [
-    'Subcategory A',
-    'Subcategory B',
-    'Subcategory C',
-  ];
+  late List<CategoryListModel> _categories = [];
+  late List<SupplierListModel> _suppliers = [];
+  late List<UomListModel> _oum = [];
+  bool _isLoading = false;
 
   final List<String> _previousOrders = [
     'Order 1',
     'Order 2',
     'Order 3',
-  ];
-
-  final List<String> _uom = [
-    'Bulk',
-    'Split',
   ];
 
   final List<Map<String, dynamic>> _dummyTableData = [
@@ -139,8 +132,39 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   @override
   void initState() {
     super.initState();
+    _loadCategories();
     orderQtyControllers =
         _dummyTableData.map((item) => TextEditingController()).toList();
+  }
+
+  Future<void> _loadCategories() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final categories = await getCategoryList();
+      final suppliers = await getSupplierList();
+      final oum = await getOumList();
+      setState(() {
+        _categories = categories;
+        _suppliers = suppliers;
+        _oum = oum;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (!mounted) return;
+      Util.customErrorSnackbar(
+        context,
+        'Category, Suppliers and Previous order not ready!',
+      );
+      if (kDebugMode) {
+        print('Error loading dropdowns: $e');
+      }
+    }
   }
 
   @override
@@ -149,6 +173,48 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  Future<List<CategoryListModel>> getCategoryList() async {
+    try {
+      final response =
+          await ApiServices().getCategoryList(prmCompanyId: prmCompanyId);
+      if (response.isNotEmpty) {
+        return response;
+      } else {
+        throw Exception('No Category found');
+      }
+    } catch (e) {
+      throw Exception('No Category found');
+    }
+  }
+
+  Future<List<SupplierListModel>> getSupplierList() async {
+    try {
+      final response =
+          await ApiServices().getSupplierList(prmCompanyId: prmCompanyId);
+      if (response.isNotEmpty) {
+        return response;
+      } else {
+        throw Exception('No Supplier found');
+      }
+    } catch (e) {
+      throw Exception('No Supplier found');
+    }
+  }
+
+  Future<List<UomListModel>> getOumList() async {
+    try {
+      final response =
+          await ApiServices().getUomList(prmCompanyId: prmCompanyId);
+      if (response.isNotEmpty) {
+        return response;
+      } else {
+        throw Exception('No Oum List found');
+      }
+    } catch (e) {
+      throw Exception('No Oum List found');
+    }
   }
 
   @override
@@ -281,11 +347,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         onPressed: () {},
                         child: Text('Add'),
                       ),
-                      SizedBox(width: 25),
+                      SizedBox(width: 8),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
-                          minimumSize: const Size(100, 50),
+                          minimumSize: const Size(120, 50),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -341,10 +407,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   }
 
   Widget _buildCategoryDropdown() {
+    if (_isLoading) {
+      return _buildDropdownButtonFormField(
+          hint: 'Category', value: '', items: [], onChanged: (value) {});
+    }
     return _buildDropdownButtonFormField(
       hint: 'Category',
       value: _selectedCategory,
-      items: _categories,
+      items: _categories.map((category) => category.name).toList(),
       onChanged: (value) {
         setState(() {
           _selectedCategory = value;
@@ -353,27 +423,35 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  Widget _buildOrderUomDropdown() {
+  Widget _buildSupplierDropdown() {
+    if (_isLoading) {
+      return _buildDropdownButtonFormField(
+          hint: 'Supplier', value: '', items: [], onChanged: (value) {});
+    }
     return _buildDropdownButtonFormField(
-      hint: 'UOM',
-      value: _selectedOrderUom,
-      items: _uom,
+      hint: 'Supplier',
+      value: _selectedSupplier,
+      items: _suppliers.map((supplier) => supplier.name).toList(),
       onChanged: (value) {
         setState(() {
-          _selectedOrderUom = value;
+          _selectedSupplier = value;
         });
       },
     );
   }
 
-  Widget _buildSupplierDropdown() {
+  Widget _buildOrderUomDropdown() {
+    if (_isLoading) {
+      return _buildDropdownButtonFormField(
+          hint: 'UOM', value: '', items: [], onChanged: (value) {});
+    }
     return _buildDropdownButtonFormField(
-      hint: 'Supplier',
-      value: _selectedSubcategory,
-      items: _subcategories,
+      hint: 'UOM',
+      value: _selectedOrderUom,
+      items: _oum.map((oum) => oum.name).toList(),
       onChanged: (value) {
         setState(() {
-          _selectedSubcategory = value;
+          _selectedOrderUom = value;
         });
       },
     );
@@ -447,13 +525,13 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   }
 
   void _handleSearch() {
-    if (_selectedCategory == null || _selectedSubcategory == null) {
+    if (_selectedCategory == null || _selectedSupplier == null) {
       Util.customErrorSnackbar(
         context,
         'Please select Category and Subcategory!',
       );
     }
-    if (_selectedCategory != null && _selectedSubcategory != null) {
+    if (_selectedCategory != null && _selectedSupplier != null) {
       Util.customErrorSnackbar(
         context,
         'Categories and Subcategories are not yet added!',
@@ -484,7 +562,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
                 child: DataTable(
-                  headingRowHeight: 30,
+                  // headingRowHeight: 30,
                   dataRowMinHeight: 60,
                   dataRowMaxHeight: 60,
                   horizontalMargin: 10,
@@ -517,9 +595,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       'Code',
       'Name',
       'Con Val',
-      'Short Bulk',
-      'Short Split',
-      'Order UOM',
+      'Short \nBulk',
+      'Short \nSplit',
+      'Order \nUOM',
       'Order Qty',
       'Rate',
       'Select'
