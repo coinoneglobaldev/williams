@@ -337,8 +337,6 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                     ),
                   ],
                 ),
-
-
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonColor,
@@ -391,18 +389,18 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                   },
                   child: _isButtonLoading
                       ? const CustomLogoSpinner(
-                    oneSize: 10,
-                    roundSize: 30,
-                  )
+                          oneSize: 10,
+                          roundSize: 30,
+                        )
                       : const Text(
-                    'LOGIN',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                          'LOGIN',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                 ),
                 const SizedBox(
                   height: 10,
@@ -580,31 +578,44 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                           setState(() {
                             _isButtonLoading = true;
                           });
-                          String username = _usernameController.text.trim();
-                          String password = _passwordController.text.trim();
-                          await Future.delayed(
-                            const Duration(seconds: 2),
-                            () {
-                              if (username == 'p' && password == 'p') {
-                                _fnNavigateToHomePage();
-                              } else if (username == 'd' && password == 'd') {
-                                _fnNavigateToDriverPage();
-                              } else if (username == 'b' && password == 'b') {
-                                _fnNavigateToBuyerPage();
-                              } else {
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('Invalid username or password'),
-                                  ),
-                                );
-                                setState(() {
-                                  _isButtonLoading = false;
-                                });
-                              }
-                            },
-                          );
+                          try {
+                            LoginModel loginData =
+                                await apiServices.getUserLogIn(
+                              prmUsername: _usernameController.text.trim(),
+                              prmPassword: _passwordController.text.trim(),
+                              prmMacAddress: '',
+                              prmIpAddress: '',
+                              prmLat: '',
+                              prmLong: '',
+                              prmAppType: '',
+                            );
+                            if (!mounted) return;
+                            if (loginData.errorCode == 0) {
+                              await _saveUserData(loginData);
+                              _navigateToBackground(loginData.data[0].userType);
+                            } else {
+                              if (!context.mounted) return;
+                              Util.customErrorSnackbar(
+                                context,
+                                "Error: ${loginData.message}",
+                              );
+                            }
+                          } catch (e) {
+                            if (kDebugMode) {
+                              print('Login error: $e');
+                            }
+                            if (!context.mounted) return;
+                            Util.customErrorSnackbar(
+                              context,
+                              "An error occurred during login. Please try again.",
+                            );
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                _isButtonLoading = false;
+                              });
+                            }
+                          }
                         },
                         child: _isButtonLoading
                             ? const CustomLogoSpinner(
