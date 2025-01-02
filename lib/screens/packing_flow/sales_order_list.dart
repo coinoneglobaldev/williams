@@ -14,8 +14,8 @@ class SalesOrderList extends StatefulWidget {
 }
 
 class _SalesOrderListState extends State<SalesOrderList> {
-  DateTime? startDate;
-  DateTime? endDate;
+  DateTime startDate = DateTime.now();
+  DateTime endDate = DateTime.now();
   ApiServices apiServices = ApiServices();
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
@@ -187,9 +187,9 @@ class _SalesOrderListState extends State<SalesOrderList> {
         return DatePickerDialog(
           restorationId: 'start_date_picker_dialog',
           initialEntryMode: DatePickerEntryMode.calendarOnly,
-          initialDate: startDate ?? DateTime.now(),
+          initialDate:  DateTime.now(),
           firstDate: DateTime(2021),
-          lastDate: DateTime(2025),
+          lastDate:  DateTime.now(),
         );
       },
     );
@@ -198,8 +198,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
         startDate = picked;
         startDateController.text = _formatDate(picked);
 
-        if (endDate != null && picked.isAfter(endDate!)) {
-          endDate = null;
+        if (picked.isAfter(endDate)) {
           endDateController.text = '';
         }
       });
@@ -207,25 +206,15 @@ class _SalesOrderListState extends State<SalesOrderList> {
   }
 
   Future<void> _selectEndDate() async {
-    if (startDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select start date first'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-      return;
-    }
-
     final DateTime? picked = await showDialog<DateTime>(
       context: context,
       builder: (BuildContext context) {
         return DatePickerDialog(
           restorationId: 'end_date_picker_dialog',
           initialEntryMode: DatePickerEntryMode.calendarOnly,
-          initialDate: endDate ?? startDate ?? DateTime.now(),
-          firstDate: startDate!,
-          lastDate: DateTime(2025),
+          initialDate: endDate,
+          firstDate: startDate,
+          lastDate:  DateTime.now(),
         );
       },
     );
