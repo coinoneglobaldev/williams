@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:williams/services/api_services.dart';
 import '../../common/custom_overlay_loading.dart';
 import '../../custom_screens/custom_network_error.dart';
+import '../../custom_widgets/custom_alert_box.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
@@ -400,7 +401,13 @@ class _SalesOrderListState extends State<SalesOrderList> {
       } catch (e) {
         if (!mounted) return;
         Navigator.pop(context);
-        print(e);
+        showDialog(
+          barrierColor: Colors.black.withValues(alpha: 0.8),
+          context: context,
+          builder: (context) => const CustomErrorAlert(
+            content: 'Something went wrong',
+          ),
+        );
       }
     }
 
