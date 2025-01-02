@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
 
+import '../../custom_widgets/custom_alert_box.dart';
 import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
 import '../../models/uom_list_model.dart';
@@ -99,7 +100,14 @@ class _OrderItemViewState extends State<OrderItemView> {
         isLoading = false;
       });
     } catch (e) {
-      print(e);
+      Navigator.pop(context);
+      showDialog(
+        barrierColor: Colors.black.withValues(alpha: 0.8),
+        context: context,
+        builder: (context) => const CustomErrorAlert(
+          content: 'Something went wrong',
+        ),
+      );
     }
   }
 
@@ -586,7 +594,9 @@ class _OrderItemViewState extends State<OrderItemView> {
                               Center(
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.orange,
+                                    backgroundColor: item.isRelease == 'False'
+                                        ? Colors.orange
+                                        : Colors.green,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5),
                                     ),
@@ -628,7 +638,9 @@ class _OrderItemViewState extends State<OrderItemView> {
                                     minimumSize: const Size(80, 70),
                                   ),
                                   child: Text(
-                                    item.short == '' ? 'Short' : item.short,
+                                    item.short == '' || item.short == '0'
+                                        ? 'Short'
+                                        : item.short,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color:
@@ -854,7 +866,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                                         ? Colors.black
                                         : Colors.white,
                                 fillColor:
-                                    orderListItems[selectedRowIndex].short == ''
+                                    orderListItems[selectedRowIndex].short ==
+                                                '' ||
+                                            orderListItems[selectedRowIndex]
+                                                    .short ==
+                                                '0'
                                         ? Colors.grey
                                         : Colors.red,
                                 onTab: _switchToShortMode,
