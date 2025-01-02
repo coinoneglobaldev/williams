@@ -319,7 +319,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                             ]),
                       );
                     } else {
-                      return _buildSalesOrderTable(data: snapshot.data!);
+                      return _buildSalesOrderTable(orderList: snapshot.data!);
                     }
                   },
                 )
@@ -359,7 +359,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
   }
 
   Widget _buildSalesOrderTable({
-    required List<SalesOrderListModel> data,
+    required List<SalesOrderListModel> orderList,
   }) {
     final tableHeadings = [
       'Order',
@@ -372,10 +372,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
     ];
     Future<void> navigateToDetail({
       required String prmOrderId,
-      required String prmCmpId,
-      required String prmBrId,
-      required String prmFaId,
-      required String prmUId,
     }) async {
       try {
         showDialog(
@@ -386,15 +382,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
             return const CustomOverlayLoading();
           },
         );
-
-        final List<SalesOrderItemListModel> response =
-            await ApiServices().getSalesOrderItemList(
-          prmOrderId: prmOrderId,
-          prmCmpId: prmCmpId,
-          prmBrId: prmBrId,
-          prmFaId: prmFaId,
-          prmUId: prmUId,
-        );
         final List<UomListModel> packingType =
             await ApiServices().getPackingType(prmCompanyId: '1');
         if (!mounted) return;
@@ -403,8 +390,10 @@ class _SalesOrderListState extends State<SalesOrderList> {
           context,
           CupertinoPageRoute(
             builder: (context) => OrderItemView(
-              salesOrderListModel: response,
               packList: packingType,
+              selectedSalesOrderList: orderList
+                  .where((element) => element.id == prmOrderId)
+                  .toList()[0],
             ),
           ),
         );
@@ -457,7 +446,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     ),
                   )
                   .toList(),
-              rows: data.asMap().entries.map((entry) {
+              rows: orderList.asMap().entries.map((entry) {
                 final index = entry.key;
                 final item = entry.value;
                 return DataRow(
@@ -471,10 +460,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(
                         prmOrderId: item.id,
-                        prmCmpId: '1',
-                        prmBrId: '2',
-                        prmFaId: '3',
-                        prmUId: '4',
                       ),
                       Text(
                         item.refNo,
@@ -489,10 +474,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(
                         prmOrderId: item.id,
-                        prmCmpId: '1',
-                        prmBrId: '2',
-                        prmFaId: '3',
-                        prmUId: '4',
                       ),
                       Text(
                         item.regNo,
@@ -507,10 +488,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(
                         prmOrderId: item.id,
-                        prmCmpId: '1',
-                        prmBrId: '2',
-                        prmFaId: '3',
-                        prmUId: '4',
                       ),
                       Text(
                         item.trDate,
@@ -525,10 +502,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(
                         prmOrderId: item.id,
-                        prmCmpId: '1',
-                        prmBrId: '2',
-                        prmFaId: '3',
-                        prmUId: '4',
                       ),
                       Text(
                         item.optRefNo,
@@ -543,10 +516,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(
                         prmOrderId: item.id,
-                        prmCmpId: '1',
-                        prmBrId: '2',
-                        prmFaId: '3',
-                        prmUId: '4',
                       ),
                       Text(
                         item.optDate,
@@ -561,10 +530,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(
                         prmOrderId: item.id,
-                        prmCmpId: '1',
-                        prmBrId: '2',
-                        prmFaId: '3',
-                        prmUId: '4',
                       ),
                       Text(
                         item.accountCr,
@@ -579,10 +544,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(
                         prmOrderId: item.id,
-                        prmCmpId: '1',
-                        prmBrId: '2',
-                        prmFaId: '3',
-                        prmUId: '4',
                       ),
                       Text(
                         item.address,

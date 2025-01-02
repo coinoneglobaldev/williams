@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
 
 import '../../models/sales_order_item_list_model.dart';
+import '../../models/sales_order_list_model.dart';
 import '../../models/uom_list_model.dart';
+import '../../services/api_services.dart';
 
 class OrderItemView extends StatefulWidget {
-  final List<SalesOrderItemListModel> salesOrderListModel;
+  final SalesOrderListModel selectedSalesOrderList;
   final List<UomListModel> packList;
-  const OrderItemView(
-      {super.key, required this.salesOrderListModel, required this.packList});
+
+  const OrderItemView({
+    super.key,
+    required this.packList,
+    required this.selectedSalesOrderList,
+  });
 
   @override
   State<OrderItemView> createState() => _OrderItemViewState();
@@ -23,68 +30,90 @@ class _OrderItemViewState extends State<OrderItemView> {
   late List<FocusNode> qtyFocusNodes;
   late List<FocusNode> notesFocusNodes;
   bool isAllSelected = false;
+  bool isLoading = true;
   int selectedRowIndex = 0;
   bool isQtyFocused = true;
   bool isFirstDigitAfterFocus = true;
+  List<SalesOrderItemListModel> orderListItems = [];
 
   List<String> packs = ['retail', 'unit sale'];
   List<String?> selectedPack = [];
 
+  _fnGetOrderList() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+      orderListItems = await ApiServices().getSalesOrderItemList(
+        prmOrderId: widget.selectedSalesOrderList.id,
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+        prmUId: prmUId,
+      );
+      selectedPack =
+          List<String?>.filled(orderListItems.length, widget.packList[0].name);
+
+      qtyControllers = orderListItems
+          .map((item) => TextEditingController(text: item.qty))
+          .toList();
+      notesControllers = orderListItems
+          .map((item) => TextEditingController(text: item.remarks))
+          .toList();
+      shortControllers = List.generate(
+          orderListItems.length, (index) => TextEditingController());
+
+      // Then initialize focus nodes
+      qtyFocusNodes =
+          List.generate(orderListItems.length, (index) => FocusNode());
+      notesFocusNodes =
+          List.generate(orderListItems.length, (index) => FocusNode());
+
+      for (var controller in shortControllers) {
+        controller.addListener(() {
+          setState(() {});
+        });
+      }
+      for (var i = 0; i < orderListItems.length; i++) {
+        qtyFocusNodes[i].addListener(() {
+          if (qtyFocusNodes[i].hasFocus) {
+            setState(() {
+              selectedRowIndex = i;
+              isQtyFocused = true;
+            });
+          }
+        });
+
+        notesFocusNodes[i].addListener(() {
+          if (notesFocusNodes[i].hasFocus) {
+            setState(() {
+              selectedRowIndex = i;
+              isQtyFocused = false;
+            });
+          }
+        });
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    selectedPack = List<String?>.filled(
-        widget.salesOrderListModel.length, widget.packList[0].name);
-
-    qtyControllers = widget.salesOrderListModel
-        .map((item) => TextEditingController(text: item.qty))
-        .toList();
-    notesControllers = widget.salesOrderListModel
-        .map((item) => TextEditingController(text: item.remarks))
-        .toList();
-    shortControllers = List.generate(
-        widget.salesOrderListModel.length, (index) => TextEditingController());
-
-    // Then initialize focus nodes
-    qtyFocusNodes = List.generate(
-        widget.salesOrderListModel.length, (index) => FocusNode());
-    notesFocusNodes = List.generate(
-        widget.salesOrderListModel.length, (index) => FocusNode());
-
-    // Now add listeners after all controllers are initialized
-    for (var controller in shortControllers) {
-      controller.addListener(() {
-        setState(() {});
-      });
-    }
-
-    // Add focus listeners
-    for (var i = 0; i < widget.salesOrderListModel.length; i++) {
-      qtyFocusNodes[i].addListener(() {
-        if (qtyFocusNodes[i].hasFocus) {
-          setState(() {
-            selectedRowIndex = i;
-            isQtyFocused = true;
-          });
-        }
-      });
-
-      notesFocusNodes[i].addListener(() {
-        if (notesFocusNodes[i].hasFocus) {
-          setState(() {
-            selectedRowIndex = i;
-            isQtyFocused = false;
-          });
-        }
-      });
-    }
+    _fnGetOrderList();
   }
 
   void _selectAll() {
     setState(() {
       isAllSelected = !isAllSelected;
 
-      for (var item in widget.salesOrderListModel) {
+      for (var item in orderListItems) {
         item.isChecked = isAllSelected;
       }
     });
@@ -164,7 +193,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   }
 
   void _moveDown() {
-    if (selectedRowIndex < widget.salesOrderListModel.length - 1) {
+    if (selectedRowIndex < orderListItems.length - 1) {
       setState(() {
         selectedRowIndex++;
       });
@@ -185,7 +214,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     final currentQty = int.tryParse(qtyControllers[selectedRowIndex].text) ?? 0;
     qtyControllers[selectedRowIndex].text = (currentQty + 1).toString();
     setState(() {
-      widget.salesOrderListModel[selectedRowIndex].qty =
+      orderListItems[selectedRowIndex].qty =
           qtyControllers[selectedRowIndex].text;
     });
   }
@@ -195,7 +224,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     if (currentQty > 0) {
       qtyControllers[selectedRowIndex].text = (currentQty - 1).toString();
       setState(() {
-        widget.salesOrderListModel[selectedRowIndex].qty =
+        orderListItems[selectedRowIndex].qty =
             qtyControllers[selectedRowIndex].text;
       });
     }
@@ -207,9 +236,9 @@ class _OrderItemViewState extends State<OrderItemView> {
   void _handleSave() {
     if (!isValidToSave) return;
 
-    for (int i = 0; i < widget.salesOrderListModel.length; i++) {
-      widget.salesOrderListModel[i].qty = qtyControllers[i].text;
-      widget.salesOrderListModel[i].remarks = notesControllers[i].text;
+    for (int i = 0; i < orderListItems.length; i++) {
+      orderListItems[i].qty = qtyControllers[i].text;
+      orderListItems[i].remarks = notesControllers[i].text;
     }
 
     showDialog(
@@ -222,7 +251,7 @@ class _OrderItemViewState extends State<OrderItemView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                ...widget.salesOrderListModel.map((item) => Container(
+                ...orderListItems.map((item) => Container(
                       margin: const EdgeInsets.only(bottom: 10),
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
@@ -655,284 +684,284 @@ class _OrderItemViewState extends State<OrderItemView> {
       //     ],
       //   ),
       // ),
-      bodyWidget: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-              flex: 10,
-              child: _buildOrderItemTable(data: widget.salesOrderListModel)),
-          Expanded(
-            flex: 4,
-            child: Container(
-              margin: const EdgeInsets.only(
-                left: 10,
-                top: 40,
-                bottom: 10,
-              ),
-              padding: const EdgeInsets.all(10),
-              height: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.white,
-                border: Border.all(color: Colors.black),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 5,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
+      bodyWidget: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                    flex: 10,
+                    child: _buildOrderItemTable(data: orderListItems)),
+                Expanded(
+                  flex: 4,
+                  child: Container(
+                    margin: const EdgeInsets.only(
+                      left: 10,
+                      top: 40,
+                      bottom: 10,
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    height: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 5,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Row(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Expanded(
-                                child: _calculatorContainer(
-                                  value: '1',
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '1',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '2',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '3',
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Expanded(
-                                child: _calculatorContainer(
-                                  value: '2',
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '4',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '5',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '6',
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Expanded(
-                                child: _calculatorContainer(
-                                  value: '3',
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '7',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '8',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '9',
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
+                              Expanded(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '.',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '0',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: 'C',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
                             ],
                           ),
                         ),
-                        Expanded(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: _calculatorContainer(
-                                  value: '4',
-                                ),
-                              ),
-                              Expanded(
-                                child: _calculatorContainer(
-                                  value: '5',
-                                ),
-                              ),
-                              Expanded(
-                                child: _calculatorContainer(
-                                  value: '6',
-                                ),
-                              ),
-                            ],
-                          ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _itemDetails(
+                                  context: context,
+                                  title: 'Item Details',
+                                  data:
+                                      '${orderListItems[selectedRowIndex].itemName}, ${orderListItems[selectedRowIndex].printUom}',
+                                  fillColor: Colors.white),
+                            ),
+                          ],
                         ),
-                        Expanded(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: _calculatorContainer(
-                                  value: '7',
-                                ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _itemDetails(
+                                  context: context,
+                                  title: 'Quantity',
+                                  data: qtyControllers[selectedRowIndex].text,
+                                  onTab: _switchToQtyMode,
+                                  fillColor: Colors.white),
+                            ),
+                            SizedBox(width: 5),
+                            Expanded(
+                              child: _itemDetails(
+                                context: context,
+                                title: 'Shorts',
+                                data: shortControllers[selectedRowIndex].text,
+                                color:
+                                    orderListItems[selectedRowIndex].short == ''
+                                        ? Colors.black
+                                        : Colors.white,
+                                fillColor:
+                                    orderListItems[selectedRowIndex].short == ''
+                                        ? Colors.grey
+                                        : Colors.red,
+                                onTab: _switchToShortMode,
                               ),
-                              Expanded(
-                                child: _calculatorContainer(
-                                  value: '8',
-                                ),
-                              ),
-                              Expanded(
-                                child: _calculatorContainer(
-                                  value: '9',
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Expanded(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: _calculatorContainer(
-                                  value: '.',
+                        // Row(
+                        //   children: [
+                        //     Expanded(
+                        //       flex: 3,
+                        //       child: _itemDetails(
+                        //         context: context,
+                        //         title: 'Item is Checked',
+                        //         data: orderItems[selectedRowIndex].isChecked
+                        //             ? 'Yes'
+                        //             : 'No',
+                        //       ),
+                        //     ),
+                        //     Expanded(
+                        //       flex: 1,
+                        //       child: ElevatedButton(
+                        //         onPressed: _moveDown,
+                        //         style: ElevatedButton.styleFrom(
+                        //           backgroundColor: Colors.blueAccent,
+                        //           minimumSize: const Size(100, 50),
+                        //         ),
+                        //         child: const Text('Ok'),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 60,
+                                child: ElevatedButton(
+                                  // onPressed: isValidToSave ? _handleSave : null,
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    // backgroundColor: isValidToSave
+                                    //     ? Colors.blue
+                                    //     : Colors.grey,
+                                    backgroundColor: Colors.blue.shade900,
+                                    minimumSize: const Size(100, 50),
+                                  ),
+                                  child: const Text('BACK'),
                                 ),
                               ),
-                              Expanded(
-                                child: _calculatorContainer(
-                                  value: '0',
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Expanded(
+                              child: SizedBox(
+                                height: 60,
+                                child: ElevatedButton(
+                                  // onPressed: isValidToSave ? _handleSave : null,
+                                  onPressed: () {
+                                    // _handleSave();
+                                    orderListItems[selectedRowIndex].short =
+                                        shortControllers[selectedRowIndex].text;
+
+                                    _updateFocus();
+                                    notesFocusNodes[selectedRowIndex].unfocus();
+
+                                    _moveDown();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    // backgroundColor: isValidToSave
+                                    //     ? Colors.blue
+                                    //     : Colors.grey,
+                                    backgroundColor: Colors.green,
+                                    minimumSize: const Size(100, 50),
+                                  ),
+                                  child: const Text('SAVE'),
                                 ),
                               ),
-                              Expanded(
-                                child: _calculatorContainer(
-                                  value: 'C',
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
+                            ),
+                            // ElevatedButton(
+                            //   onPressed: _moveUp,
+                            //   style: ElevatedButton.styleFrom(
+                            //     backgroundColor: Colors.green,
+                            //     minimumSize: const Size(100, 50),
+                            //   ),
+                            //   child: const Icon(Icons.arrow_upward),
+                            // ),
+                            // ElevatedButton(
+                            //   onPressed: _moveDown,
+                            //   style: ElevatedButton.styleFrom(
+                            //     backgroundColor: Colors.red,
+                            //     minimumSize: const Size(100, 50),
+                            //   ),
+                            //   child: const Icon(Icons.arrow_downward),
+                            // ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _itemDetails(
-                            context: context,
-                            title: 'Item Details',
-                            data:
-                                '${widget.salesOrderListModel[selectedRowIndex].itemName}, ${widget.salesOrderListModel[selectedRowIndex].printUom}',
-                            fillColor: Colors.white),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _itemDetails(
-                            context: context,
-                            title: 'Quantity',
-                            data: qtyControllers[selectedRowIndex].text,
-                            onTab: _switchToQtyMode,
-                            fillColor: Colors.white),
-                      ),
-                      SizedBox(width: 5),
-                      Expanded(
-                        child: _itemDetails(
-                          context: context,
-                          title: 'Shorts',
-                          data: shortControllers[selectedRowIndex].text,
-                          color: widget.salesOrderListModel[selectedRowIndex]
-                                      .short ==
-                                  ''
-                              ? Colors.black
-                              : Colors.white,
-                          fillColor: widget
-                                      .salesOrderListModel[selectedRowIndex]
-                                      .short ==
-                                  ''
-                              ? Colors.grey
-                              : Colors.red,
-                          onTab: _switchToShortMode,
-                        ),
-                      ),
-                    ],
-                  ),
-                  // Row(
-                  //   children: [
-                  //     Expanded(
-                  //       flex: 3,
-                  //       child: _itemDetails(
-                  //         context: context,
-                  //         title: 'Item is Checked',
-                  //         data: orderItems[selectedRowIndex].isChecked
-                  //             ? 'Yes'
-                  //             : 'No',
-                  //       ),
-                  //     ),
-                  //     Expanded(
-                  //       flex: 1,
-                  //       child: ElevatedButton(
-                  //         onPressed: _moveDown,
-                  //         style: ElevatedButton.styleFrom(
-                  //           backgroundColor: Colors.blueAccent,
-                  //           minimumSize: const Size(100, 50),
-                  //         ),
-                  //         child: const Text('Ok'),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 60,
-                          child: ElevatedButton(
-                            // onPressed: isValidToSave ? _handleSave : null,
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              // backgroundColor: isValidToSave
-                              //     ? Colors.blue
-                              //     : Colors.grey,
-                              backgroundColor: Colors.blue.shade900,
-                              minimumSize: const Size(100, 50),
-                            ),
-                            child: const Text('BACK'),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Expanded(
-                        child: SizedBox(
-                          height: 60,
-                          child: ElevatedButton(
-                            // onPressed: isValidToSave ? _handleSave : null,
-                            onPressed: () {
-                              // _handleSave();
-                              widget.salesOrderListModel[selectedRowIndex]
-                                      .short =
-                                  shortControllers[selectedRowIndex].text;
-
-                              _updateFocus();
-                              notesFocusNodes[selectedRowIndex].unfocus();
-
-                              _moveDown();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              // backgroundColor: isValidToSave
-                              //     ? Colors.blue
-                              //     : Colors.grey,
-                              backgroundColor: Colors.green,
-                              minimumSize: const Size(100, 50),
-                            ),
-                            child: const Text('SAVE'),
-                          ),
-                        ),
-                      ),
-                      // ElevatedButton(
-                      //   onPressed: _moveUp,
-                      //   style: ElevatedButton.styleFrom(
-                      //     backgroundColor: Colors.green,
-                      //     minimumSize: const Size(100, 50),
-                      //   ),
-                      //   child: const Icon(Icons.arrow_upward),
-                      // ),
-                      // ElevatedButton(
-                      //   onPressed: _moveDown,
-                      //   style: ElevatedButton.styleFrom(
-                      //     backgroundColor: Colors.red,
-                      //     minimumSize: const Size(100, 50),
-                      //   ),
-                      //   child: const Icon(Icons.arrow_downward),
-                      // ),
-                    ],
-                  ),
-                ],
-              ),
+                )
+              ],
             ),
-          )
-        ],
-      ),
     );
   }
 
