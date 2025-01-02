@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:williams/services/api_services.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
+import '../../models/sales_order_list_model.dart';
 import 'order_item_view.dart';
 
 class SalesOrderList extends StatefulWidget {
@@ -20,143 +22,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
   final TextEditingController roundController = TextEditingController();
-  final List<TableData> salesOrderData = [
-    TableData(
-      order: '01',
-      round: "Round 1",
-      orderDate: "10-Mar-2024",
-      poNo: "5665",
-      deliveryDate: "15-Mar-2024",
-      customerName: "Raj Industries",
-      address: "123 Main Street, Mumbai, Maharashtra",
-    ),
-    TableData(
-      order: '02',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-    TableData(
-      order: '03',
-      round: "Round 3",
-      orderDate: "30-May-2024",
-      poNo: "5667",
-      deliveryDate: "05-Jun-2024",
-      customerName: "Raj Industries",
-      address: "789 Main Street, Mumbai, Maharashtra",
-    ),
-    TableData(
-      order: '04',
-      round: "Round 1",
-      orderDate: "10-Mar-2024",
-      poNo: "5665",
-      deliveryDate: "15-Mar-2024",
-      customerName: "Raj Industries",
-      address: "123 Main Street, Mumbai, Maharashtra",
-    ),
-    TableData(
-      order: '05',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-    TableData(
-      order: '05',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-    TableData(
-      order: '05',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-    TableData(
-      order: '05',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-    TableData(
-      order: '05',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-    TableData(
-      order: '05',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-    TableData(
-      order: '05',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-    TableData(
-      order: '05',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-    TableData(
-      order: '05',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-    TableData(
-      order: '05',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-    TableData(
-      order: '05',
-      round: "Round 2",
-      orderDate: "20-Apr-2024",
-      poNo: "5666",
-      deliveryDate: "25-Apr-2024",
-      customerName: "Kumar Enterprises",
-      address: "456 Park Avenue, Delhi, New Delhi",
-    ),
-  ];
+
   List<String> rounds = ['All Rounds', 'Round 1', 'Round 2', 'Round 3'];
   String? selectedRound;
 
@@ -176,8 +42,38 @@ class _SalesOrderListState extends State<SalesOrderList> {
     super.dispose();
   }
 
-  String _formatDate(DateTime date) {
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  String _formatDate(DateTime dte) {
+    DateFormat date = DateFormat('dd/MMM/yyyy');
+    return date.format(dte);
+  }
+
+  Future<List<SalesOrderListModel>> getSalesOrderList({
+    required String prmFrmDate,
+    required String prmToDate,
+    required String prmRound,
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUId,
+  }) async {
+    try {
+      final response = await ApiServices().getSalesOrderList(
+        prmFrmDate: prmFrmDate,
+        prmToDate: prmToDate,
+        prmRound: prmRound,
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+        prmUId: prmUId,
+      );
+      if (response.isNotEmpty) {
+        return response;
+      } else {
+        throw ('No Sales Order Found');
+      }
+    } catch (e) {
+      throw ('No Sales Order Found');
+    }
   }
 
   Future<void> _selectStartDate() async {
@@ -187,20 +83,18 @@ class _SalesOrderListState extends State<SalesOrderList> {
         return DatePickerDialog(
           restorationId: 'start_date_picker_dialog',
           initialEntryMode: DatePickerEntryMode.calendarOnly,
-          initialDate:  DateTime.now(),
+          initialDate: DateTime.now(),
           firstDate: DateTime(2021),
-          lastDate:  DateTime.now(),
+          lastDate: DateTime.now(),
         );
       },
     );
     if (picked != null) {
       setState(() {
+        endDateController.text = '';
+
         startDate = picked;
         startDateController.text = _formatDate(picked);
-
-        if (picked.isAfter(endDate)) {
-          endDateController.text = '';
-        }
       });
     }
   }
@@ -214,7 +108,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
           initialEntryMode: DatePickerEntryMode.calendarOnly,
           initialDate: endDate,
           firstDate: startDate,
-          lastDate:  DateTime.now(),
+          lastDate: DateTime.now(),
         );
       },
     );
@@ -225,8 +119,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
       });
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -386,7 +278,53 @@ class _SalesOrderListState extends State<SalesOrderList> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                _buildSalesOrderTable(data: salesOrderData),
+                FutureBuilder<List<SalesOrderListModel>>(
+                  future: getSalesOrderList(
+                    prmFrmDate: startDateController.text,
+                    prmToDate: endDateController.text,
+                    prmRound: '',
+                    prmCmpId: '1',
+                    prmBrId: '2',
+                    prmFaId: '3',
+                    prmUId: '4',
+                  ),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height / 1.5,
+                        width: MediaQuery.of(context).size.width,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                          ],
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height / 1.5,
+                        width: MediaQuery.of(context).size.width,
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                snapshot.error.toString(),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                            ]),
+                      );
+                    } else {
+                      return _buildSalesOrderTable(data: snapshot.data!);
+                    }
+                  },
+                )
               ],
             ),
           ),
@@ -421,7 +359,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
   }
 
   Widget _buildSalesOrderTable({
-    required List<TableData> data,
+    required List<SalesOrderListModel> data,
   }) {
     final tableHeadings = [
       'Order',
@@ -432,7 +370,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
       'Customer',
       'Address'
     ];
-    void navigateToDetail(TableData item, int index) {
+    void navigateToDetail(SalesOrderListModel item, int index) {
       Navigator.push(
         context,
         CupertinoPageRoute(
@@ -498,7 +436,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(item, index),
                       Text(
-                        item.order,
+                        item.refNo,
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -510,7 +448,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(item, index),
                       Text(
-                        item.round,
+                        item.regNo,
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -522,7 +460,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(item, index),
                       Text(
-                        item.orderDate,
+                        item.trDate,
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -534,7 +472,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(item, index),
                       Text(
-                        item.poNo,
+                        item.optRefNo,
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -546,7 +484,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(item, index),
                       Text(
-                        item.deliveryDate,
+                        item.optDate,
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -558,7 +496,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     DataCell(
                       onTap: () => navigateToDetail(item, index),
                       Text(
-                        item.customerName,
+                        item.accountCr,
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -586,24 +524,4 @@ class _SalesOrderListState extends State<SalesOrderList> {
       ),
     );
   }
-}
-
-class TableData {
-  final String order;
-  final String round;
-  final String orderDate;
-  final String poNo;
-  final String deliveryDate;
-  final String customerName;
-  final String address;
-
-  TableData({
-    required this.order,
-    required this.round,
-    required this.orderDate,
-    required this.poNo,
-    required this.deliveryDate,
-    required this.customerName,
-    required this.address,
-  });
 }

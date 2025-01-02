@@ -255,10 +255,15 @@ class ApiServices {
         print("Response: ${response.body}");
       }
       final List<dynamic> responseList = json.decode(response.body);
+      if (response.body.isEmpty) {
+        throw ('No Sales Order found');
+      }
       if (kDebugMode) {
         print(responseList);
       }
-      return responseList.map((json) => SalesOrderListModel.fromJson(json)).toList();
+      return responseList
+          .map((json) => SalesOrderListModel.fromJson(json))
+          .toList();
     } catch (error) {
       if (kDebugMode) {
         print('Exception in getSalesOrderList: $error');
@@ -274,7 +279,8 @@ class ApiServices {
     required String prmFaId,
     required String prmUId,
   }) async {
-    String uri = "$getSalesOrderListUrl?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&"
+    String uri =
+        "$getSalesOrderListUrl?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&"
         "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
     if (kDebugMode) {
       print(uri);
@@ -293,7 +299,9 @@ class ApiServices {
       if (kDebugMode) {
         print(responseList);
       }
-      return responseList.map((json) => SalesOrderItemListModel.fromJson(json)).toList();
+      return responseList
+          .map((json) => SalesOrderItemListModel.fromJson(json))
+          .toList();
     } catch (error) {
       if (kDebugMode) {
         print('Exception in getSalesOrderItemList: $error');
