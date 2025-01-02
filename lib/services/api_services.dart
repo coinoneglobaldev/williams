@@ -377,4 +377,39 @@ class ApiServices {
       rethrow;
     }
   }
+
+  Future fnSavePackingItem({
+    required String prmAutoID,
+    required String orderId,
+    required String prmShort,
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUID,
+  }) async {
+    String uri = "$savePackingItem?PrmIsRlz=1&PrmAutoId=$prmAutoID&"
+        "PrmOrderId=$orderId&PrmShort=$prmShort&PrmCmpId=$prmCmpId&"
+        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUID";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      // final List<dynamic> responseList = json.decode(response.body);
+      // return responseList.map((json) => UomListModel.fromJson(json)).toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnSavePackingItem: $error');
+      }
+      rethrow;
+    }
+  }
 }

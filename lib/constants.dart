@@ -29,3 +29,4 @@ String getSalesOrderListUrl = '$transactionUrl/FnGetSalesOrderList';
 String getSalesOrderItemListUrl = '$transactionUrl/FnGetSalesOrderItemList';
 String getPackingTypeListData = '$webAppGeneralUrl/FnGetPackingTypeList';
 String releaseOrder = '$transactionUrl/FnIsReleaseOrder';
+String savePackingItem = '$transactionUrl/FnIsReleaseOrder';

@@ -96,10 +96,9 @@ class _SalesOrderListState extends State<SalesOrderList> {
     );
     if (picked != null) {
       setState(() {
-        endDateController.text = '';
-
         startDate = picked;
         startDateController.text = _formatDate(picked);
+        endDate = DateTime.now();
       });
     }
   }
