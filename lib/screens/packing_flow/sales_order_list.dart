@@ -2,9 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:williams/services/api_services.dart';
+import '../../common/custom_overlay_loading.dart';
+import '../../custom_screens/custom_network_error.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
+import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
 import 'order_item_view.dart';
 
@@ -150,14 +153,14 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     const Text(
                       'Sales Order',
                       style: TextStyle(
-                        fontSize: 40.0,
+                        fontSize: 35.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      flex: 3,
+                      flex: 4,
                       child: TextField(
                         readOnly: true,
                         decoration: const InputDecoration(
@@ -172,7 +175,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      flex: 3,
+                      flex: 4,
                       child: TextField(
                         readOnly: true,
                         decoration: const InputDecoration(
@@ -209,58 +212,52 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Expanded(
-                      flex: 7,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              children: [
-                                SizedBox(height: 5),
-                                _colorMatchingData(
-                                  title: 'Hold',
-                                  colors: Colors.red.shade500,
-                                ),
-                                const SizedBox(height: 6),
-                                _colorMatchingData(
-                                  title: 'Release',
-                                  colors: Colors.green.shade500,
-                                ),
-                              ],
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 5),
+                            _colorMatchingData(
+                              title: 'Hold',
+                              colors: Colors.red.shade500,
                             ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                SizedBox(height: 5),
-                                _colorMatchingData(
-                                  title: 'Zero Rate',
-                                  colors: Colors.blue.shade500,
-                                ),
-                                const SizedBox(height: 6),
-                                _colorMatchingData(
-                                  title: 'Part Release',
-                                  colors: Colors.orange.shade500,
-                                ),
-                              ],
+                            const SizedBox(height: 6),
+                            _colorMatchingData(
+                              title: 'Release   ',
+                              colors: Colors.green.shade500,
                             ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                SizedBox(height: 5),
-                                _colorMatchingData(
-                                  title: 'Processing',
-                                  colors: Colors.black,
-                                ),
-                                const SizedBox(height: 20),
-                              ],
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 5),
+                            _colorMatchingData(
+                              title: 'Zero Rate',
+                              colors: Colors.blue.shade500,
                             ),
-                          ),
-                        ],
-                      ),
+                            const SizedBox(height: 6),
+                            _colorMatchingData(
+                              title: 'Part Release ',
+                              colors: Colors.orange.shade500,
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 5),
+                            _colorMatchingData(
+                              title: 'Processing',
+                              colors: Colors.black,
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ],
                     ),
                     IconButton(
                       icon: const Icon(
@@ -338,6 +335,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
     required Color colors,
   }) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Container(
           height: 20,
@@ -370,14 +369,50 @@ class _SalesOrderListState extends State<SalesOrderList> {
       'Customer',
       'Address'
     ];
-    void navigateToDetail(SalesOrderListModel item, int index) {
-      Navigator.push(
-        context,
-        CupertinoPageRoute(
-          builder: (context) => const OrderItemView(),
-          settings: const RouteSettings(name: '/home'),
-        ),
-      );
+    Future<void> navigateToDetail({
+      required String prmOrderId,
+      required String prmCmpId,
+      required String prmBrId,
+      required String prmFaId,
+      required String prmUId,
+    }) async {
+      try {
+        showDialog(
+          barrierColor: Colors.black.withValues(alpha: 0.8),
+          barrierDismissible: false,
+          context: context,
+          builder: (BuildContext context) {
+            return const CustomOverlayLoading();
+          },
+        );
+
+        final List<SalesOrderItemListModel> response =
+            await ApiServices().getSalesOrderItemList(
+          prmOrderId: prmOrderId,
+          prmCmpId: prmCmpId,
+          prmBrId: prmBrId,
+          prmFaId: prmFaId,
+          prmUId: prmUId,
+        );
+        if (!mounted) return;
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (context) => OrderItemView(
+              salesOrderListModel: response,
+            ),
+          ),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        Navigator.pop(context);
+        showDialog(
+          barrierColor: Colors.black.withValues(alpha: 0.8),
+          context: context,
+          builder: (context) => const ScreenCustomNetworkError(),
+        );
+      }
     }
 
     return Container(
@@ -434,7 +469,13 @@ class _SalesOrderListState extends State<SalesOrderList> {
                   }),
                   cells: [
                     DataCell(
-                      onTap: () => navigateToDetail(item, index),
+                      onTap: () => navigateToDetail(
+                        prmOrderId: item.id,
+                        prmCmpId: '1',
+                        prmBrId: '2',
+                        prmFaId: '3',
+                        prmUId: '4',
+                      ),
                       Text(
                         item.refNo,
                         style: const TextStyle(
@@ -446,7 +487,13 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                     ),
                     DataCell(
-                      onTap: () => navigateToDetail(item, index),
+                      onTap: () => navigateToDetail(
+                        prmOrderId: item.id,
+                        prmCmpId: '1',
+                        prmBrId: '2',
+                        prmFaId: '3',
+                        prmUId: '4',
+                      ),
                       Text(
                         item.regNo,
                         style: const TextStyle(
@@ -458,7 +505,13 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                     ),
                     DataCell(
-                      onTap: () => navigateToDetail(item, index),
+                      onTap: () => navigateToDetail(
+                        prmOrderId: item.id,
+                        prmCmpId: '1',
+                        prmBrId: '2',
+                        prmFaId: '3',
+                        prmUId: '4',
+                      ),
                       Text(
                         item.trDate,
                         style: const TextStyle(
@@ -470,7 +523,13 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                     ),
                     DataCell(
-                      onTap: () => navigateToDetail(item, index),
+                      onTap: () => navigateToDetail(
+                        prmOrderId: item.id,
+                        prmCmpId: '1',
+                        prmBrId: '2',
+                        prmFaId: '3',
+                        prmUId: '4',
+                      ),
                       Text(
                         item.optRefNo,
                         style: const TextStyle(
@@ -482,7 +541,13 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                     ),
                     DataCell(
-                      onTap: () => navigateToDetail(item, index),
+                      onTap: () => navigateToDetail(
+                        prmOrderId: item.id,
+                        prmCmpId: '1',
+                        prmBrId: '2',
+                        prmFaId: '3',
+                        prmUId: '4',
+                      ),
                       Text(
                         item.optDate,
                         style: const TextStyle(
@@ -494,7 +559,13 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                     ),
                     DataCell(
-                      onTap: () => navigateToDetail(item, index),
+                      onTap: () => navigateToDetail(
+                        prmOrderId: item.id,
+                        prmCmpId: '1',
+                        prmBrId: '2',
+                        prmFaId: '3',
+                        prmUId: '4',
+                      ),
                       Text(
                         item.accountCr,
                         style: const TextStyle(
@@ -506,7 +577,13 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                     ),
                     DataCell(
-                      onTap: () => navigateToDetail(item, index),
+                      onTap: () => navigateToDetail(
+                        prmOrderId: item.id,
+                        prmCmpId: '1',
+                        prmBrId: '2',
+                        prmFaId: '3',
+                        prmUId: '4',
+                      ),
                       Text(
                         item.address,
                         style: const TextStyle(

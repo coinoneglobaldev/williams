@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
 
+import '../../models/sales_order_item_list_model.dart';
+
 class OrderItemView extends StatefulWidget {
-  const OrderItemView({super.key});
+  final List<SalesOrderItemListModel> salesOrderListModel;
+  const OrderItemView({super.key, required this.salesOrderListModel});
 
   @override
   State<OrderItemView> createState() => _OrderItemViewState();
@@ -24,121 +27,26 @@ class _OrderItemViewState extends State<OrderItemView> {
   List<String> packs = ['retail', 'unit sale'];
   List<String?> selectedPack = [];
 
-  List<OrderItem> orderItems = [
-    OrderItem(
-      pack: 'EA',
-      code: '222',
-      short: '',
-      description: 'Pears',
-      qty: '10.00',
-      notes: '',
-    ),
-    OrderItem(
-      pack: 'KG',
-      code: '191',
-      short: '',
-      description: 'Banana',
-      qty: '3.00',
-      notes: '',
-    ),
-    OrderItem(
-      pack: 'EA',
-      code: '226',
-      short: '',
-      description: 'PLUMS',
-      qty: '10.00',
-      notes: '',
-    ),
-    OrderItem(
-      pack: 'PUN',
-      code: '235',
-      short: '',
-      description: 'Strawberries',
-      qty: '2.00',
-      notes: '',
-    ),
-    OrderItem(
-      pack: 'PUN',
-      code: '194',
-      short: '',
-      description: 'BLUEBERRIES',
-      qty: '2.00',
-      notes: '',
-    ),
-    OrderItem(
-      pack: 'PUN',
-      code: '228',
-      short: '',
-      description: 'RASPBERRIES',
-      qty: '2.00',
-      notes: '',
-    ),
-    OrderItem(
-      pack: 'PKT',
-      code: '192',
-      short: '',
-      description: 'BLACKBERRIES',
-      qty: '1.00',
-      notes: '',
-    ),
-    OrderItem(
-      pack: 'PUN',
-      code: '149',
-      short: '',
-      description: 'Tomato Cherry',
-      qty: '1.00',
-      notes: '',
-    ),
-    OrderItem(
-      pack: 'EA',
-      code: '189',
-      short: '',
-      description: 'READY TO EAT AVOC',
-      qty: '3.00',
-      notes: '',
-    ),
-    OrderItem(
-      pack: 'BOT',
-      code: '259',
-      short: '',
-      description: 'Milk Semi (green) 2 ltr',
-      qty: '2.00',
-      notes: '',
-    ),
-    OrderItem(
-      pack: 'EA',
-      code: '1224',
-      short: '',
-      description: 'Light Milk',
-      qty: '5.00',
-      notes: '',
-    ),
-    OrderItem(
-      pack: 'TUB',
-      code: '1212',
-      short: '',
-      description: 'Greek Yogurt 0.5 Ltr',
-      qty: '1.00',
-      notes: '',
-    ),
-  ];
   @override
   void initState() {
     super.initState();
-    selectedPack = List<String?>.filled(orderItems.length, 'retail');
+    selectedPack =
+        List<String?>.filled(widget.salesOrderListModel.length, 'retail');
 
-    qtyControllers = orderItems
+    qtyControllers = widget.salesOrderListModel
         .map((item) => TextEditingController(text: item.qty))
         .toList();
-    notesControllers = orderItems
-        .map((item) => TextEditingController(text: item.notes))
+    notesControllers = widget.salesOrderListModel
+        .map((item) => TextEditingController(text: item.remarks))
         .toList();
-    shortControllers =
-        List.generate(orderItems.length, (index) => TextEditingController());
+    shortControllers = List.generate(
+        widget.salesOrderListModel.length, (index) => TextEditingController());
 
     // Then initialize focus nodes
-    qtyFocusNodes = List.generate(orderItems.length, (index) => FocusNode());
-    notesFocusNodes = List.generate(orderItems.length, (index) => FocusNode());
+    qtyFocusNodes = List.generate(
+        widget.salesOrderListModel.length, (index) => FocusNode());
+    notesFocusNodes = List.generate(
+        widget.salesOrderListModel.length, (index) => FocusNode());
 
     // Now add listeners after all controllers are initialized
     for (var controller in shortControllers) {
@@ -148,7 +56,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     }
 
     // Add focus listeners
-    for (var i = 0; i < orderItems.length; i++) {
+    for (var i = 0; i < widget.salesOrderListModel.length; i++) {
       qtyFocusNodes[i].addListener(() {
         if (qtyFocusNodes[i].hasFocus) {
           setState(() {
@@ -173,7 +81,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     setState(() {
       isAllSelected = !isAllSelected;
 
-      for (var item in orderItems) {
+      for (var item in widget.salesOrderListModel) {
         item.isChecked = isAllSelected;
       }
     });
@@ -253,7 +161,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   }
 
   void _moveDown() {
-    if (selectedRowIndex < orderItems.length - 1) {
+    if (selectedRowIndex < widget.salesOrderListModel.length - 1) {
       setState(() {
         selectedRowIndex++;
       });
@@ -274,7 +182,8 @@ class _OrderItemViewState extends State<OrderItemView> {
     final currentQty = int.tryParse(qtyControllers[selectedRowIndex].text) ?? 0;
     qtyControllers[selectedRowIndex].text = (currentQty + 1).toString();
     setState(() {
-      orderItems[selectedRowIndex].qty = qtyControllers[selectedRowIndex].text;
+      widget.salesOrderListModel[selectedRowIndex].qty =
+          qtyControllers[selectedRowIndex].text;
     });
   }
 
@@ -283,7 +192,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     if (currentQty > 0) {
       qtyControllers[selectedRowIndex].text = (currentQty - 1).toString();
       setState(() {
-        orderItems[selectedRowIndex].qty =
+        widget.salesOrderListModel[selectedRowIndex].qty =
             qtyControllers[selectedRowIndex].text;
       });
     }
@@ -295,9 +204,9 @@ class _OrderItemViewState extends State<OrderItemView> {
   void _handleSave() {
     if (!isValidToSave) return;
 
-    for (int i = 0; i < orderItems.length; i++) {
-      orderItems[i].qty = qtyControllers[i].text;
-      orderItems[i].notes = notesControllers[i].text;
+    for (int i = 0; i < widget.salesOrderListModel.length; i++) {
+      widget.salesOrderListModel[i].qty = qtyControllers[i].text;
+      widget.salesOrderListModel[i].remarks = notesControllers[i].text;
     }
 
     showDialog(
@@ -310,7 +219,7 @@ class _OrderItemViewState extends State<OrderItemView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                ...orderItems.map((item) => Container(
+                ...widget.salesOrderListModel.map((item) => Container(
                       margin: const EdgeInsets.only(bottom: 10),
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
@@ -320,12 +229,12 @@ class _OrderItemViewState extends State<OrderItemView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Pack: ${item.pack}'),
-                          Text('Code: ${item.code}'),
-                          Text('Description: ${item.description}'),
+                          Text('Pack: ${item.printUom}'),
+                          Text('Code: ${item.itemCode}'),
+                          Text('Description: ${item.itemName}'),
                           Text('Quantity: ${item.qty}'),
-                          Text('Notes: ${item.notes}'),
-                          Text('Checked: ${item.isChecked ? 'Yes' : 'No'}'),
+                          Text('Notes: ${item.remarks}'),
+                          Text('Checked: ${item.isChecked! ? 'Yes' : 'No'}'),
                         ],
                       ),
                     )),
@@ -344,7 +253,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   }
 
   Widget _buildOrderItemTable({
-    required List<OrderItem> data,
+    required List<SalesOrderItemListModel> data,
   }) {
     final columns = [
       'Qty',
@@ -523,7 +432,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                               },
                               Center(
                                 child: Text(
-                                  item.code,
+                                  item.itemCode,
                                   style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
@@ -559,7 +468,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       ]),
                                   child: Center(
                                     child: Text(
-                                      item.description,
+                                      item.itemName,
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 16,
@@ -596,7 +505,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                                     ),
                                     onChanged: (value) {
                                       setState(() {
-                                        item.notes = value;
+                                        //TODO : update notes
+                                        // item.notes = value;
                                       });
                                     },
                                   ),
@@ -643,9 +553,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                               Center(
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: index == 1
-                                        ? Colors.green
-                                        : Colors.orange,
+                                    backgroundColor: Colors.orange,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5),
                                     ),
@@ -747,7 +655,9 @@ class _OrderItemViewState extends State<OrderItemView> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(flex: 10, child: _buildOrderItemTable(data: orderItems)),
+          Expanded(
+              flex: 10,
+              child: _buildOrderItemTable(data: widget.salesOrderListModel)),
           Expanded(
             flex: 4,
             child: Container(
@@ -881,7 +791,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                             context: context,
                             title: 'Item Details',
                             data:
-                                '${orderItems[selectedRowIndex].description}, ${orderItems[selectedRowIndex].pack}',
+                                '${widget.salesOrderListModel[selectedRowIndex].itemName}, ${widget.salesOrderListModel[selectedRowIndex].printUom}',
                             fillColor: Colors.white),
                       ),
                     ],
@@ -902,10 +812,15 @@ class _OrderItemViewState extends State<OrderItemView> {
                           context: context,
                           title: 'Shorts',
                           data: shortControllers[selectedRowIndex].text,
-                          color: orderItems[selectedRowIndex].short == ''
+                          color: widget.salesOrderListModel[selectedRowIndex]
+                                      .short ==
+                                  ''
                               ? Colors.black
                               : Colors.white,
-                          fillColor: orderItems[selectedRowIndex].short == ''
+                          fillColor: widget
+                                      .salesOrderListModel[selectedRowIndex]
+                                      .short ==
+                                  ''
                               ? Colors.grey
                               : Colors.red,
                           onTab: _switchToShortMode,
@@ -970,7 +885,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                             // onPressed: isValidToSave ? _handleSave : null,
                             onPressed: () {
                               // _handleSave();
-                              orderItems[selectedRowIndex].short =
+                              widget.salesOrderListModel[selectedRowIndex]
+                                      .short =
                                   shortControllers[selectedRowIndex].text;
 
                               _updateFocus();
@@ -1118,24 +1034,4 @@ class _OrderItemViewState extends State<OrderItemView> {
       ),
     );
   }
-}
-
-class OrderItem {
-  final String pack;
-  final String code;
-  final String description;
-  String short;
-  String qty;
-  String notes;
-  bool isChecked;
-
-  OrderItem({
-    required this.pack,
-    required this.code,
-    required this.description,
-    required this.short,
-    this.qty = '',
-    this.notes = '',
-    this.isChecked = false,
-  });
 }

@@ -280,7 +280,7 @@ class ApiServices {
     required String prmUId,
   }) async {
     String uri =
-        "$getSalesOrderListUrl?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&"
+        "$getSalesOrderItemListUrl?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&"
         "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
     if (kDebugMode) {
       print(uri);
