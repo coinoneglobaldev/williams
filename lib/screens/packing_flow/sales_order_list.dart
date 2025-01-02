@@ -9,6 +9,7 @@ import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
 import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
+import '../../models/uom_list_model.dart';
 import 'order_item_view.dart';
 
 class SalesOrderList extends StatefulWidget {
@@ -394,6 +395,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
           prmFaId: prmFaId,
           prmUId: prmUId,
         );
+        final List<UomListModel> packingType =
+            await ApiServices().getPackingType(prmCompanyId: '1');
         if (!mounted) return;
         Navigator.pop(context);
         Navigator.push(
@@ -401,17 +404,14 @@ class _SalesOrderListState extends State<SalesOrderList> {
           CupertinoPageRoute(
             builder: (context) => OrderItemView(
               salesOrderListModel: response,
+              packList: packingType,
             ),
           ),
         );
       } catch (e) {
         if (!mounted) return;
         Navigator.pop(context);
-        showDialog(
-          barrierColor: Colors.black.withValues(alpha: 0.8),
-          context: context,
-          builder: (context) => const ScreenCustomNetworkError(),
-        );
+        print(e);
       }
     }
 

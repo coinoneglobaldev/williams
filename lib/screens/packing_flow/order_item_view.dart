@@ -3,10 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
 
 import '../../models/sales_order_item_list_model.dart';
+import '../../models/uom_list_model.dart';
 
 class OrderItemView extends StatefulWidget {
   final List<SalesOrderItemListModel> salesOrderListModel;
-  const OrderItemView({super.key, required this.salesOrderListModel});
+  final List<UomListModel> packList;
+  const OrderItemView(
+      {super.key, required this.salesOrderListModel, required this.packList});
 
   @override
   State<OrderItemView> createState() => _OrderItemViewState();
@@ -30,8 +33,8 @@ class _OrderItemViewState extends State<OrderItemView> {
   @override
   void initState() {
     super.initState();
-    selectedPack =
-        List<String?>.filled(widget.salesOrderListModel.length, 'retail');
+    selectedPack = List<String?>.filled(
+        widget.salesOrderListModel.length, widget.packList[0].name);
 
     qtyControllers = widget.salesOrderListModel
         .map((item) => TextEditingController(text: item.qty))
@@ -406,10 +409,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(10)),
                                     value: selectedPack[index],
-                                    items: packs.map((String pack) {
+                                    items: widget.packList
+                                        .map((UomListModel pack) {
                                       return DropdownMenuItem<String>(
-                                        value: pack,
-                                        child: Text(pack),
+                                        value: pack.name,
+                                        child: Text(pack.name),
                                       );
                                     }).toList(),
                                     onChanged: (String? newValue) {

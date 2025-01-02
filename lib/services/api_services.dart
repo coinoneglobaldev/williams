@@ -309,4 +309,33 @@ class ApiServices {
       rethrow;
     }
   }
+
+  Future<List<UomListModel>> getPackingType(
+      {required String prmCompanyId}) async {
+    String uri = "$getPackingTypeListData?PrmCompanyId=$prmCompanyId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList.map((json) => UomListModel.fromJson(json)).toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in getPackingType: $error');
+      }
+      rethrow;
+    }
+  }
 }

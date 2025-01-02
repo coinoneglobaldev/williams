@@ -10,10 +10,10 @@ const String appVersion = '0.0.1';
 
 String prmCompanyId = '1';
 
-String baseUrl ='https://sysware-lasovrana.co.uk/lasov';
+String baseUrl = 'https://sysware-lasovrana.co.uk/lasov';
 
 String webAppLogUrl = '$baseUrl/WebAppLog.asmx';
-String webAppGeneralUrl ='$baseUrl/WebAppGeneral.asmx';
+String webAppGeneralUrl = '$baseUrl/WebAppGeneral.asmx';
 String transactionUrl = '$baseUrl/WebAppTRansaction.asmx';
 
 String loginUrl = '$webAppLogUrl/FnGetUserLogIn';
@@ -27,3 +27,4 @@ String getUomListUrl = '$webAppGeneralUrl/FnGetUomList';
 
 String getSalesOrderListUrl = '$transactionUrl/FnGetSalesOrderList';
 String getSalesOrderItemListUrl = '$transactionUrl/FnGetSalesOrderItemList';
+String getPackingTypeListData = '$webAppGeneralUrl/FnGetPackingTypeList';
