@@ -339,19 +339,18 @@ class ApiServices {
     }
   }
 
-  Future<List<UomListModel>> releaseOrderSave({
-    required String prmIsRlz,
-    required String prmAutoId,
-    required String prmOrderId,
+  Future fnSavePackingItem({
+    required String prmAutoID,
+    required String orderId,
     required String prmShort,
     required String prmCmpId,
     required String prmBrId,
     required String prmFaId,
-    required String prmUId,
+    required String prmUID,
   }) async {
-    String uri =
-        "$releaseOrder?PrmIsRlz=$prmIsRlz&PrmAutoId=$prmAutoId&PrmOrderId=$prmOrderId&PrmShort=$prmShort&PrmCmpId=$prmCmpId&"
-        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId&PrmFaId=$prmFaId&PrmUId=$prmUId";
+    String uri = "$savePackingItem?PrmIsRlz=1&PrmAutoId=$prmAutoID&"
+        "PrmOrderId=$orderId&PrmShort=$prmShort&PrmCmpId=$prmCmpId&"
+        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUID";
     if (kDebugMode) {
       print(uri);
     }
@@ -365,31 +364,26 @@ class ApiServices {
       if (kDebugMode) {
         print("Response: ${response.body}");
       }
-      final List<dynamic> responseList = json.decode(response.body);
-      if (kDebugMode) {
-        print(responseList);
-      }
-      return responseList.map((json) => UomListModel.fromJson(json)).toList();
+      // final List<dynamic> responseList = json.decode(response.body);
+      // return responseList.map((json) => UomListModel.fromJson(json)).toList();
     } catch (error) {
       if (kDebugMode) {
-        print('Exception in getPackingType: $error');
+        print('Exception in fnSavePackingItem: $error');
       }
       rethrow;
     }
   }
 
-  Future fnSavePackingItem({
-    required String prmAutoID,
-    required String orderId,
-    required String prmShort,
+  //!Eldho
+  Future selectAllSavePackingItem({
+    required String prmOrderId,
     required String prmCmpId,
     required String prmBrId,
     required String prmFaId,
-    required String prmUID,
+    required String prmUId,
   }) async {
-    String uri = "$savePackingItem?PrmIsRlz=1&PrmAutoId=$prmAutoID&"
-        "PrmOrderId=$orderId&PrmShort=$prmShort&PrmCmpId=$prmCmpId&"
-        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUID";
+    String uri =
+        "$releaseOrderAllOrder?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
     if (kDebugMode) {
       print(uri);
     }

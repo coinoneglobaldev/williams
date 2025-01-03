@@ -28,5 +28,5 @@ String getUomListUrl = '$webAppGeneralUrl/FnGetUomList';
 String getSalesOrderListUrl = '$transactionUrl/FnGetSalesOrderList';
 String getSalesOrderItemListUrl = '$transactionUrl/FnGetSalesOrderItemList';
 String getPackingTypeListData = '$webAppGeneralUrl/FnGetPackingTypeList';
-String releaseOrder = '$transactionUrl/FnIsReleaseOrder';
+String releaseOrderAllOrder = '$transactionUrl/FnIsReleaseAllOrder';
 String savePackingItem = '$transactionUrl/FnIsReleaseOrder';

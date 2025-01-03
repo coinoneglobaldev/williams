@@ -40,6 +40,8 @@ class _OrderItemViewState extends State<OrderItemView> {
   List<String> packs = ['retail', 'unit sale'];
   List<String?> selectedPack = [];
 
+  String inputShort = '';
+
   _fnGetOrderList() async {
     try {
       setState(() {
@@ -66,8 +68,9 @@ class _OrderItemViewState extends State<OrderItemView> {
       notesControllers = orderListItems
           .map((item) => TextEditingController(text: item.remarks))
           .toList();
-      shortControllers = List.generate(
-          orderListItems.length, (index) => TextEditingController());
+      //TODO : add short
+      shortControllers = List.generate(orderListItems.length,
+          (index) => TextEditingController(text: orderListItems[index].short));
 
       // Then initialize focus nodes
       qtyFocusNodes =
@@ -123,17 +126,28 @@ class _OrderItemViewState extends State<OrderItemView> {
   void _selectAll() {
     setState(() {
       isAllSelected = !isAllSelected;
-
+      int i = 0;
       for (var item in orderListItems) {
         item.isChecked = isAllSelected;
+        _selectAllItemSave(autoId: item.autoId, short: i);
+        i++;
       }
+      _selectAllSavePackingItem();
+    });
+  }
+
+  void _selectedRow({
+    required SalesOrderItemListModel selectedRowItem,
+  }) {
+    setState(() {
+      selectedOrderItem = selectedRowItem;
     });
   }
 
   void _handleShortButtonClick({
     required int index,
     required SalesOrderItemListModel selectedRowItem,
-  }) {
+  }) async {
     setState(() {
       selectedRowIndex = index;
       isShortMode = true;
@@ -143,6 +157,7 @@ class _OrderItemViewState extends State<OrderItemView> {
       Future.delayed(const Duration(milliseconds: 50), () {
         setState(() {});
       });
+      print('index: $index');
       selectedOrderItem = selectedRowItem;
       _updateFocus();
       notesFocusNodes[index].unfocus();
@@ -253,6 +268,7 @@ class _OrderItemViewState extends State<OrderItemView> {
       String prmBrId = prefs.getString('brId')!;
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
+
       ApiServices()
           .fnSavePackingItem(
         prmBrId: prmBrId,
@@ -262,6 +278,59 @@ class _OrderItemViewState extends State<OrderItemView> {
         prmAutoID: selectedOrderItem!.autoId,
         orderId: widget.selectedSalesOrderList.id,
         prmShort: shortControllers[selectedRowIndex].text,
+      )
+          .whenComplete(() {
+        _fnGetOrderList();
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _selectAllItemSave(
+      {required String autoId, required int short}) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+
+      ApiServices()
+          .fnSavePackingItem(
+        prmBrId: prmBrId,
+        prmCmpId: prmCmpId,
+        prmFaId: prmFaId,
+        prmUID: prmUId,
+        prmAutoID: autoId,
+        orderId: widget.selectedSalesOrderList.id,
+        prmShort: shortControllers[short].text,
+      )
+          .whenComplete(() {
+        _fnGetOrderList();
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _selectAllSavePackingItem() async {
+    try {
+      print('pref not covered');
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+
+      ApiServices()
+          .selectAllSavePackingItem(
+        prmOrderId: widget.selectedSalesOrderList.id,
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+        prmUId: prmUId,
       )
           .whenComplete(() {
         _fnGetOrderList();
@@ -386,6 +455,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   notesFocusNodes[index].unfocus();
                                 });
                                 _switchToQtyMode();
+                                _selectedRow(selectedRowItem: selectedRowItem);
                               },
                               Center(
                                 child: Container(
@@ -449,6 +519,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   notesFocusNodes[index].unfocus();
                                 });
                                 _switchToQtyMode();
+                                _selectedRow(selectedRowItem: selectedRowItem);
                               },
                               Center(
                                 child: Text(
@@ -470,6 +541,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   notesFocusNodes[index].unfocus();
                                 });
                                 _switchToQtyMode();
+                                _selectedRow(selectedRowItem: selectedRowItem);
                               },
                               Center(
                                 child: Container(
@@ -528,6 +600,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                                         //TODO : update notes
                                         // item.notes = value;
                                       });
+                                      _selectedRow(
+                                          selectedRowItem: selectedRowItem);
                                     },
                                   ),
                                 ),
@@ -540,6 +614,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   _updateFocus();
                                   notesFocusNodes[index].unfocus();
                                 });
+                                _selectedRow(selectedRowItem: selectedRowItem);
                               },
                               Center(
                                 child: Transform.scale(
@@ -549,7 +624,9 @@ class _OrderItemViewState extends State<OrderItemView> {
                                     checkColor: Colors.black,
                                     fillColor:
                                         WidgetStateProperty.all(Colors.white),
-                                    value: selectedRowItem.isChecked,
+                                    value: selectedRowItem.isRelease == 'False'
+                                        ? selectedRowItem.isChecked
+                                        : true,
                                     side: BorderSide(
                                         color: Colors.black, width: 1),
                                     onChanged: (bool? value) {
@@ -574,9 +651,10 @@ class _OrderItemViewState extends State<OrderItemView> {
                               Center(
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: selectedRowItem.isRelease == 'False'
-                                        ? Colors.orange
-                                        : Colors.green,
+                                    backgroundColor:
+                                        selectedRowItem.isRelease == 'False'
+                                            ? Colors.orange
+                                            : Colors.green,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5),
                                     ),
@@ -593,6 +671,9 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       _updateFocus();
                                       notesFocusNodes[index].unfocus();
                                     });
+                                    _selectedRow(
+                                        selectedRowItem: selectedRowItem);
+                                    _handleSave();
                                   },
                                 ),
                               ),
@@ -608,20 +689,23 @@ class _OrderItemViewState extends State<OrderItemView> {
                               Center(
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        selectedRowItem.short == '' ||
-                                                selectedRowItem.short == '0'
-                                            ? Colors.grey
-                                            : Colors.red,
+                                    backgroundColor: selectedRowItem.short ==
+                                                '' &&
+                                            shortControllers[index].text == ''
+                                        ? Colors.grey
+                                        : Colors.red,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5),
                                     ),
                                     minimumSize: const Size(80, 70),
                                   ),
                                   child: Text(
-                                    selectedRowItem.short == ''
+                                    selectedRowItem.short == '' &&
+                                            shortControllers[index].text == ''
                                         ? 'Short'
-                                        : selectedRowItem.short,
+                                        : selectedRowItem.short == ''
+                                            ? shortControllers[index].text
+                                            : selectedRowItem.short,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: selectedRowItem.short == '' ||
