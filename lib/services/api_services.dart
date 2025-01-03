@@ -2,6 +2,7 @@ import 'dart:convert';
 import '../constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+import '../models/buying_sheet_list_order_model.dart';
 import '../models/category_list_model.dart';
 import '../models/customer_list_model.dart';
 import '../models/item_list_model.dart';
@@ -410,7 +411,7 @@ class ApiServices {
   }
 
   // todo: Model need to change
-  Future<List<SalesOrderItemListModel>> fnGetBuyingSheetList({
+  Future<List<BuyingSheetListModel>> fnGetBuyingSheetList({
     required String prmFrmDate,
     required String prmToDate,
     required String prmItmGrpId,
@@ -441,7 +442,7 @@ class ApiServices {
         print(responseList);
       }
       return responseList
-          .map((json) => SalesOrderItemListModel.fromJson(json))
+          .map((json) => BuyingSheetListModel.fromJson(json))
           .toList();
     } catch (error) {
       if (kDebugMode) {
