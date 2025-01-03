@@ -129,7 +129,10 @@ class _OrderItemViewState extends State<OrderItemView> {
       int i = 0;
       for (var item in orderListItems) {
         item.isChecked = isAllSelected;
-        _selectAllItemSave(autoId: item.autoId, short: i);
+        _selectAllItemSave(
+            autoId: item.autoId,
+            short: i,
+            prmIsRlz: item.isRelease == 'False' ? '1' : '0');
         i++;
       }
       _selectAllSavePackingItem();
@@ -261,7 +264,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   bool get isValidToSave =>
       qtyControllers.every((controller) => controller.text.isNotEmpty);
 
-  Future<void> _handleSave() async {
+  Future<void> _handleSave({required String prmIsRlz}) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String prmCmpId = prefs.getString('cmpId')!;
@@ -271,14 +274,15 @@ class _OrderItemViewState extends State<OrderItemView> {
 
       ApiServices()
           .fnSavePackingItem(
-        prmBrId: prmBrId,
-        prmCmpId: prmCmpId,
-        prmFaId: prmFaId,
-        prmUID: prmUId,
-        prmAutoID: selectedOrderItem!.autoId,
-        orderId: widget.selectedSalesOrderList.id,
-        prmShort: shortControllers[selectedRowIndex].text,
-      )
+              prmBrId: prmBrId,
+              prmCmpId: prmCmpId,
+              prmFaId: prmFaId,
+              prmUID: prmUId,
+              prmAutoID: selectedOrderItem!.autoId,
+              orderId: widget.selectedSalesOrderList.id,
+              prmShort: shortControllers[selectedRowIndex].text,
+              prmQty: qtyControllers[selectedRowIndex].text,
+              prmIsRlz: prmIsRlz)
           .whenComplete(() {
         _fnGetOrderList();
       });
@@ -288,7 +292,9 @@ class _OrderItemViewState extends State<OrderItemView> {
   }
 
   Future<void> _selectAllItemSave(
-      {required String autoId, required int short}) async {
+      {required String autoId,
+      required int short,
+      required String prmIsRlz}) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String prmCmpId = prefs.getString('cmpId')!;
@@ -298,14 +304,15 @@ class _OrderItemViewState extends State<OrderItemView> {
 
       ApiServices()
           .fnSavePackingItem(
-        prmBrId: prmBrId,
-        prmCmpId: prmCmpId,
-        prmFaId: prmFaId,
-        prmUID: prmUId,
-        prmAutoID: autoId,
-        orderId: widget.selectedSalesOrderList.id,
-        prmShort: shortControllers[short].text,
-      )
+              prmBrId: prmBrId,
+              prmCmpId: prmCmpId,
+              prmFaId: prmFaId,
+              prmUID: prmUId,
+              prmAutoID: autoId,
+              orderId: widget.selectedSalesOrderList.id,
+              prmShort: shortControllers[short].text,
+              prmQty: qtyControllers[short].text,
+              prmIsRlz: prmIsRlz)
           .whenComplete(() {
         _fnGetOrderList();
       });
@@ -359,9 +366,9 @@ class _OrderItemViewState extends State<OrderItemView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-             SizedBox(
-               width: 500,
-               child: Text(
+            SizedBox(
+              width: 500,
+              child: Text(
                 widget.selectedSalesOrderList.accountCr,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -370,8 +377,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
-                           ),
-             ),
+              ),
+            ),
             const Spacer(),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -642,7 +649,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                                         selectedRowItem.isChecked =
                                             value ?? false;
                                       });
-                                      _handleSave();
+                                      _handleSave(
+                                          prmIsRlz: selectedRowItem.isRelease ==
+                                                  'False'
+                                              ? '1'
+                                              : '0');
                                     },
                                   ),
                                 ),
@@ -682,7 +693,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                                     });
                                     _selectedRow(
                                         selectedRowItem: selectedRowItem);
-                                    _handleSave();
+                                    _handleSave(
+                                        prmIsRlz:
+                                            selectedRowItem.isRelease == 'False'
+                                                ? '1'
+                                                : '0');
                                   },
                                 ),
                               ),
@@ -1009,7 +1024,13 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 height: 60,
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    _handleSave();
+                                    _handleSave(
+                                      prmIsRlz: orderListItems[selectedRowIndex]
+                                                  .isRelease ==
+                                              'False'
+                                          ? '1'
+                                          : '0',
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.green,

@@ -347,10 +347,12 @@ class ApiServices {
     required String prmBrId,
     required String prmFaId,
     required String prmUID,
+    required String prmQty,
+    required String prmIsRlz,
   }) async {
-    String uri = "$savePackingItem?PrmIsRlz=1&PrmAutoId=$prmAutoID&"
+    String uri = "$savePackingItem?PrmIsRlz=$prmIsRlz&PrmAutoId=$prmAutoID&"
         "PrmOrderId=$orderId&PrmShort=$prmShort&PrmCmpId=$prmCmpId&"
-        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUID";
+        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUID&PrmQty=$prmQty";
     if (kDebugMode) {
       print(uri);
     }

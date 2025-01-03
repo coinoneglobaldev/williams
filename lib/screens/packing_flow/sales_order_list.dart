@@ -39,7 +39,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
     selectedRound = rounds[0];
   }
 
-
   @override
   void dispose() {
     startDateController.dispose();
@@ -121,6 +120,20 @@ class _SalesOrderListState extends State<SalesOrderList> {
         endDate = picked;
         endDateController.text = _formatDate(picked);
       });
+    }
+  }
+
+  Color getTableColor(SalesOrderListModel item) {
+    if (int.parse(item.isZeroRate) > 1) {
+      return Colors.blue;
+    } else if (item.isHold == 'True') {
+      return Colors.red;
+    } else if (item.isRelease == 'True') {
+      return Colors.green;
+    } else if (item.isPrtalRelze == 'True') {
+      return Colors.orange;
+    } else {
+      return Colors.black;
     }
   }
 
@@ -469,8 +482,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                       Text(
                         item.refNo,
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style: TextStyle(
+                          color: getTableColor(item),
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -483,8 +496,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                       Text(
                         item.regNo,
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style: TextStyle(
+                          color: getTableColor(item),
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -497,8 +510,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                       Text(
                         item.trDate,
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style: TextStyle(
+                          color: getTableColor(item),
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -511,8 +524,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                       Text(
                         item.optRefNo,
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style: TextStyle(
+                          color: getTableColor(item),
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -525,8 +538,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                       Text(
                         item.optDate,
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style: TextStyle(
+                          color: getTableColor(item),
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -539,8 +552,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                       Text(
                         item.accountCr,
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style: TextStyle(
+                          color: getTableColor(item),
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -553,8 +566,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
                       ),
                       Text(
                         item.address,
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style: TextStyle(
+                          color: getTableColor(item),
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
