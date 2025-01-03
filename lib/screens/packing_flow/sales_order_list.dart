@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:williams/services/api_services.dart';
 import '../../common/custom_overlay_loading.dart';
-import '../../custom_screens/custom_network_error.dart';
 import '../../custom_widgets/custom_alert_box.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
-import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
 import '../../models/uom_list_model.dart';
 import 'order_item_view.dart';
@@ -50,6 +48,9 @@ class _SalesOrderListState extends State<SalesOrderList> {
     DateFormat date = DateFormat('dd/MMM/yyyy');
     return date.format(dte);
   }
+
+
+
 
   Future<List<SalesOrderListModel>> getSalesOrderList({
     required String prmFrmDate,
@@ -468,6 +469,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
               rows: orderList.asMap().entries.map((entry) {
                 final index = entry.key;
                 final item = entry.value;
+                DateTime orderDate = DateFormat("M/d/yyyy h:mm:ss a").parse(item.trDate);
+                DateTime deliveryDate = DateFormat("M/d/yyyy h:mm:ss a").parse(item.optDate);
                 return DataRow(
                   color: WidgetStateProperty.resolveWith<Color>(
                       (Set<WidgetState> states) {
@@ -509,7 +512,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                         prmOrderId: item.id,
                       ),
                       Text(
-                        item.trDate,
+                        item.trDate == '' ? '' : DateFormat('dd/MMM/yyyy hh:mm: a').format(orderDate),
                         style: TextStyle(
                           color: getTableColor(item),
                           fontSize: 16,
@@ -537,7 +540,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                         prmOrderId: item.id,
                       ),
                       Text(
-                        item.optDate,
+                        item.optDate == '' ? '' : DateFormat('dd/MMM/yyyy').format(deliveryDate),
                         style: TextStyle(
                           color: getTableColor(item),
                           fontSize: 16,
