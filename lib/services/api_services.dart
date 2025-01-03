@@ -406,4 +406,48 @@ class ApiServices {
       rethrow;
     }
   }
+
+  // todo: Model need to change
+  Future<List<SalesOrderItemListModel>> fnGetBuyingSheetList({
+    required String prmFrmDate,
+    required String prmToDate,
+    required String prmItmGrpId,
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUId,
+  }) async {
+    String uri =
+        "$getBuyingSheetListUrl?PrmFrmDate=$prmFrmDate&PrmToDate=$prmToDate&"
+        "PrmItmGrpId=$prmItmGrpId&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
+        "PrmFaId=$prmFaId&PrmUId=$prmUId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList
+          .map((json) => SalesOrderItemListModel.fromJson(json))
+          .toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnGetBuyingSheetList: $error');
+      }
+      rethrow;
+    }
+  }
+
+
 }
