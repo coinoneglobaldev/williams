@@ -368,13 +368,15 @@ class _OrderItemViewState extends State<OrderItemView> {
               ),
             ),
             const Spacer(),
+            //  isAllSelected                 ? "Unselect All"
+
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 minimumSize: const Size(150, 50),
               ),
               onPressed: _selectAll,
-              child: Text(isAllSelected ? "Unselect All" : "Select All"),
+              child: Text("Select All"),
             ),
             const Spacer(),
           ],
