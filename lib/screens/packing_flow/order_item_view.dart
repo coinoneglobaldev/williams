@@ -632,10 +632,14 @@ class _OrderItemViewState extends State<OrderItemView> {
                                     side: BorderSide(
                                         color: Colors.black, width: 1),
                                     onChanged: (bool? value) {
+                                      _selectedRow(
+                                          selectedRowItem: selectedRowItem);
+
                                       setState(() {
                                         selectedRowItem.isChecked =
                                             value ?? false;
                                       });
+                                      _handleSave();
                                     },
                                   ),
                                 ),
