@@ -359,26 +359,29 @@ class _OrderItemViewState extends State<OrderItemView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text(
-              ' Order Items',
-              style: TextStyle(
-                fontSize: 40.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
+             SizedBox(
+               width: 500,
+               child: Text(
+                widget.selectedSalesOrderList.accountCr,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                           ),
+             ),
             const Spacer(),
-            //  isAllSelected                 ? "Unselect All"
-
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
-                minimumSize: const Size(150, 50),
+                minimumSize: const Size(130, 35),
               ),
               onPressed: _selectAll,
-              child: Text("Select All"),
+              child: Text(isAllSelected ? "Unselect All" : "Select All"),
             ),
-            const Spacer(),
+            SizedBox(width: 150),
           ],
         ),
         Expanded(

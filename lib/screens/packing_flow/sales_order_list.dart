@@ -33,12 +33,12 @@ class _SalesOrderListState extends State<SalesOrderList> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     startDateController.text = _formatDate(DateTime.now());
-    endDateController.text = _formatDate(DateTime.now());
+    endDateController.text = _formatDate(DateTime.now().add(Duration(days: 1)));
     selectedRound = rounds[0];
   }
+
 
   @override
   void dispose() {
@@ -112,7 +112,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
           initialEntryMode: DatePickerEntryMode.calendarOnly,
           initialDate: endDate,
           firstDate: startDate,
-          lastDate: DateTime.now(),
+          lastDate: (DateTime.now().add(Duration(days: 1))),
         );
       },
     );
@@ -152,7 +152,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Sales Order',
+                      'Sales Orders',
                       style: TextStyle(
                         fontSize: 35.0,
                         fontWeight: FontWeight.bold,
