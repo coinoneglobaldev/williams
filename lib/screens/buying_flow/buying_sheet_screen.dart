@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/constants.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/util_class.dart';
+import '../../models/buying_sheet_list_order_model.dart';
 import '../../models/category_list_model.dart';
 import '../../models/supplier_list_model.dart';
 import '../../models/uom_list_model.dart';
@@ -29,6 +31,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   late List<SupplierListModel> _suppliers = [];
   late List<UomListModel> _oum = [];
   bool _isLoading = false;
+  List<BuyingSheetListModel> buyingSheet = [];
 
   final List<String> _previousOrders = [
     'Order 1',
@@ -36,105 +39,43 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     'Order 3',
   ];
 
-  final List<Map<String, dynamic>> _dummyTableData = [
-    {
-      'code': 'Chemia EHI0422',
-      'name': '20 Silk Cut Sliver',
-      'uom': 'NET',
-      'conVal': '1.00',
-      'Bulk': '2.00',
-      'Split': '0.00',
-      'BulkSplit': 'Bulk',
-      'orderQty': '10',
-    },
-    {
-      'code': 'Frozen EHI1244',
-      'name': 'Abramczyk Fliety Z Mintaja 400G',
-      'uom': 'NET',
-      'conVal': '1.00',
-      'Bulk': '2.00',
-      'Split': '0.00',
-      'BulkSplit': 'Bulk',
-      'orderQty': '20',
-    },
-    {
-      'code': 'Gazeta EHI3074',
-      'name': '100 Panaramicznych',
-      'uom': 'NET',
-      'conVal': '1.00',
-      'Bulk': '7.00',
-      'Split': '0.00',
-      'BulkSplit': 'Bulk',
-      'orderQty': '30',
-    },
-    {
-      'code': 'Chemia EHI0422',
-      'name': '20 Silk Cut Sliver',
-      'uom': 'NET',
-      'conVal': '1.00',
-      'Bulk': '2.00',
-      'Split': '0.00',
-      'BulkSplit': 'Bulk',
-      'orderQty': '10',
-    },
-    {
-      'code': 'Frozen EHI1244',
-      'name': 'Abramczyk Fliety Z Mintaja 400G',
-      'uom': 'NET',
-      'conVal': '1.00',
-      'Bulk': '2.00',
-      'Split': '0.00',
-      'BulkSplit': 'Bulk',
-      'orderQty': '20',
-    },
-    {
-      'code': 'Gazeta EHI3074',
-      'name': '100 Panaramicznych',
-      'uom': 'NET',
-      'conVal': '1.00',
-      'Bulk': '7.00',
-      'Split': '0.00',
-      'BulkSplit': 'Bulk',
-      'orderQty': '30',
-    },
-    {
-      'code': 'Chemia EHI0422',
-      'name': '20 Silk Cut Sliver',
-      'uom': 'NET',
-      'conVal': '1.00',
-      'Bulk': '2.00',
-      'Split': '0.00',
-      'BulkSplit': 'Bulk',
-      'orderQty': '10',
-    },
-    {
-      'code': 'Frozen EHI1244',
-      'name': 'Abramczyk Fliety Z Mintaja 400G',
-      'uom': 'NET',
-      'conVal': '1.00',
-      'Bulk': '2.00',
-      'Split': '0.00',
-      'BulkSplit': 'Bulk',
-      'orderQty': '20',
-    },
-    {
-      'code': 'Gazeta EHI3074',
-      'name': '100 Panaramicznych',
-      'uom': 'NET',
-      'conVal': '1.00',
-      'Bulk': '7.00',
-      'Split': '0.00',
-      'BulkSplit': 'Bulk',
-      'orderQty': '30',
-    },
-  ];
+  Future<void> getBuyingSheetList({
+    required String prmFrmDate,
+    required String prmToDate,
+  }) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+      final response = await ApiServices().fnGetBuyingSheetList(
+        prmFrmDate: prmFrmDate,
+        prmToDate: prmToDate,
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+        prmUId: prmUId,
+        prmItmGrpId: '0',
+      );
+      if (response.isNotEmpty) {
+        buyingSheet = response;
+      } else {
+        throw ('No Sales Order Found');
+      }
+    } catch (e) {
+      throw ('No Sales Order Found');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _loadCategories();
-    orderQtyControllers =
-        _dummyTableData.map((item) => TextEditingController()).toList();
+    orderQtyControllers = List.generate(
+      buyingSheet.length,
+      (index) => TextEditingController(text: buyingSheet[index].odrEQty),
+    );
   }
 
   Future<void> _loadCategories() async {
@@ -143,6 +84,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     });
 
     try {
+      await getBuyingSheetList(
+        prmFrmDate: '02/jan/2025',
+        prmToDate: '03/jan/2025',
+      );
       final categories = await getCategoryList();
       final suppliers = await getSupplierList();
       final oum = await getOumList();
@@ -359,8 +304,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         onPressed: () {
                           setState(() {
                             _selectAll = !_selectAll;
-                            for (var item in _dummyTableData) {
-                              item['isSelected'] = _selectAll;
+                            for (var item in buyingSheet) {
+                              item.isSelected = _selectAll;
                             }
                           });
                         },
@@ -370,7 +315,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                _buyingSheetTable(data: _dummyTableData),
+                _buyingSheetTable(data: buyingSheet),
                 const SizedBox(height: 10),
                 _buildSaveButton(),
               ],
@@ -539,7 +484,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     }
   }
 
-  Widget _buyingSheetTable({required List<Map<String, dynamic>> data}) {
+  Widget _buyingSheetTable({required List<BuyingSheetListModel> data}) {
     return SingleChildScrollView(
       child: Row(
         children: [
@@ -552,7 +497,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 border: Border.all(color: Colors.black),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withAlpha(128),
+                    color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
                     offset: const Offset(0, 3),
@@ -562,13 +507,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
                 child: DataTable(
-                  // headingRowHeight: 30,
                   dataRowMinHeight: 60,
                   dataRowMaxHeight: 60,
                   horizontalMargin: 10,
                   columnSpacing: 10,
                   headingRowColor: WidgetStateProperty.all(
-                    Colors.grey.shade400.withValues(alpha: 0.5),
+                    Colors.grey.shade400.withOpacity(0.5),
                   ),
                   border: TableBorder.symmetric(
                     inside: const BorderSide(
@@ -577,10 +521,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     ),
                   ),
                   columns: _getTableColumns(),
-                  rows: List<DataRow>.generate(
-                    data.length,
-                    (index) => _buildDataRow(data[index], index),
-                  ),
+                  rows: data.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    return _buildDataRow(item, index);
+                  }).toList(),
                 ),
               ),
             ),
@@ -620,25 +565,25 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  DataRow _buildDataRow(Map<String, dynamic> item, int index) {
-    item['isSelected'] ??= false;
-    item['bulkSplitValue'] ??= 'Bulk';
-
+  DataRow _buildDataRow(BuyingSheetListModel item, int index) {
     return DataRow(
-      color: WidgetStateProperty.resolveWith<Color>(
-        (Set<WidgetState> states) {
+      color: MaterialStateProperty.resolveWith<Color>(
+        (Set<MaterialState> states) {
           return index.isEven ? Colors.amber.shade50 : Colors.amber.shade100;
         },
       ),
       cells: [
-        _buildDataCell(item['code']),
-        _buildDataCell(item['name']),
-        _buildEditTextDataCell(TextEditingController(text: item['conVal'])),
-        _buildDataCell(item['Bulk']),
-        _buildDataCell(item['Split']),
+        _buildDataCell(item.itemCode),
+        _buildDataCell(item.itemName),
+        _buildEditTextDataCell(TextEditingController(text: item.uomConVal)),
+        _buildDataCell(
+            item.boxQty), // Changed from eachQty to boxQty for Short Bulk
+        _buildDataCell(item.eachQty), // For Short Split
         _buildBulkSplitDropdownCell(item),
-        _buildEditableDataCell(TextEditingController(text: item['orderQty'])),
-        _buildEditTextDataCell(TextEditingController(text: item['conVal'])),
+        _buildEditableDataCell(TextEditingController(
+            text: item.odrEQty)), // Changed to odrEQty for Order Qty
+        _buildEditTextDataCell(TextEditingController(
+            text: item.uomConVal)), // Using uomConVal for Rate
         _buildCheckboxDataCell(item),
       ],
     );
@@ -664,13 +609,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  DataCell _buildBulkSplitDropdownCell(Map<String, dynamic> item) {
+  DataCell _buildBulkSplitDropdownCell(BuyingSheetListModel item) {
+    //TODO: Add dropdown for Bulk and Split
     return DataCell(
       Center(
         child: ButtonTheme(
           alignedDropdown: true,
           child: DropdownButton<String>(
-            value: item['bulkSplitValue'],
+            value: 'Bulk',
             underline: Container(),
             items: ['Bulk', 'Split'].map((String value) {
               return DropdownMenuItem<String>(
@@ -683,7 +629,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             }).toList(),
             onChanged: (String? newValue) {
               setState(() {
-                item['bulkSplitValue'] = newValue;
+                item.boxQty = newValue!;
               });
             },
           ),
@@ -764,7 +710,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     }
   }
 
-  DataCell _buildCheckboxDataCell(Map<String, dynamic> item) {
+  DataCell _buildCheckboxDataCell(BuyingSheetListModel item) {
     return DataCell(
       Center(
         child: Transform.scale(
@@ -772,12 +718,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           child: Checkbox(
             activeColor: Colors.black,
             checkColor: Colors.black,
-            fillColor: WidgetStateProperty.all(Colors.white),
-            value: item['isSelected'] ?? false,
+            fillColor: MaterialStateProperty.all(Colors.white),
+            value: item.isSelected,
             side: const BorderSide(color: Colors.black, width: 1),
             onChanged: (bool? value) {
               setState(() {
-                item['isSelected'] = value ?? false;
+                item.isSelected = value ?? false;
               });
             },
           ),

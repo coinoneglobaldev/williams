@@ -4,11 +4,15 @@
 
 import 'dart:convert';
 
-List<BuyingSheetListModel> buyingSheetListModelFromJson(String str) => List<BuyingSheetListModel>.from(json.decode(str).map((x) => BuyingSheetListModel.fromJson(x)));
+List<BuyingSheetListModel> buyingSheetListModelFromJson(String str) =>
+    List<BuyingSheetListModel>.from(
+        json.decode(str).map((x) => BuyingSheetListModel.fromJson(x)));
 
-String buyingSheetListModelToJson(List<BuyingSheetListModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String buyingSheetListModelToJson(List<BuyingSheetListModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class BuyingSheetListModel {
+  bool isSelected;
   String itemId;
   String itemName;
   String itemCode;
@@ -23,6 +27,7 @@ class BuyingSheetListModel {
   String itmCnt;
 
   BuyingSheetListModel({
+    this.isSelected = false,
     required this.itemId,
     required this.itemName,
     required this.itemCode,
@@ -37,46 +42,42 @@ class BuyingSheetListModel {
     required this.itmCnt,
   });
 
-  factory BuyingSheetListModel.fromJson(Map<String, dynamic> json) => BuyingSheetListModel(
-    itemId: json["ItemId"],
-    itemName: json["ItemName"],
-    itemCode: json["ItemCode"],
-    uom: uomValues.map[json["Uom"]]!,
-    itemGroup: json["ItemGroup"],
-    boxQty: json["BoxQty"],
-    eachQty: json["EachQty"],
-    odrBQty: json["OdrBQty"],
-    odrEQty: json["OdrEQty"],
-    boxUomId: json["BoxUomId"],
-    uomConVal: json["UomConVal"],
-    itmCnt: json["ItmCnt"],
-  );
+  factory BuyingSheetListModel.fromJson(Map<String, dynamic> json) =>
+      BuyingSheetListModel(
+        itemId: json["ItemId"],
+        itemName: json["ItemName"],
+        itemCode: json["ItemCode"],
+        uom: uomValues.map[json["Uom"]]!,
+        itemGroup: json["ItemGroup"],
+        boxQty: json["BoxQty"],
+        eachQty: json["EachQty"],
+        odrBQty: json["OdrBQty"],
+        odrEQty: json["OdrEQty"],
+        boxUomId: json["BoxUomId"],
+        uomConVal: json["UomConVal"],
+        itmCnt: json["ItmCnt"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "ItemId": itemId,
-    "ItemName": itemName,
-    "ItemCode": itemCode,
-    "Uom": uomValues.reverse[uom],
-    "ItemGroup": itemGroup,
-    "BoxQty": boxQty,
-    "EachQty": eachQty,
-    "OdrBQty": odrBQty,
-    "OdrEQty": odrEQty,
-    "BoxUomId": boxUomId,
-    "UomConVal": uomConVal,
-    "ItmCnt": itmCnt,
-  };
+        "IsSelected": isSelected,
+        "ItemId": itemId,
+        "ItemName": itemName,
+        "ItemCode": itemCode,
+        "Uom": uomValues.reverse[uom],
+        "ItemGroup": itemGroup,
+        "BoxQty": boxQty,
+        "EachQty": eachQty,
+        "OdrBQty": odrBQty,
+        "OdrEQty": odrEQty,
+        "BoxUomId": boxUomId,
+        "UomConVal": uomConVal,
+        "ItmCnt": itmCnt,
+      };
 }
 
-enum Uom {
-  BOX,
-  KG
-}
+enum Uom { BOX, KG }
 
-final uomValues = EnumValues({
-  "BOX": Uom.BOX,
-  "KG": Uom.KG
-});
+final uomValues = EnumValues({"BOX": Uom.BOX, "KG": Uom.KG});
 
 class EnumValues<T> {
   Map<String, T> map;

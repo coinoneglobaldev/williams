@@ -410,7 +410,6 @@ class ApiServices {
     }
   }
 
-  // todo: Model need to change
   Future<List<BuyingSheetListModel>> fnGetBuyingSheetList({
     required String prmFrmDate,
     required String prmToDate,
@@ -451,6 +450,4 @@ class ApiServices {
       rethrow;
     }
   }
-
-
 }
