@@ -49,6 +49,9 @@ class _SalesOrderListState extends State<SalesOrderList> {
     return date.format(dte);
   }
 
+
+
+
   Future<List<SalesOrderListModel>> getSalesOrderList({
     required String prmFrmDate,
     required String prmToDate,
@@ -466,6 +469,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
               rows: orderList.asMap().entries.map((entry) {
                 final index = entry.key;
                 final item = entry.value;
+                DateTime orderDate = DateFormat("M/d/yyyy h:mm:ss a").parse(item.trDate);
+                DateTime deliveryDate = DateFormat("M/d/yyyy h:mm:ss a").parse(item.optDate);
                 return DataRow(
                   color: WidgetStateProperty.resolveWith<Color>(
                       (Set<WidgetState> states) {
@@ -507,7 +512,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                         prmOrderId: item.id,
                       ),
                       Text(
-                        item.trDate,
+                        item.trDate == '' ? '' : DateFormat('dd/MMM/yyyy hh:mm: a').format(orderDate),
                         style: TextStyle(
                           color: getTableColor(item),
                           fontSize: 16,
@@ -535,7 +540,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                         prmOrderId: item.id,
                       ),
                       Text(
-                        item.optDate,
+                        item.optDate == '' ? '' : DateFormat('dd/MMM/yyyy').format(deliveryDate),
                         style: TextStyle(
                           color: getTableColor(item),
                           fontSize: 16,
