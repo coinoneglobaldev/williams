@@ -13,11 +13,11 @@ import '../../services/api_services.dart';
 class OrderItemView extends StatefulWidget {
   final SalesOrderListModel selectedSalesOrderList;
   List<SalesOrderItemListModel> orderListItems;
-  final List<UomListModel> packList;
+  final List<UomAndPackListModel> packTypeList;
 
   OrderItemView({
     super.key,
-    required this.packList,
+    required this.packTypeList,
     required this.orderListItems,
     required this.selectedSalesOrderList,
   });
@@ -38,8 +38,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   bool isQtyFocused = true;
   bool isFirstDigitAfterFocus = true;
   SalesOrderItemListModel? selectedOrderItem;
-  List<String> packs = ['retail', 'unit sale'];
-  List<String?> selectedPack = [];
+  List<UomAndPackListModel> selectedPackList = [];
 
   String inputShort = '';
 
@@ -76,9 +75,17 @@ class _OrderItemViewState extends State<OrderItemView> {
   @override
   void initState() {
     super.initState();
-    selectedPack = List<String?>.filled(
-        widget.orderListItems.length, widget.packList[0].name);
-
+    selectedPackList = List<UomAndPackListModel>.filled(
+        widget.orderListItems.length, widget.packTypeList[0]);
+    for (int i = 0; i < widget.orderListItems.length; i++) {
+      try {
+        selectedPackList[i] = widget.packTypeList.where((element) {
+          return element.id == widget.orderListItems[i].packId;
+        }).first;
+      } catch (e) {
+        selectedPackList[i] = widget.packTypeList[0];
+      }
+    }
     qtyControllers = widget.orderListItems
         .map((item) => TextEditingController(text: item.qty))
         .toList();
@@ -241,26 +248,6 @@ class _OrderItemViewState extends State<OrderItemView> {
     }
   }
 
-  void _incrementQty() {
-    final currentQty = int.tryParse(qtyControllers[selectedRowIndex].text) ?? 0;
-    qtyControllers[selectedRowIndex].text = (currentQty + 1).toString();
-    setState(() {
-      widget.orderListItems[selectedRowIndex].qty =
-          qtyControllers[selectedRowIndex].text;
-    });
-  }
-
-  void _decrementQty() {
-    final currentQty = int.tryParse(qtyControllers[selectedRowIndex].text) ?? 0;
-    if (currentQty > 0) {
-      qtyControllers[selectedRowIndex].text = (currentQty - 1).toString();
-      setState(() {
-        widget.orderListItems[selectedRowIndex].qty =
-            qtyControllers[selectedRowIndex].text;
-      });
-    }
-  }
-
   bool get isValidToSave =>
       qtyControllers.every((controller) => controller.text.isNotEmpty);
 
@@ -399,14 +386,18 @@ class _OrderItemViewState extends State<OrderItemView> {
           children: [
             SizedBox(
               width: 500,
-              child: Text(
-                widget.selectedSalesOrderList.accountCr,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+              height: 50,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  widget.selectedSalesOrderList.accountCr,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
               ),
             ),
@@ -534,20 +525,23 @@ class _OrderItemViewState extends State<OrderItemView> {
                               Center(
                                 child: ButtonTheme(
                                   alignedDropdown: true,
-                                  child: DropdownButton<String>(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10)),
-                                    value: selectedPack[index],
-                                    items: widget.packList
-                                        .map((UomListModel pack) {
-                                      return DropdownMenuItem<String>(
-                                        value: pack.name,
-                                        child: Text(pack.name),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? newValue) {
+                                  child: DropdownButton(
+                                    borderRadius: BorderRadius.circular(10),
+                                    isDense: true,
+                                    dropdownColor: Colors.white,
+                                    items: widget.packTypeList
+                                        .map(
+                                          (e) => DropdownMenuItem(
+                                            value: e,
+                                            child: Text(e.name),
+                                          ),
+                                        )
+                                        .toList(),
+                                    value: selectedPackList[index],
+                                    hint: const Text('Select Category'),
+                                    onChanged: (value) {
                                       setState(() {
-                                        selectedPack[index] = newValue;
+                                        selectedPackList[index] = value!;
                                       });
                                     },
                                   ),
@@ -794,30 +788,6 @@ class _OrderItemViewState extends State<OrderItemView> {
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
       resizeToAvoidBottomInset: false,
-
-      // floatingActionButton: Container(
-      //   margin: const EdgeInsets.only(left: 30),
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.end,
-      //     children: [
-      //       FloatingActionButton(
-      //         heroTag: 'btn1',
-      //         onPressed: _moveUp,
-      //         mini: true,
-      //         backgroundColor: Colors.grey.shade900,
-      //         child: const Icon(Icons.arrow_upward, color: Colors.white),
-      //       ),
-      //       const SizedBox(height: 10),
-      //       FloatingActionButton(
-      //         heroTag: 'btn2',
-      //         onPressed: _moveDown,
-      //         mini: true,
-      //         backgroundColor: Colors.grey.shade900,
-      //         child: const Icon(Icons.arrow_downward, color: Colors.white),
-      //       ),
-      //     ],
-      //   ),
-      // ),
       bodyWidget: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -830,7 +800,7 @@ class _OrderItemViewState extends State<OrderItemView> {
             child: Container(
               margin: const EdgeInsets.only(
                 left: 10,
-                top: 40,
+                top: 50,
                 bottom: 10,
               ),
               padding: const EdgeInsets.all(10),

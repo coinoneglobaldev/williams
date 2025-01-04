@@ -395,7 +395,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
             return const CustomOverlayLoading();
           },
         );
-        final List<UomListModel> packingType =
+        final List<UomAndPackListModel> packingType =
             await ApiServices().getPackingType(prmCompanyId: '1');
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String prmCmpId = prefs.getString('cmpId')!;
@@ -420,7 +420,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
           context,
           CupertinoPageRoute(
             builder: (context) => OrderItemView(
-              packList: packingType,
+              packTypeList: packingType,
               orderListItems: orderListItems,
               selectedSalesOrderList: orderList
                   .where((element) => element.id == prmOrderId)
