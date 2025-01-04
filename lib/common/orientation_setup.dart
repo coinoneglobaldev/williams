@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 class OrientationSetup extends StatelessWidget {
   final Widget child;
 
-  OrientationSetup({required this.child});
+  const OrientationSetup({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

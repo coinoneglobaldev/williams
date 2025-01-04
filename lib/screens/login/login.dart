@@ -64,25 +64,19 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
   }
 
   void _navigateToBackground(String userType) {
-    Widget dashboard;
     switch (userType) {
-      case 'Buyer':
-        dashboard = _fnNavigateToBuyerPage();
-        break;
       case '':
-        dashboard = _fnNavigateToHomePage();
+        _fnNavigateToBuyerPage();
+        break;
+      case 'packer':
+        _fnNavigateToHomePage();
         break;
       case 'Driver':
-        dashboard = _fnNavigateToDriverPage();
+        _fnNavigateToDriverPage();
         break;
       default:
-        dashboard = const ScreenLogin();
+       _fnNavigateToLoginPage();
     }
-    Navigator.pushAndRemoveUntil(
-      context,
-      CupertinoPageRoute(builder: (context) => dashboard),
-      (route) => false,
-    );
   }
 
   _fnNavigateToHomePage() {
@@ -126,6 +120,17 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
       ),
     );
   }
+
+  _fnNavigateToLoginPage() {
+    // Set portrait orientation for driver
+    Navigator.pushReplacement(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const ScreenLogin(),
+      ),
+    );
+  }
+
 
   @override
   Widget build(

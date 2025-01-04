@@ -32,4 +32,3 @@ String getBuyingSheetListUrl = '$transactionUrl/FnGetBuyingSheetList';
 //todo: currently not in use but it will be used in future
 String getCustomerListUrl = '$webAppGeneralUrl/FnGetCustomerList';
 String getItemListUrl = '$webAppGeneralUrl/FnGetItemList';
-String getPackingTypeListUrl = '$webAppGeneralUrl/FnGetPackingTypeList';
