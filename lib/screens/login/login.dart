@@ -65,13 +65,13 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
 
   void _navigateToBackground(String userType) {
     switch (userType) {
-      case 'asd':
+      case 'BSHT':
         _fnNavigateToBuyerPage();
         break;
-      case '':
-        _fnNavigateToHomePage();
+      case 'PACK':
+        _fnNavigateToPackingPage();
         break;
-      case 'Driver':
+      case 'DRVR':
         _fnNavigateToDriverPage();
         break;
       default:
@@ -79,7 +79,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     }
   }
 
-  _fnNavigateToHomePage() {
+  _fnNavigateToPackingPage() {
     // Set landscape orientation for admin
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
