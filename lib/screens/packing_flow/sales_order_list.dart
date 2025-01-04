@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/services/api_services.dart';
 import '../../common/custom_overlay_loading.dart';
 import '../../custom_widgets/custom_alert_box.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
+import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
 import '../../models/uom_list_model.dart';
 import 'order_item_view.dart';
@@ -48,9 +50,6 @@ class _SalesOrderListState extends State<SalesOrderList> {
     DateFormat date = DateFormat('dd/MMM/yyyy');
     return date.format(dte);
   }
-
-
-
 
   Future<List<SalesOrderListModel>> getSalesOrderList({
     required String prmFrmDate,
@@ -398,6 +397,23 @@ class _SalesOrderListState extends State<SalesOrderList> {
         );
         final List<UomListModel> packingType =
             await ApiServices().getPackingType(prmCompanyId: '1');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String prmCmpId = prefs.getString('cmpId')!;
+        String prmBrId = prefs.getString('brId')!;
+        String prmFaId = prefs.getString('faId')!;
+        String prmUId = prefs.getString('userId')!;
+        List<SalesOrderItemListModel> orderListItems =
+            await ApiServices().getSalesOrderItemList(
+          prmOrderId: orderList
+              .where((element) => element.id == prmOrderId)
+              .toList()[0]
+              .id,
+          prmCmpId: prmCmpId,
+          prmBrId: prmBrId,
+          prmFaId: prmFaId,
+          prmUId: prmUId,
+        );
+
         if (!mounted) return;
         Navigator.pop(context);
         Navigator.push(
@@ -405,6 +421,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
           CupertinoPageRoute(
             builder: (context) => OrderItemView(
               packList: packingType,
+              orderListItems: orderListItems,
               selectedSalesOrderList: orderList
                   .where((element) => element.id == prmOrderId)
                   .toList()[0],
@@ -469,14 +486,16 @@ class _SalesOrderListState extends State<SalesOrderList> {
               rows: orderList.asMap().entries.map((entry) {
                 final index = entry.key;
                 final item = entry.value;
-                DateTime orderDate = DateFormat("M/d/yyyy h:mm:ss a").parse(item.trDate);
-                DateTime deliveryDate = DateFormat("M/d/yyyy h:mm:ss a").parse(item.optDate);
+                DateTime orderDate =
+                    DateFormat("M/d/yyyy h:mm:ss a").parse(item.trDate);
+                DateTime deliveryDate =
+                    DateFormat("M/d/yyyy h:mm:ss a").parse(item.optDate);
                 return DataRow(
                   color: WidgetStateProperty.resolveWith<Color>(
                       (Set<WidgetState> states) {
                     return index.isEven
-                        ? Colors.purple.shade100
-                        : Colors.purple.shade50;
+                        ? Colors.grey.shade200
+                        : Colors.grey.shade100;
                   }),
                   cells: [
                     DataCell(
@@ -512,7 +531,10 @@ class _SalesOrderListState extends State<SalesOrderList> {
                         prmOrderId: item.id,
                       ),
                       Text(
-                        item.trDate == '' ? '' : DateFormat('dd/MMM/yyyy hh:mm: a').format(orderDate),
+                        item.trDate == ''
+                            ? ''
+                            : DateFormat('dd/MMM/yyyy hh:mm: a')
+                                .format(orderDate),
                         style: TextStyle(
                           color: getTableColor(item),
                           fontSize: 16,
@@ -540,7 +562,9 @@ class _SalesOrderListState extends State<SalesOrderList> {
                         prmOrderId: item.id,
                       ),
                       Text(
-                        item.optDate == '' ? '' : DateFormat('dd/MMM/yyyy').format(deliveryDate),
+                        item.optDate == ''
+                            ? ''
+                            : DateFormat('dd/MMM/yyyy').format(deliveryDate),
                         style: TextStyle(
                           color: getTableColor(item),
                           fontSize: 16,
