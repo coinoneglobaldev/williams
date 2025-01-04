@@ -19,15 +19,16 @@ class _CustomProcessingPopupState extends ConsumerState<CustomOverlayLoading> {
     return PopScope(
       canPop: false,
       child: Dialog(
-          surfaceTintColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(15),
-          backgroundColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(35),
-          ),
-          child: const CustomLogoSpinner(
-            color: Colors.white,
-          )),
+        surfaceTintColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(15),
+        backgroundColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(35),
+        ),
+        child: const CustomLogoSpinner(
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }
