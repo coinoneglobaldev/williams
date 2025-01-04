@@ -65,13 +65,13 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
 
   void _navigateToBackground(String userType) {
     switch (userType) {
-      case '':
+      case 'BSHT':
         _fnNavigateToBuyerPage();
         break;
-      case 'packer':
+      case 'PACK':
         _fnNavigateToHomePage();
         break;
-      case 'Driver':
+      case 'DRVR':
         _fnNavigateToDriverPage();
         break;
       default:
