@@ -19,9 +19,6 @@ String transactionUrl = '$baseUrl/WebAppTRansaction.asmx';
 String loginUrl = '$webAppLogUrl/FnGetUserLogIn';
 
 String getCategoryListUrl = '$webAppGeneralUrl/FnGetCategoryList';
-String getCustomerListUrl = '$webAppGeneralUrl/FnGetCustomerList';
-String getItemListUrl = '$webAppGeneralUrl/FnGetItemList';
-String getPackingTypeListUrl = '$webAppGeneralUrl/FnGetPackingTypeList';
 String getSupplierListUrl = '$webAppGeneralUrl/FnGetSupplierList';
 String getUomListUrl = '$webAppGeneralUrl/FnGetUomList';
 
@@ -31,3 +28,8 @@ String getPackingTypeListData = '$webAppGeneralUrl/FnGetPackingTypeList';
 String releaseOrderAllOrder = '$transactionUrl/FnIsReleaseAllOrder';
 String savePackingItem = '$transactionUrl/FnIsReleaseOrder';
 String getBuyingSheetListUrl = '$transactionUrl/FnGetBuyingSheetList';
+
+//todo: currently not in use but it will be used in future
+String getCustomerListUrl = '$webAppGeneralUrl/FnGetCustomerList';
+String getItemListUrl = '$webAppGeneralUrl/FnGetItemList';
+String getPackingTypeListUrl = '$webAppGeneralUrl/FnGetPackingTypeList';

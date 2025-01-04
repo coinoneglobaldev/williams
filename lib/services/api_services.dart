@@ -113,94 +113,97 @@ class ApiServices {
     }
   }
 
-  Future<List<CustomerListModel>> getCustomerList() async {
-    String uri = getCustomerListUrl;
-    if (kDebugMode) {
-      print(uri);
-    }
-    try {
-      final response = await http.get(Uri.parse(uri)).timeout(
-          const Duration(
-            seconds: 15,
-          ), onTimeout: () {
-        throw 'timeout';
-      });
-      if (kDebugMode) {
-        print("Response: ${response.body}");
-      }
-      final List<dynamic> responseList = json.decode(response.body);
-      if (kDebugMode) {
-        print(responseList);
-      }
-      return responseList
-          .map((json) => CustomerListModel.fromJson(json))
-          .toList();
-    } catch (error) {
-      if (kDebugMode) {
-        print('Exception in getCustomerList: $error');
-      }
-      rethrow;
-    }
-  }
+  //todo: remove it if it is not needed
+  // Future<List<CustomerListModel>> getCustomerList() async {
+  //   String uri = getCustomerListUrl;
+  //   if (kDebugMode) {
+  //     print(uri);
+  //   }
+  //   try {
+  //     final response = await http.get(Uri.parse(uri)).timeout(
+  //         const Duration(
+  //           seconds: 15,
+  //         ), onTimeout: () {
+  //       throw 'timeout';
+  //     });
+  //     if (kDebugMode) {
+  //       print("Response: ${response.body}");
+  //     }
+  //     final List<dynamic> responseList = json.decode(response.body);
+  //     if (kDebugMode) {
+  //       print(responseList);
+  //     }
+  //     return responseList
+  //         .map((json) => CustomerListModel.fromJson(json))
+  //         .toList();
+  //   } catch (error) {
+  //     if (kDebugMode) {
+  //       print('Exception in getCustomerList: $error');
+  //     }
+  //     rethrow;
+  //   }
+  // }
 
-  Future<List<ItemListModel>> getItemList() async {
-    String uri = getItemListUrl;
-    if (kDebugMode) {
-      print(uri);
-    }
-    try {
-      final response = await http.get(Uri.parse(uri)).timeout(
-          const Duration(
-            seconds: 15,
-          ), onTimeout: () {
-        throw 'timeout';
-      });
-      if (kDebugMode) {
-        print("Response: ${response.body}");
-      }
-      final List<dynamic> responseList = json.decode(response.body);
-      if (kDebugMode) {
-        print(responseList);
-      }
-      return responseList.map((json) => ItemListModel.fromJson(json)).toList();
-    } catch (error) {
-      if (kDebugMode) {
-        print('Exception in getItemList: $error');
-      }
-      rethrow;
-    }
-  }
+  //todo: remove it if it is not needed
+  // Future<List<ItemListModel>> getItemList() async {
+  //   String uri = getItemListUrl;
+  //   if (kDebugMode) {
+  //     print(uri);
+  //   }
+  //   try {
+  //     final response = await http.get(Uri.parse(uri)).timeout(
+  //         const Duration(
+  //           seconds: 15,
+  //         ), onTimeout: () {
+  //       throw 'timeout';
+  //     });
+  //     if (kDebugMode) {
+  //       print("Response: ${response.body}");
+  //     }
+  //     final List<dynamic> responseList = json.decode(response.body);
+  //     if (kDebugMode) {
+  //       print(responseList);
+  //     }
+  //     return responseList.map((json) => ItemListModel.fromJson(json)).toList();
+  //   } catch (error) {
+  //     if (kDebugMode) {
+  //       print('Exception in getItemList: $error');
+  //     }
+  //     rethrow;
+  //   }
+  // }
 
-  Future<List<PackingTypeListModel>> getPackingTypeList(
-      {required String prmCompanyId}) async {
-    String uri = "$getPackingTypeListUrl?PrmCompanyId=$prmCompanyId";
-    if (kDebugMode) {
-      print(uri);
-    }
-    try {
-      final response = await http.get(Uri.parse(uri)).timeout(
-          const Duration(
-            seconds: 15,
-          ), onTimeout: () {
-        throw 'timeout';
-      });
-      if (kDebugMode) {
-        print("Response: ${response.body}");
-      }
-      final List<dynamic> responseList = json.decode(response.body);
-      if (kDebugMode) {
-        print(responseList);
-      }
-      return responseList
-          .map((json) => PackingTypeListModel.fromJson(json))
-          .toList();
-    } catch (error) {
-      if (kDebugMode) {
-        print('Exception in getPackingTypeList: $error');
-      }
-      rethrow;
-    }
-  }
+  //todo: remove it if it is not needed
+  // Future<List<PackingTypeListModel>> getPackingTypeList({
+  //   required String prmCompanyId}) async {
+  //   String uri = "$getPackingTypeListUrl?PrmCompanyId=$prmCompanyId";
+  //   if (kDebugMode) {
+  //     print(uri);
+  //   }
+  //   try {
+  //     final response = await http.get(Uri.parse(uri)).timeout(
+  //         const Duration(
+  //           seconds: 15,
+  //         ), onTimeout: () {
+  //       throw 'timeout';
+  //     });
+  //     if (kDebugMode) {
+  //       print("Response: ${response.body}");
+  //     }
+  //     final List<dynamic> responseList = json.decode(response.body);
+  //     if (kDebugMode) {
+  //       print(responseList);
+  //     }
+  //     return responseList
+  //         .map((json) => PackingTypeListModel.fromJson(json))
+  //         .toList();
+  //   } catch (error) {
+  //     if (kDebugMode) {
+  //       print('Exception in getPackingTypeList: $error');
+  //     }
+  //     rethrow;
+  //   }
+  // }
 
   Future<List<UomListModel>> getUomList({required String prmCompanyId}) async {
     String uri = "$getUomListUrl?PrmCompanyId=$prmCompanyId";
