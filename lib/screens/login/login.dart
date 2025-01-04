@@ -65,17 +65,17 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
 
   void _navigateToBackground(String userType) {
     switch (userType) {
-      case '':
+      case 'asd':
         _fnNavigateToBuyerPage();
         break;
-      case 'packer':
+      case '':
         _fnNavigateToHomePage();
         break;
       case 'Driver':
         _fnNavigateToDriverPage();
         break;
       default:
-       _fnNavigateToLoginPage();
+        _fnNavigateToLoginPage();
     }
   }
 
@@ -130,7 +130,6 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
       ),
     );
   }
-
 
   @override
   Widget build(

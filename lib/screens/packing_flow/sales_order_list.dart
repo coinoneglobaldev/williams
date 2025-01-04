@@ -8,6 +8,7 @@ import '../../custom_widgets/custom_alert_box.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
+import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
 import '../../models/uom_list_model.dart';
@@ -55,12 +56,13 @@ class _SalesOrderListState extends State<SalesOrderList> {
     required String prmFrmDate,
     required String prmToDate,
     required String prmRound,
-    required String prmCmpId,
-    required String prmBrId,
-    required String prmFaId,
-    required String prmUId,
   }) async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
       final response = await ApiServices().getSalesOrderList(
         prmFrmDate: prmFrmDate,
         prmToDate: prmToDate,
@@ -294,23 +296,11 @@ class _SalesOrderListState extends State<SalesOrderList> {
                     prmFrmDate: startDateController.text,
                     prmToDate: endDateController.text,
                     prmRound: '',
-                    prmCmpId: '1',
-                    prmBrId: '2',
-                    prmFaId: '3',
-                    prmUId: '4',
                   ),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return SizedBox(
-                        height: MediaQuery.of(context).size.height / 1.5,
-                        width: MediaQuery.of(context).size.width,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                          ],
-                        ),
+                      return const CustomLogoSpinner(
+                        color: Colors.black,
                       );
                     } else if (snapshot.hasError) {
                       return SizedBox(
