@@ -75,7 +75,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
         _fnNavigateToDriverPage();
         break;
       default:
-       _fnNavigateToLoginPage();
+        _fnNavigateToLoginPage();
     }
   }
 
@@ -130,7 +130,6 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
       ),
     );
   }
-
 
   @override
   Widget build(
