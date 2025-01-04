@@ -4,30 +4,34 @@
 
 import 'dart:convert';
 
-List<UomListModel> uomListModelFromJson(String str) => List<UomListModel>.from(json.decode(str).map((x) => UomListModel.fromJson(x)));
+List<UomAndPackListModel> uomListModelFromJson(String str) =>
+    List<UomAndPackListModel>.from(
+        json.decode(str).map((x) => UomAndPackListModel.fromJson(x)));
 
-String uomListModelToJson(List<UomListModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String uomListModelToJson(List<UomAndPackListModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class UomListModel {
+class UomAndPackListModel {
   String id;
   String name;
   String code;
 
-  UomListModel({
+  UomAndPackListModel({
     required this.id,
     required this.name,
     required this.code,
   });
 
-  factory UomListModel.fromJson(Map<String, dynamic> json) => UomListModel(
-    id: json["Id"],
-    name: json["Name"],
-    code: json["Code"],
-  );
+  factory UomAndPackListModel.fromJson(Map<String, dynamic> json) =>
+      UomAndPackListModel(
+        id: json["Id"],
+        name: json["Name"],
+        code: json["Code"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "Id": id,
-    "Name": name,
-    "Code": code,
-  };
+        "Id": id,
+        "Name": name,
+        "Code": code,
+      };
 }

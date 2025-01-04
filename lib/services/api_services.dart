@@ -205,7 +205,8 @@ class ApiServices {
   //   }
   // }
 
-  Future<List<UomListModel>> getUomList({required String prmCompanyId}) async {
+  Future<List<UomAndPackListModel>> getUomList(
+      {required String prmCompanyId}) async {
     String uri = "$getUomListUrl?PrmCompanyId=$prmCompanyId";
     if (kDebugMode) {
       print(uri);
@@ -224,7 +225,9 @@ class ApiServices {
       if (kDebugMode) {
         print(responseList);
       }
-      return responseList.map((json) => UomListModel.fromJson(json)).toList();
+      return responseList
+          .map((json) => UomAndPackListModel.fromJson(json))
+          .toList();
     } catch (error) {
       if (kDebugMode) {
         print('Exception in getUomList: $error');
@@ -314,7 +317,7 @@ class ApiServices {
     }
   }
 
-  Future<List<UomListModel>> getPackingType(
+  Future<List<UomAndPackListModel>> getPackingType(
       {required String prmCompanyId}) async {
     String uri = "$getPackingTypeListData?PrmCompanyId=$prmCompanyId";
     if (kDebugMode) {
@@ -334,7 +337,9 @@ class ApiServices {
       if (kDebugMode) {
         print(responseList);
       }
-      return responseList.map((json) => UomListModel.fromJson(json)).toList();
+      return responseList
+          .map((json) => UomAndPackListModel.fromJson(json))
+          .toList();
     } catch (error) {
       if (kDebugMode) {
         print('Exception in getPackingType: $error');

@@ -30,7 +30,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   late List<CategoryListModel> _categories = [];
   late List<SupplierListModel> _suppliers = [];
-  late List<UomListModel> _oum = [];
+  late List<UomAndPackListModel> _oum = [];
   bool _isLoading = false;
   List<BuyingSheetListModel> buyingSheet = [];
 
@@ -92,7 +92,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     try {
       await getBuyingSheetList(
         prmFrmDate: _formatDate(DateTime.now()).toString(),
-        prmToDate: _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
+        prmToDate:
+            _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
       );
       final categories = await getCategoryList();
       final suppliers = await getSupplierList();
@@ -154,7 +155,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     }
   }
 
-  Future<List<UomListModel>> getOumList() async {
+  Future<List<UomAndPackListModel>> getOumList() async {
     try {
       final response =
           await ApiServices().getUomList(prmCompanyId: prmCompanyId);
