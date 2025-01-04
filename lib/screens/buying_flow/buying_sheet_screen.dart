@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/constants.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
@@ -78,6 +79,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
+  String _formatDate(DateTime dte) {
+    DateFormat date = DateFormat('dd/MMM/yyyy');
+    return date.format(dte);
+  }
+
   Future<void> _loadCategories() async {
     setState(() {
       _isLoading = true;
@@ -85,8 +91,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
     try {
       await getBuyingSheetList(
-        prmFrmDate: '02/jan/2025',
-        prmToDate: '03/jan/2025',
+        prmFrmDate: _formatDate(DateTime.now()).toString(),
+        prmToDate: _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
       );
       final categories = await getCategoryList();
       final suppliers = await getSupplierList();
@@ -497,7 +503,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 border: Border.all(color: Colors.black),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
+                    color: Colors.grey.withValues(alpha: 0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
                     offset: const Offset(0, 3),
@@ -512,7 +518,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   horizontalMargin: 10,
                   columnSpacing: 10,
                   headingRowColor: WidgetStateProperty.all(
-                    Colors.grey.shade400.withOpacity(0.5),
+                    Colors.grey.shade400.withValues(alpha: 0.5),
                   ),
                   border: TableBorder.symmetric(
                     inside: const BorderSide(
@@ -567,8 +573,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   DataRow _buildDataRow(BuyingSheetListModel item, int index) {
     return DataRow(
-      color: MaterialStateProperty.resolveWith<Color>(
-        (Set<MaterialState> states) {
+      color: WidgetStateProperty.resolveWith<Color>(
+        (Set<WidgetState> states) {
           return index.isEven ? Colors.amber.shade50 : Colors.amber.shade100;
         },
       ),
@@ -718,7 +724,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           child: Checkbox(
             activeColor: Colors.black,
             checkColor: Colors.black,
-            fillColor: MaterialStateProperty.all(Colors.white),
+            fillColor: WidgetStateProperty.all(Colors.white),
             value: item.isSelected,
             side: const BorderSide(color: Colors.black, width: 1),
             onChanged: (bool? value) {
