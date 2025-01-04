@@ -4,9 +4,12 @@
 
 import 'dart:convert';
 
-List<ItemListModel> itemListModelFromJson(String str) => List<ItemListModel>.from(json.decode(str).map((x) => ItemListModel.fromJson(x)));
+List<ItemListModel> itemListModelFromJson(String str) =>
+    List<ItemListModel>.from(
+        json.decode(str).map((x) => ItemListModel.fromJson(x)));
 
-String itemListModelToJson(List<ItemListModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String itemListModelToJson(List<ItemListModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class ItemListModel {
   String id;
@@ -15,6 +18,11 @@ class ItemListModel {
   ItemGroup itemGroup;
   String bulkRate;
   String splitRate;
+
+  @override
+  String toString() {
+    return code;
+  }
 
   ItemListModel({
     required this.id,
@@ -26,22 +34,22 @@ class ItemListModel {
   });
 
   factory ItemListModel.fromJson(Map<String, dynamic> json) => ItemListModel(
-    id: json["Id"],
-    name: json["Name"],
-    code: json["Code"],
-    itemGroup: itemGroupValues.map[json["ItemGroup"]]!,
-    bulkRate: json["BulkRate"],
-    splitRate: json["SplitRate"],
-  );
+        id: json["Id"],
+        name: json["Name"],
+        code: json["Code"],
+        itemGroup: itemGroupValues.map[json["ItemGroup"]]!,
+        bulkRate: json["BulkRate"],
+        splitRate: json["SplitRate"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "Id": id,
-    "Name": name,
-    "Code": code,
-    "ItemGroup": itemGroupValues.reverse[itemGroup],
-    "BulkRate": bulkRate,
-    "SplitRate": splitRate,
-  };
+        "Id": id,
+        "Name": name,
+        "Code": code,
+        "ItemGroup": itemGroupValues.reverse[itemGroup],
+        "BulkRate": bulkRate,
+        "SplitRate": splitRate,
+      };
 }
 
 enum ItemGroup {

@@ -4,11 +4,15 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/constants.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
+
+import '../../common/custom_overlay_loading.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
+import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../custom_widgets/util_class.dart';
 import '../../models/buying_sheet_list_order_model.dart';
 import '../../models/category_list_model.dart';
+import '../../models/item_list_model.dart';
 import '../../models/supplier_list_model.dart';
 import '../../models/uom_list_model.dart';
 import '../../services/api_services.dart';
@@ -26,13 +30,19 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   String? _selectedPreviousOrder;
   String? _selectedOrderUom;
   late List<TextEditingController> orderQtyControllers;
+  final TextEditingController _itemNameController = TextEditingController();
+  final TextEditingController _itemConValController = TextEditingController();
+  final TextEditingController _itemOrderQtyController = TextEditingController();
+  final TextEditingController _itemRateController = TextEditingController();
   bool _selectAll = false;
 
   late List<CategoryListModel> _categories = [];
   late List<SupplierListModel> _suppliers = [];
   late List<UomAndPackListModel> _oum = [];
+  late List<ItemListModel> _items = [];
   bool _isLoading = false;
-  List<BuyingSheetListModel> buyingSheet = [];
+  List<BuyingSheetListModel> _buyingSheet = [];
+  ItemListModel? selectedItem;
 
   final List<String> _previousOrders = [
     'Order 1',
@@ -40,11 +50,19 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     'Order 3',
   ];
 
-  Future<void> getBuyingSheetList({
+  Future getBuyingSheetList({
     required String prmFrmDate,
     required String prmToDate,
   }) async {
     try {
+      showDialog(
+        barrierColor: Colors.black.withValues(alpha: 0.8),
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomOverlayLoading();
+        },
+      );
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String prmCmpId = prefs.getString('cmpId')!;
       String prmBrId = prefs.getString('brId')!;
@@ -60,12 +78,43 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         prmItmGrpId: '0',
       );
       if (response.isNotEmpty) {
-        buyingSheet = response;
+        setState(() {
+          _buyingSheet = response;
+        });
+        Navigator.pop(context);
       } else {
-        throw ('No Sales Order Found');
+        throw ('No Items Found');
       }
     } catch (e) {
-      throw ('No Sales Order Found');
+      _buyingSheet = [];
+      Navigator.pop(context);
+      debugPrint(e.toString());
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          margin: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
+          content: const Text('Unable to save data'),
+        ),
+      );
+    }
+  }
+
+  Future<List<ItemListModel>> getItemList() async {
+    try {
+      final response = await ApiServices().getItemList();
+      if (response.isNotEmpty) {
+        return response;
+      } else {
+        throw ('No Items Found');
+      }
+    } catch (e) {
+      throw ('No Items Found');
     }
   }
 
@@ -74,8 +123,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     super.initState();
     _loadCategories();
     orderQtyControllers = List.generate(
-      buyingSheet.length,
-      (index) => TextEditingController(text: buyingSheet[index].odrEQty),
+      _buyingSheet.length,
+      (index) => TextEditingController(text: _buyingSheet[index].odrEQty),
     );
   }
 
@@ -88,19 +137,20 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     setState(() {
       _isLoading = true;
     });
-
     try {
-      await getBuyingSheetList(
-        prmFrmDate: _formatDate(DateTime.now()).toString(),
-        prmToDate:
-            _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
-      );
+      // final buyingSheetList = await getBuyingSheetList(
+      //   prmFrmDate: _formatDate(DateTime.now()).toString(),
+      //   prmToDate:
+      //       _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
+      // );
       final categories = await getCategoryList();
       final suppliers = await getSupplierList();
       final oum = await getOumList();
+      final items = await getItemList();
       setState(() {
         _categories = categories;
         _suppliers = suppliers;
+        _items = items;
         _oum = oum;
         _isLoading = false;
       });
@@ -129,43 +179,49 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   Future<List<CategoryListModel>> getCategoryList() async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
       final response =
-          await ApiServices().getCategoryList(prmCompanyId: prmCompanyId);
+          await ApiServices().getCategoryList(prmCompanyId: prmCmpId);
       if (response.isNotEmpty) {
         return response;
       } else {
-        throw Exception('No Category found');
+        throw ('No Category found');
       }
     } catch (e) {
-      throw Exception('No Category found');
+      rethrow;
     }
   }
 
   Future<List<SupplierListModel>> getSupplierList() async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
       final response =
-          await ApiServices().getSupplierList(prmCompanyId: prmCompanyId);
+          await ApiServices().getSupplierList(prmCompanyId: prmCmpId);
       if (response.isNotEmpty) {
         return response;
       } else {
-        throw Exception('No Supplier found');
+        throw ('No Supplier found');
       }
     } catch (e) {
-      throw Exception('No Supplier found');
+      rethrow;
     }
   }
 
   Future<List<UomAndPackListModel>> getOumList() async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
       final response =
-          await ApiServices().getUomList(prmCompanyId: prmCompanyId);
+          await ApiServices().getPackingType(prmCompanyId: prmCmpId);
       if (response.isNotEmpty) {
         return response;
       } else {
-        throw Exception('No Oum List found');
+        throw ('No Oum List found');
       }
     } catch (e) {
-      throw Exception('No Oum List found');
+      rethrow;
     }
   }
 
@@ -184,151 +240,288 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             builder: (context) => const ScreenCustomExitConfirmation(),
           );
         },
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Row(
-                  children: [
-                    const Text(
-                      'Buying Sheet',
-                      style: TextStyle(
-                        fontSize: 40.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    _buildSearchRow(),
-                    const SizedBox(width: 16),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.logout,
-                        color: Colors.black,
-                        size: 40.0,
-                      ),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) =>
-                              const CustomLogoutConfirmation(),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Divider(
-                  color: Colors.black,
-                  thickness: 2,
-                ),
-                const SizedBox(height: 2),
-                Container(
-                  width: double.infinity,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Row(
+        child: _isLoading
+            ? CustomLogoSpinner(
+                color: Colors.black,
+              )
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Expanded(
-                        flex: 1,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Code',
-                            border: OutlineInputBorder(),
+                      Row(
+                        children: [
+                          const Text(
+                            'Buying Sheet',
+                            style: TextStyle(
+                              fontSize: 40.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
+                          const SizedBox(width: 16),
+                          _buildSearchRow(),
+                          const SizedBox(width: 16),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.logout,
+                              color: Colors.black,
+                              size: 40.0,
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    const CustomLogoutConfirmation(),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Divider(
+                        color: Colors.black,
+                        thickness: 2,
+                      ),
+                      const SizedBox(height: 2),
+                      Container(
+                        width: double.infinity,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Autocomplete<ItemListModel>(
+                                optionsBuilder:
+                                    (TextEditingValue textEditingValue) {
+                                  if (textEditingValue.text == '') {
+                                    return const Iterable<
+                                        ItemListModel>.empty();
+                                  }
+                                  return _items.where((ItemListModel option) {
+                                    return option.code.toLowerCase().contains(
+                                        textEditingValue.text.toLowerCase());
+                                  });
+                                },
+                                onSelected: (ItemListModel selection) async {
+                                  setState(() {
+                                    selectedItem = selection;
+                                  });
+                                },
+                                fieldViewBuilder: (BuildContext context,
+                                    editingCurrentSupervisorController,
+                                    FocusNode fieldFocusNode,
+                                    VoidCallback onFieldSubmitted) {
+                                  return TextFormField(
+                                    controller:
+                                        editingCurrentSupervisorController,
+                                    focusNode: fieldFocusNode,
+                                    decoration: InputDecoration(
+                                      labelText: 'Code',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    onFieldSubmitted: (String value) {
+                                      onFieldSubmitted();
+                                    },
+                                  );
+                                },
+                                optionsViewBuilder: (BuildContext context,
+                                    AutocompleteOnSelected<ItemListModel>
+                                        onSelected,
+                                    Iterable<ItemListModel> options) {
+                                  return Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      elevation: 25,
+                                      child: Container(
+                                        margin: const EdgeInsets.only(
+                                          top: 5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          // Background color
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          // Border radius
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: 2,
+                                          ), // Border color
+                                        ),
+                                        constraints: BoxConstraints(
+                                          maxHeight: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.25,
+                                          maxWidth: 600,
+                                        ),
+                                        child: ListView(
+                                          padding: const EdgeInsets.all(10.0),
+                                          children: options
+                                              .map((ItemListModel option) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                onSelected(option);
+                                                _itemNameController.text =
+                                                    option.name;
+                                                _itemConValController.text =
+                                                    option.code;
+                                                _itemRateController.text =
+                                                    option.bulkRate;
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      color: Colors.grey,
+                                                      width: 1,
+                                                    ),
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        option.code,
+                                                        style: const TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 400,
+                                                      child: Text(
+                                                        '    ${option.name}',
+                                                        style: const TextStyle(
+                                                          fontSize: 16,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 50,
+                                                      child: Text(
+                                                        '    ${option.bulkRate}',
+                                                        style: const TextStyle(
+                                                          fontSize: 16,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Expanded(
+                              flex: 2,
+                              child: TextField(
+                                controller: _itemNameController,
+                                decoration: InputDecoration(
+                                  labelText: 'Name',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                controller: _itemConValController,
+                                decoration: InputDecoration(
+                                  labelText: 'Con Val',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                controller: _itemOrderQtyController,
+                                decoration: InputDecoration(
+                                  labelText: 'Order Qty',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Flexible(
+                              flex: 1,
+                              child: _buildOrderUomDropdown(),
+                            ),
+                            SizedBox(width: 8),
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                controller: _itemRateController,
+                                decoration: InputDecoration(
+                                  labelText: 'Rate',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: buttonColor,
+                                minimumSize: const Size(150, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                              onPressed: () {},
+                              child: Text('Add'),
+                            ),
+                            SizedBox(width: 8),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                minimumSize: const Size(120, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _selectAll = !_selectAll;
+                                  for (var item in _buyingSheet) {
+                                    item.isSelected = _selectAll;
+                                  }
+                                });
+                              },
+                              child: Text(
+                                  _selectAll ? 'Deselect All' : 'Select All'),
+                            ),
+                          ],
                         ),
                       ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        flex: 2,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Name',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        flex: 1,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Con Val',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        flex: 1,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Order Qty',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Flexible(
-                        flex: 1,
-                        child: _buildOrderUomDropdown(),
-                      ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        flex: 1,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Rate',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: buttonColor,
-                          minimumSize: const Size(150, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        onPressed: () {},
-                        child: Text('Add'),
-                      ),
-                      SizedBox(width: 8),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          minimumSize: const Size(120, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _selectAll = !_selectAll;
-                            for (var item in buyingSheet) {
-                              item.isSelected = _selectAll;
-                            }
-                          });
-                        },
-                        child: Text(_selectAll ? 'Deselect All' : 'Select All'),
-                      ),
+                      const SizedBox(height: 10),
+                      _buyingSheet.isEmpty
+                          ? SizedBox()
+                          : _buyingSheetTable(data: _buyingSheet),
+                      const SizedBox(height: 10),
+                      _buyingSheet.isEmpty ? SizedBox() : _buildSaveButton(),
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                _buyingSheetTable(data: buyingSheet),
-                const SizedBox(height: 10),
-                _buildSaveButton(),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }
@@ -461,7 +654,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return SizedBox(
       height: 50,
       child: ElevatedButton(
-        onPressed: _handleSearch,
+        onPressed: () async {
+          await getBuyingSheetList(
+            prmFrmDate: _formatDate(DateTime.now()).toString(),
+            prmToDate:
+                _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
+          );
+        },
+        // onPressed: _handleSearch,
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,
           backgroundColor: buttonColor,

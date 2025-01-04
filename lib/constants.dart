@@ -8,8 +8,6 @@ Color textColor = Colors.white;
 
 const String appVersion = '0.0.1';
 
-String prmCompanyId = '1';
-
 String baseUrl = 'https://sysware-lasovrana.co.uk/lasov';
 
 String webAppLogUrl = '$baseUrl/WebAppLog.asmx';
