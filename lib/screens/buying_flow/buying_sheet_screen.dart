@@ -217,6 +217,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
+      resizeToAvoidBottomInset: false,
       bodyWidget: PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -355,7 +356,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                             _itemNameController.text =
                                                 option.name;
                                             _itemConValController.text =
-                                                option.code;
+                                                option.conVal;
                                             _itemRateController.text =
                                                 option.bulkRate;
                                           },
@@ -810,7 +811,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return DataCell(
       SizedBox(
         height: 20,
-        width: MediaQuery.of(context).size.width * 0.35,
+        width: MediaQuery.of(context).size.width * 0.3,
         child: Center(
           child: Text(
             text ?? '',
@@ -834,13 +835,13 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         child: ButtonTheme(
           alignedDropdown: true,
           child: DropdownButton<String>(
-            value: 'Bulk',
+            value: "BOX / BAG",
             underline: Container(),
-            items: ['Bulk', 'Split'].map((String value) {
+            items: _oum.map((UomAndPackListModel value) {
               return DropdownMenuItem<String>(
-                value: value,
+                value: value.name,
                 child: Text(
-                  value,
+                  value.name,
                   style: const TextStyle(color: Colors.black),
                 ),
               );
@@ -917,12 +918,13 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   }
 
   void _incrementValue(TextEditingController controller) {
-    int currentValue = int.tryParse(controller.text) ?? 0;
+    // print(controller.text);
+    double currentValue = double.parse(controller.text);
     controller.text = (currentValue + 1).toString();
   }
 
   void _decrementValue(TextEditingController controller) {
-    int currentValue = int.tryParse(controller.text) ?? 0;
+    double currentValue = double.parse(controller.text);
     if (currentValue > 0) {
       controller.text = (currentValue - 1).toString();
     }

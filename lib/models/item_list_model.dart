@@ -18,11 +18,9 @@ class ItemListModel {
   ItemGroup itemGroup;
   String bulkRate;
   String splitRate;
-
-  @override
-  String toString() {
-    return code;
-  }
+  String uom;
+  String conVal;
+  String groupId;
 
   ItemListModel({
     required this.id,
@@ -31,6 +29,9 @@ class ItemListModel {
     required this.itemGroup,
     required this.bulkRate,
     required this.splitRate,
+    required this.uom,
+    required this.conVal,
+    required this.groupId,
   });
 
   factory ItemListModel.fromJson(Map<String, dynamic> json) => ItemListModel(
@@ -40,6 +41,9 @@ class ItemListModel {
         itemGroup: itemGroupValues.map[json["ItemGroup"]]!,
         bulkRate: json["BulkRate"],
         splitRate: json["SplitRate"],
+        uom: json["Uom"],
+        conVal: json["ConVal"],
+        groupId: json["GroupId"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -49,6 +53,9 @@ class ItemListModel {
         "ItemGroup": itemGroupValues.reverse[itemGroup],
         "BulkRate": bulkRate,
         "SplitRate": splitRate,
+        "Uom": uom,
+        "ConVal": conVal,
+        "GroupId": groupId,
       };
 }
 
