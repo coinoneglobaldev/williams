@@ -233,283 +233,285 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             ? CustomLogoSpinner(
                 color: Colors.black,
               )
-            : SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        children: [
-                          const Text(
-                            'Buying Sheet',
-                            style: TextStyle(
-                              fontSize: 40.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+            : Column(
+                children: [
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Buying Sheet',
+                          style: TextStyle(
+                            fontSize: 35.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                          const SizedBox(width: 16),
-                          _buildSearchRow(),
-                          const SizedBox(width: 16),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.logout,
-                              color: Colors.black,
-                              size: 40.0,
-                            ),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    const CustomLogoutConfirmation(),
+                        ),
+                        const SizedBox(width: 16),
+                        _buildSearchRow(),
+                        const SizedBox(width: 16),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.logout,
+                            color: Colors.black,
+                            size: 40.0,
+                          ),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  const CustomLogoutConfirmation(),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Divider(
+                    color: Colors.black,
+                    thickness: 2,
+                  ),
+                  const SizedBox(height: 2),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Autocomplete<ItemListModel>(
+                            optionsBuilder:
+                                (TextEditingValue textEditingValue) {
+                              if (textEditingValue.text == '') {
+                                return const Iterable<ItemListModel>.empty();
+                              }
+                              return _items.where((ItemListModel option) {
+                                return option.code.toLowerCase().contains(
+                                    textEditingValue.text.toLowerCase());
+                              });
+                            },
+                            onSelected: (ItemListModel selection) async {
+                              setState(() {
+                                selectedItem = selection;
+                              });
+                            },
+                            fieldViewBuilder: (BuildContext context,
+                                editingCurrentSupervisorController,
+                                FocusNode fieldFocusNode,
+                                VoidCallback onFieldSubmitted) {
+                              return TextFormField(
+                                controller: editingCurrentSupervisorController,
+                                focusNode: fieldFocusNode,
+                                decoration: InputDecoration(
+                                  labelText: 'Code',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onFieldSubmitted: (String value) {
+                                  onFieldSubmitted();
+                                },
                               );
                             },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Divider(
-                        color: Colors.black,
-                        thickness: 2,
-                      ),
-                      const SizedBox(height: 2),
-                      Container(
-                        width: double.infinity,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: Autocomplete<ItemListModel>(
-                                optionsBuilder:
-                                    (TextEditingValue textEditingValue) {
-                                  if (textEditingValue.text == '') {
-                                    return const Iterable<
-                                        ItemListModel>.empty();
-                                  }
-                                  return _items.where((ItemListModel option) {
-                                    return option.code.toLowerCase().contains(
-                                        textEditingValue.text.toLowerCase());
-                                  });
-                                },
-                                onSelected: (ItemListModel selection) async {
-                                  setState(() {
-                                    selectedItem = selection;
-                                  });
-                                },
-                                fieldViewBuilder: (BuildContext context,
-                                    editingCurrentSupervisorController,
-                                    FocusNode fieldFocusNode,
-                                    VoidCallback onFieldSubmitted) {
-                                  return TextFormField(
-                                    controller:
-                                        editingCurrentSupervisorController,
-                                    focusNode: fieldFocusNode,
-                                    decoration: InputDecoration(
-                                      labelText: 'Code',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
+                            optionsViewBuilder: (BuildContext context,
+                                AutocompleteOnSelected<ItemListModel>
+                                    onSelected,
+                                Iterable<ItemListModel> options) {
+                              return Align(
+                                alignment: Alignment.topLeft,
+                                child: Material(
+                                  color: Colors.transparent,
+                                  elevation: 25,
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                      top: 5,
                                     ),
-                                    onFieldSubmitted: (String value) {
-                                      onFieldSubmitted();
-                                    },
-                                  );
-                                },
-                                optionsViewBuilder: (BuildContext context,
-                                    AutocompleteOnSelected<ItemListModel>
-                                        onSelected,
-                                    Iterable<ItemListModel> options) {
-                                  return Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      elevation: 25,
-                                      child: Container(
-                                        margin: const EdgeInsets.only(
-                                          top: 5,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          // Background color
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          // Border radius
-                                          border: Border.all(
-                                            color: Colors.black,
-                                            width: 2,
-                                          ), // Border color
-                                        ),
-                                        constraints: BoxConstraints(
-                                          maxHeight: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      // Background color
+                                      borderRadius: BorderRadius.circular(10),
+                                      // Border radius
+                                      border: Border.all(
+                                        color: Colors.black,
+                                        width: 2,
+                                      ), // Border color
+                                    ),
+                                    constraints: BoxConstraints(
+                                      maxHeight:
+                                          MediaQuery.of(context).size.height *
                                               0.25,
-                                          maxWidth: 600,
-                                        ),
-                                        child: ListView(
-                                          padding: const EdgeInsets.all(10.0),
-                                          children: options
-                                              .map((ItemListModel option) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                onSelected(option);
-                                                _itemNameController.text =
-                                                    option.name;
-                                                _itemConValController.text =
-                                                    option.code;
-                                                _itemRateController.text =
-                                                    option.bulkRate;
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(
-                                                      color: Colors.grey,
-                                                      width: 1,
+                                      maxWidth: 600,
+                                    ),
+                                    child: ListView(
+                                      padding: const EdgeInsets.all(10.0),
+                                      children:
+                                          options.map((ItemListModel option) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            onSelected(option);
+                                            _itemNameController.text =
+                                                option.name;
+                                            _itemConValController.text =
+                                                option.code;
+                                            _itemRateController.text =
+                                                option.bulkRate;
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                bottom: BorderSide(
+                                                  color: Colors.grey,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 100,
+                                                  child: Text(
+                                                    option.code,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                                   ),
                                                 ),
-                                                child: Row(
-                                                  children: [
-                                                    SizedBox(
-                                                      width: 100,
-                                                      child: Text(
-                                                        option.code,
-                                                        style: const TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
+                                                SizedBox(
+                                                  width: 400,
+                                                  child: Text(
+                                                    '    ${option.name}',
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
                                                     ),
-                                                    SizedBox(
-                                                      width: 400,
-                                                      child: Text(
-                                                        '    ${option.name}',
-                                                        style: const TextStyle(
-                                                          fontSize: 16,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 50,
-                                                      child: Text(
-                                                        '    ${option.bulkRate}',
-                                                        style: const TextStyle(
-                                                          fontSize: 16,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
+                                                  ),
                                                 ),
-                                              ),
-                                            );
-                                          }).toList(),
-                                        ),
-                                      ),
+                                                SizedBox(
+                                                  width: 50,
+                                                  child: Text(
+                                                    '    ${option.bulkRate}',
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              flex: 2,
-                              child: TextField(
-                                controller: _itemNameController,
-                                decoration: InputDecoration(
-                                  labelText: 'Name',
-                                  border: OutlineInputBorder(),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              flex: 1,
-                              child: TextField(
-                                controller: _itemConValController,
-                                decoration: InputDecoration(
-                                  labelText: 'Con Val',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              flex: 1,
-                              child: TextField(
-                                controller: _itemOrderQtyController,
-                                decoration: InputDecoration(
-                                  labelText: 'Order Qty',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Flexible(
-                              flex: 1,
-                              child: _buildOrderUomDropdown(),
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              flex: 1,
-                              child: TextField(
-                                controller: _itemRateController,
-                                decoration: InputDecoration(
-                                  labelText: 'Rate',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: buttonColor,
-                                minimumSize: const Size(150, 50),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
-                              onPressed: () {},
-                              child: Text('Add'),
-                            ),
-                            SizedBox(width: 8),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                minimumSize: const Size(120, 50),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _selectAll = !_selectAll;
-                                  for (var item in _buyingSheet) {
-                                    item.isSelected = _selectAll;
-                                  }
-                                });
-                              },
-                              child: Text(
-                                  _selectAll ? 'Deselect All' : 'Select All'),
-                            ),
-                          ],
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      _buyingSheet.isEmpty
-                          ? SizedBox()
-                          : _buyingSheetTable(data: _buyingSheet),
-                      const SizedBox(height: 10),
-                      _buyingSheet.isEmpty ? SizedBox() : _buildSaveButton(),
-                    ],
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 2,
+                          child: TextField(
+                            controller: _itemNameController,
+                            decoration: InputDecoration(
+                              labelText: 'Name',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            controller: _itemConValController,
+                            decoration: InputDecoration(
+                              labelText: 'Con Val',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            controller: _itemOrderQtyController,
+                            decoration: InputDecoration(
+                              labelText: 'Order Qty',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Flexible(
+                          flex: 1,
+                          child: _buildOrderUomDropdown(),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            controller: _itemRateController,
+                            decoration: InputDecoration(
+                              labelText: 'Rate',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: buttonColor,
+                            minimumSize: const Size(150, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          onPressed: () {},
+                          child: Text('Add'),
+                        ),
+                        SizedBox(width: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            minimumSize: const Size(120, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _selectAll = !_selectAll;
+                              for (var item in _buyingSheet) {
+                                item.isSelected = _selectAll;
+                              }
+                            });
+                          },
+                          child:
+                              Text(_selectAll ? 'Deselect All' : 'Select All'),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: _buyingSheet.isEmpty
+                        ? SizedBox()
+                        : _buyingSheetTable(data: _buyingSheet),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 50,
+                    child: _buyingSheet.isEmpty
+                        ? SizedBox()
+                        : Align(
+                            alignment: Alignment.centerRight,
+                            child: _buildSaveButton(),
+                          ),
+                  ),
+                ],
               ),
       ),
     );
@@ -645,7 +647,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       child: ElevatedButton(
         onPressed: () async {
           await getBuyingSheetList(
-            prmFrmDate: _formatDate(DateTime.now()).toString(),
+            prmFrmDate: _formatDate(DateTime.now().subtract(Duration(days: 5)))
+                .toString(),
             prmToDate:
                 _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
           );
@@ -681,52 +684,46 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   }
 
   Widget _buyingSheetTable({required List<BuyingSheetListModel> data}) {
-    return SingleChildScrollView(
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15.0),
-                border: Border.all(color: Colors.black),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15.0),
-                child: DataTable(
-                  dataRowMinHeight: 60,
-                  dataRowMaxHeight: 60,
-                  horizontalMargin: 10,
-                  columnSpacing: 10,
-                  headingRowColor: WidgetStateProperty.all(
-                    Colors.grey.shade400.withValues(alpha: 0.5),
-                  ),
-                  border: TableBorder.symmetric(
-                    inside: const BorderSide(
-                      color: Colors.black,
-                      width: 1.0,
-                    ),
-                  ),
-                  columns: _getTableColumns(),
-                  rows: data.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final item = entry.value;
-                    return _buildDataRow(item, index);
-                  }).toList(),
-                ),
-              ),
-            ),
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15.0),
+        border: Border.all(color: Colors.black),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
           ),
         ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15.0),
+        child: SingleChildScrollView(
+          child: DataTable(
+            dataRowMinHeight: 60,
+            dataRowMaxHeight: 60,
+            horizontalMargin: 10,
+            columnSpacing: 10,
+            headingRowColor: WidgetStateProperty.all(
+              Colors.grey.shade400.withValues(alpha: 0.5),
+            ),
+            border: TableBorder.symmetric(
+              inside: const BorderSide(
+                color: Colors.black,
+                width: 1.0,
+              ),
+            ),
+            columns: _getTableColumns(),
+            rows: data.asMap().entries.map((entry) {
+              final index = entry.key;
+              final item = entry.value;
+              return _buildDataRow(item, index);
+            }).toList(),
+          ),
+        ),
       ),
     );
   }
@@ -770,7 +767,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       ),
       cells: [
         _buildDataCell(item.itemCode),
-        _buildDataCell(item.itemName),
+        _buildNameCell(item.itemName),
         _buildEditTextDataCell(TextEditingController(text: item.uomConVal)),
         _buildDataCell(
             item.boxQty), // Changed from eachQty to boxQty for Short Bulk
@@ -785,10 +782,35 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  DataCell _buildDataCell(String? text) {
+  DataCell _buildDataCell(
+    String? text,
+  ) {
     return DataCell(
       SizedBox(
         height: 20,
+        child: Center(
+          child: Text(
+            text ?? '',
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+          ),
+        ),
+      ),
+    );
+  }
+
+  DataCell _buildNameCell(
+    String? text,
+  ) {
+    return DataCell(
+      SizedBox(
+        height: 20,
+        width: MediaQuery.of(context).size.width * 0.35,
         child: Center(
           child: Text(
             text ?? '',
