@@ -30,6 +30,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   SupplierListModel? _selectedSupplier;
   String? _selectedPreviousOrder;
   UomAndPackListModel? _selectedOrderUom;
+  List<UomAndPackListModel>? _selectedOrderTableUom;
   late List<TextEditingController> orderQtyControllers;
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _itemConValController = TextEditingController();
@@ -123,6 +124,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     orderQtyControllers = List.generate(
       _buyingSheet.length,
       (index) => TextEditingController(text: _buyingSheet[index].odrEQty),
+    );
+    List.generate(
+      _buyingSheet.length,
+      (index) => _selectedOrderTableUom!.add(UomAndPackListModel(
+        code: '',
+        name: _buyingSheet[index].uom,
+        id: '',
+      )),
     );
   }
 
@@ -569,7 +578,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                 itmCnt: '0',
                               ),
                             );
-                            setState(() {});
+                            setState(() {
+                              _itemNameController.clear();
+                              _itemConValController.clear();
+                              _itemOrderQtyController.clear();
+                              _itemRateController.clear();
+                            });
                           },
                           child: Text('Add'),
                         ),
@@ -873,7 +887,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         _buildDataCell(
             item.boxQty), // Changed from eachQty to boxQty for Short Bulk
         _buildDataCell(item.eachQty), // For Short Split
-        _buildBulkSplitDropdownCell(item),
+        _buildBulkSplitDropdownCell(item, index),
         _buildEditableDataCell(TextEditingController(
             text: item.odrEQty)), // Changed to odrEQty for Order Qty
         _buildEditTextDataCell(TextEditingController(
@@ -928,27 +942,28 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  DataCell _buildBulkSplitDropdownCell(BuyingSheetListModel item) {
+  DataCell _buildBulkSplitDropdownCell(BuyingSheetListModel item, int index) {
     //TODO: Add dropdown for Bulk and Split
     return DataCell(
       Center(
         child: ButtonTheme(
           alignedDropdown: true,
-          child: DropdownButton<String>(
-            value: "BOX / BAG",
+          child: DropdownButton<UomAndPackListModel>(
+            isExpanded: true,
             underline: Container(),
-            items: _oum.map((UomAndPackListModel value) {
-              return DropdownMenuItem<String>(
-                value: value.name,
-                child: Text(
-                  value.name,
-                  style: const TextStyle(color: Colors.black),
-                ),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
+            items: _oum
+                .map(
+                  (e) => DropdownMenuItem(
+                    value: e,
+                    child: Text(e.name),
+                  ),
+                )
+                .toList(),
+            value: _selectedOrderTableUom?[index],
+            hint: const Text('Order UOM'),
+            onChanged: (UomAndPackListModel? value) {
               setState(() {
-                item.boxQty = newValue!;
+                _selectedOrderTableUom?[index] = value!;
               });
             },
           ),
