@@ -90,18 +90,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       Navigator.pop(context);
       debugPrint(e.toString());
       if (!mounted) return;
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          margin: const EdgeInsets.all(10),
-          padding: const EdgeInsets.all(10),
-          content: const Text('Unable to save data'),
-        ),
-      );
+      Util.customErrorSnackBar(context, 'Unable to fetch data');
     }
   }
 
@@ -159,7 +148,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         _isLoading = false;
       });
       if (!mounted) return;
-      Util.customErrorSnackbar(
+      Util.customErrorSnackBar(
         context,
         'Category, Suppliers and Previous order not ready!',
       );
@@ -678,13 +667,13 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   void _handleSearch() {
     if (_selectedCategory == null || _selectedSupplier == null) {
-      Util.customErrorSnackbar(
+      Util.customErrorSnackBar(
         context,
         'Please select Category and Subcategory!',
       );
     }
     if (_selectedCategory != null && _selectedSupplier != null) {
-      Util.customErrorSnackbar(
+      Util.customErrorSnackBar(
         context,
         'Categories and Subcategories are not yet added!',
       );
@@ -942,7 +931,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   Widget _buildSaveButton() {
     return ElevatedButton(
       onPressed: () {
-        Util.customSuccessSnackbar(
+        Util.customSuccessSnackBar(
           context,
           'Saved Successfully!',
         );

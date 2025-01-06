@@ -369,7 +369,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                         _navigateToBackground(loginData.data[0].userType);
                       } else {
                         if (!context.mounted) return;
-                        Util.customErrorSnackbar(
+                        Util.customErrorSnackBar(
                           context,
                           "Error: ${loginData.message}",
                         );
@@ -379,7 +379,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                         print('Login error: $e');
                       }
                       if (!context.mounted) return;
-                      Util.customErrorSnackbar(
+                      Util.customErrorSnackBar(
                         context,
                         "An error occurred during login. Please try again.",
                       );
@@ -599,7 +599,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                               _navigateToBackground(loginData.data[0].userType);
                             } else {
                               if (!context.mounted) return;
-                              Util.customErrorSnackbar(
+                              Util.customErrorSnackBar(
                                 context,
                                 "Error: ${loginData.message}",
                               );
@@ -609,7 +609,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                               print('Login error: $e');
                             }
                             if (!context.mounted) return;
-                            Util.customErrorSnackbar(
+                            Util.customErrorSnackBar(
                               context,
                               "An error occurred during login. Please try again.",
                             );
