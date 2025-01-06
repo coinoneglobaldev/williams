@@ -59,10 +59,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     required String prmSupplier,
     required String prmPreviousOrder,
   }) async {
-    print('-------------------------------------------------------------');
-    print(
-        '${prmFrmDate}_${prmToDate}_${prmCategory}_${prmSupplier}_${prmPreviousOrder}');
-    print('-------------------------------------------------------------');
+    // print('-------------------------------------------------------------');
+    // print(
+    //     '${prmFrmDate}_${prmToDate}_${prmCategory}_${prmSupplier}_${prmPreviousOrder}');
+    // print('-------------------------------------------------------------');
 
     try {
       showDialog(
@@ -761,9 +761,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           await getBuyingSheetList(
             prmFrmDate: _formatDate(selectedDateRange!.start).toString(),
             prmToDate: _formatDate(selectedDateRange!.end),
-            prmCategory: _selectedCategory!.id.toString(),
-            prmSupplier: _selectedSupplier!.id.toString(),
-            prmPreviousOrder: _selectedPreviousOrder.toString(),
+            prmCategory: _selectedCategory?.id ?? '',
+            prmSupplier: _selectedSupplier?.id ?? '',
+            prmPreviousOrder: _selectedPreviousOrder ?? '',
           ).whenComplete(() {
             setState(() {});
           });
