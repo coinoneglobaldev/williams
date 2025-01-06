@@ -15,12 +15,17 @@ class ItemListModel {
   String id;
   String name;
   String code;
-  ItemGroup itemGroup;
+  String itemGroup;
   String bulkRate;
   String splitRate;
   String uom;
   String conVal;
   String groupId;
+  String taxId;
+  @override
+  String toString() {
+    return code;
+  }
 
   ItemListModel({
     required this.id,
@@ -32,73 +37,32 @@ class ItemListModel {
     required this.uom,
     required this.conVal,
     required this.groupId,
+    required this.taxId,
   });
 
   factory ItemListModel.fromJson(Map<String, dynamic> json) => ItemListModel(
         id: json["Id"],
         name: json["Name"],
         code: json["Code"],
-        itemGroup: itemGroupValues.map[json["ItemGroup"]]!,
+        itemGroup: json["ItemGroup"]!,
         bulkRate: json["BulkRate"],
         splitRate: json["SplitRate"],
         uom: json["Uom"],
         conVal: json["ConVal"],
         groupId: json["GroupId"],
+        taxId: json["TaxId"],
       );
 
   Map<String, dynamic> toJson() => {
         "Id": id,
         "Name": name,
         "Code": code,
-        "ItemGroup": itemGroupValues.reverse[itemGroup],
+        "ItemGroup": itemGroup,
         "BulkRate": bulkRate,
         "SplitRate": splitRate,
         "Uom": uom,
         "ConVal": conVal,
         "GroupId": groupId,
+        "TaxId": taxId,
       };
-}
-
-enum ItemGroup {
-  CHARCUTERIE,
-  DAIRY,
-  DRY_STORAGE,
-  FROZEN,
-  FRUITS,
-  HERBS,
-  JUICES,
-  MEAT,
-  MUSHROOMS,
-  PREP_GOODS,
-  SALADS,
-  VEGETABLES,
-  WINE
-}
-
-final itemGroupValues = EnumValues({
-  "CHARCUTERIE": ItemGroup.CHARCUTERIE,
-  "DAIRY": ItemGroup.DAIRY,
-  "DRY STORAGE": ItemGroup.DRY_STORAGE,
-  "FROZEN": ItemGroup.FROZEN,
-  "FRUITS": ItemGroup.FRUITS,
-  "HERBS": ItemGroup.HERBS,
-  "JUICES": ItemGroup.JUICES,
-  "MEAT": ItemGroup.MEAT,
-  "MUSHROOMS": ItemGroup.MUSHROOMS,
-  "PREP GOODS": ItemGroup.PREP_GOODS,
-  "SALADS": ItemGroup.SALADS,
-  "VEGETABLES": ItemGroup.VEGETABLES,
-  "WINE": ItemGroup.WINE
-});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
 }

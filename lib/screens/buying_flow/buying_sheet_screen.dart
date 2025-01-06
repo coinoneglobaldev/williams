@@ -25,10 +25,11 @@ class BuyingSheetScreen extends StatefulWidget {
 }
 
 class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
-  String? _selectedCategory;
-  String? _selectedSupplier;
+  DateTimeRange? selectedDateRange;
+  CategoryListModel? _selectedCategory;
+  SupplierListModel? _selectedSupplier;
   String? _selectedPreviousOrder;
-  String? _selectedOrderUom;
+  UomAndPackListModel? _selectedOrderUom;
   late List<TextEditingController> orderQtyControllers;
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _itemConValController = TextEditingController();
@@ -53,7 +54,15 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   Future getBuyingSheetList({
     required String prmFrmDate,
     required String prmToDate,
+    required String prmCategory,
+    required String prmSupplier,
+    required String prmPreviousOrder,
   }) async {
+    print('-------------------------------------------------------------');
+    print(
+        '${prmFrmDate}_${prmToDate}_${prmCategory}_${prmSupplier}_${prmPreviousOrder}');
+    print('-------------------------------------------------------------');
+
     try {
       showDialog(
         barrierColor: Colors.black.withValues(alpha: 0.8),
@@ -117,6 +126,42 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
+  void _showDateRangePicker() async {
+    final DateTimeRange? result = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2022),
+      lastDate: DateTime.now().add(Duration(days: 1)),
+      currentDate: DateTime.now(),
+      saveText: 'Done',
+
+      // Customize the picker appearance
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.blue,
+            colorScheme: const ColorScheme.light(
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (result != null) {
+      // Only update if user didn't cancel the picker
+      setState(() {
+        selectedDateRange = result;
+      });
+      //  selectedDateRange!.start.toString().split(' ')[0]
+      // ${selectedDateRange!.end.toString().split(' ')[0]}
+    }
+  }
+
   String _formatDate(DateTime dte) {
     DateFormat date = DateFormat('dd/MMM/yyyy');
     return date.format(dte);
@@ -136,6 +181,15 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       final suppliers = await getSupplierList();
       final oum = await getOumList();
       final items = await getItemList();
+      await getBuyingSheetList(
+        prmFrmDate:
+            _formatDate(DateTime.now().subtract(Duration(days: 5))).toString(),
+        prmToDate:
+            _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
+        prmCategory: '',
+        prmSupplier: '',
+        prmPreviousOrder: '',
+      );
       setState(() {
         _categories = categories;
         _suppliers = suppliers;
@@ -359,6 +413,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                                 option.conVal;
                                             _itemRateController.text =
                                                 option.bulkRate;
+                                            selectedItem = option;
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -448,7 +503,34 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         SizedBox(width: 8),
                         Flexible(
                           flex: 1,
-                          child: _buildOrderUomDropdown(),
+                          child: ButtonTheme(
+                            alignedDropdown: true,
+                            child: DropdownButtonFormField<UomAndPackListModel>(
+                              isExpanded: true,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              items: _oum
+                                  .map(
+                                    (e) => DropdownMenuItem(
+                                      value: e,
+                                      child: Text(e.name),
+                                    ),
+                                  )
+                                  .toList(),
+                              value: _selectedOrderUom,
+                              hint: const Text('UOM'),
+                              onChanged: (UomAndPackListModel? value) {
+                                setState(() {
+                                  _selectedOrderUom = value!;
+                                });
+                              },
+                            ),
+                          ),
                         ),
                         SizedBox(width: 8),
                         Expanded(
@@ -470,7 +552,25 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            _buyingSheet.add(
+                              BuyingSheetListModel(
+                                itemId: selectedItem!.id,
+                                itemName: _itemNameController.text,
+                                itemCode: selectedItem!.code,
+                                uom: _selectedOrderUom!.name,
+                                itemGroup: selectedItem!.itemGroup,
+                                boxQty: _itemOrderQtyController.text,
+                                eachQty: _itemRateController.text,
+                                odrBQty: '',
+                                odrEQty: '',
+                                boxUomId: _selectedOrderUom!.id,
+                                uomConVal: _itemConValController.text,
+                                itmCnt: '0',
+                              ),
+                            );
+                            setState(() {});
+                          },
                           child: Text('Add'),
                         ),
                         SizedBox(width: 8),
@@ -524,120 +624,117 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         children: [
           Flexible(
             flex: 3,
-            child: _buildCategoryDropdown(),
+            child: ButtonTheme(
+              alignedDropdown: true,
+              child: DropdownButtonFormField<CategoryListModel>(
+                isExpanded: true,
+                decoration: InputDecoration(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: _categories
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e.name),
+                      ),
+                    )
+                    .toList(),
+                value: _selectedCategory,
+                hint: const Text('Category'),
+                onChanged: (CategoryListModel? value) {
+                  setState(() {
+                    _selectedCategory = value!;
+                  });
+                },
+              ),
+            ),
           ),
           const SizedBox(width: 10),
           Flexible(
             flex: 3,
-            child: _buildSupplierDropdown(),
+            child: ButtonTheme(
+              alignedDropdown: true,
+              child: DropdownButtonFormField<SupplierListModel>(
+                isExpanded: true,
+                decoration: InputDecoration(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: _suppliers
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e.name),
+                      ),
+                    )
+                    .toList(),
+                value: _selectedSupplier,
+                hint: const Text('Supplier'),
+                onChanged: (SupplierListModel? value) {
+                  setState(() {
+                    _selectedSupplier = value;
+                  });
+                },
+              ),
+            ),
           ),
           const SizedBox(width: 10),
           Flexible(
             flex: 3,
-            child: _buildPreviousOrderDropdown(),
+            child: ButtonTheme(
+              alignedDropdown: true,
+              child: DropdownButtonFormField<String>(
+                isExpanded: true,
+                decoration: InputDecoration(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: _previousOrders
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e),
+                      ),
+                    )
+                    .toList(),
+                value: _selectedPreviousOrder,
+                hint: const Text('Previous Order'),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedPreviousOrder = value;
+                  });
+                },
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonColor,
+                minimumSize: const Size(50, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              onPressed: _showDateRangePicker,
+              child:
+                  const Icon(Icons.date_range, color: Colors.white, size: 30),
+            ),
           ),
           Spacer(),
           _buildSearchButton(),
         ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryDropdown() {
-    if (_isLoading) {
-      return _buildDropdownButtonFormField(
-          hint: 'Category', value: '', items: [], onChanged: (value) {});
-    }
-    return _buildDropdownButtonFormField(
-      hint: 'Category',
-      value: _selectedCategory,
-      items: _categories.map((category) => category.name).toList(),
-      onChanged: (value) {
-        setState(() {
-          _selectedCategory = value;
-        });
-      },
-    );
-  }
-
-  Widget _buildSupplierDropdown() {
-    if (_isLoading) {
-      return _buildDropdownButtonFormField(
-          hint: 'Supplier', value: '', items: [], onChanged: (value) {});
-    }
-    return _buildDropdownButtonFormField(
-      hint: 'Supplier',
-      value: _selectedSupplier,
-      items: _suppliers.map((supplier) => supplier.name).toList(),
-      onChanged: (value) {
-        setState(() {
-          _selectedSupplier = value;
-        });
-      },
-    );
-  }
-
-  Widget _buildOrderUomDropdown() {
-    if (_isLoading) {
-      return _buildDropdownButtonFormField(
-          hint: 'UOM', value: '', items: [], onChanged: (value) {});
-    }
-    return _buildDropdownButtonFormField(
-      hint: 'UOM',
-      value: _selectedOrderUom,
-      items: _oum.map((oum) => oum.name).toList(),
-      onChanged: (value) {
-        setState(() {
-          _selectedOrderUom = value;
-        });
-      },
-    );
-  }
-
-  Widget _buildPreviousOrderDropdown() {
-    return _buildDropdownButtonFormField(
-      hint: 'Previous order',
-      value: _selectedPreviousOrder,
-      items: _previousOrders,
-      onChanged: (value) {
-        setState(() {
-          _selectedPreviousOrder = value;
-        });
-      },
-    );
-  }
-
-  Widget _buildDropdownButtonFormField({
-    required String hint,
-    required String? value,
-    required List<String> items,
-    required void Function(String?) onChanged,
-  }) {
-    return SizedBox(
-      height: 50,
-      child: ButtonTheme(
-        alignedDropdown: true,
-        child: DropdownButtonFormField<String>(
-          isExpanded: true,
-          decoration: InputDecoration(
-            hintText: hint,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          value: value,
-          items: items
-              .map(
-                (item) => DropdownMenuItem(
-                  value: item,
-                  child: Text(item),
-                ),
-              )
-              .toList(),
-          onChanged: onChanged,
-        ),
       ),
     );
   }
@@ -648,11 +745,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       child: ElevatedButton(
         onPressed: () async {
           await getBuyingSheetList(
-            prmFrmDate: _formatDate(DateTime.now().subtract(Duration(days: 5)))
-                .toString(),
-            prmToDate:
-                _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
-          );
+            prmFrmDate: _formatDate(selectedDateRange!.start).toString(),
+            prmToDate: _formatDate(selectedDateRange!.end),
+            prmCategory: _selectedCategory!.id.toString(),
+            prmSupplier: _selectedSupplier!.id.toString(),
+            prmPreviousOrder: _selectedPreviousOrder.toString(),
+          ).whenComplete(() {
+            setState(() {});
+          });
         },
         // onPressed: _handleSearch,
         style: ElevatedButton.styleFrom(
