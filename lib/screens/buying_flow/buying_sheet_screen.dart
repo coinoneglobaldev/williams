@@ -342,7 +342,22 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                             ),
                           ),
                           onPressed: () {
-                            _buyingSheet.add(
+                            // Add new item at the beginning of _buyingSheet
+
+                            print(_itemOrderQtyController.text);
+                            // Insert new controllers at the beginning of their respective lists
+                            _orderQtyControllers.insert(
+                                0,
+                                TextEditingController(
+                                    text: _itemOrderQtyController.text));
+                            _conValControllers.insert(
+                                0,
+                                TextEditingController(
+                                    text: _itemConValController.text));
+                            _selectedOrderTableUom.insert(
+                                0, _selectedOrderUom!);
+                            _buyingSheet.insert(
+                              0,
                               BuyingSheetListModel(
                                 itemId: selectedItem!.id,
                                 itemName: _itemNameController.text,
@@ -352,13 +367,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                 boxQty: _itemOrderQtyController.text,
                                 eachQty: _itemRateController.text,
                                 odrBQty: '',
-                                odrEQty: '',
+                                odrEQty: _itemOrderQtyController.text,
                                 boxUomId: _selectedOrderUom!.id,
                                 uomConVal: _itemConValController.text,
                                 itmCnt: '0',
                               ),
                             );
                             setState(() {
+                              // Clear input fields
                               _itemNameController.clear();
                               _itemConValController.clear();
                               _itemOrderQtyController.clear();
@@ -1002,9 +1018,13 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   }
 
   void _incrementValue(TextEditingController controller) {
-    // print(controller.text);
-    double currentValue = double.parse(controller.text);
-    controller.text = (currentValue + 1).toString();
+    try {
+      double currentValue =
+          double.parse(controller.text.isEmpty ? '0' : controller.text);
+      controller.text = (currentValue + 1).toString();
+    } catch (e) {
+      controller.text = 'error';
+    }
   }
 
   void _decrementValue(TextEditingController controller) {
@@ -1039,10 +1059,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   Widget _buildSaveButton() {
     return ElevatedButton(
       onPressed: () {
-        Util.customSuccessSnackBar(
-          context,
-          'Saved Successfully!',
-        );
+        // Util.customSuccessSnackBar(
+        //   context,
+        //   'Saved Successfully!',
+        // );
+        _orderNow();
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
@@ -1053,6 +1074,56 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       ),
       child: const Text('Order Now'),
     );
+  }
+
+  Future<void> _orderNow() async {
+    try {
+      showDialog(
+        barrierColor: Colors.black.withValues(alpha: 0.8),
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomOverlayLoading();
+        },
+      );
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+      String prmAccId = prefs.getString('accId')!;
+      final String tokenNo = await ApiServices().fnGetTokenNoUrl(
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+      );
+      //TODO:bug fix
+      for (int i = 0; i < _buyingSheet.length; i++) {
+        await ApiServices().fnSavePoList(
+          prmTokenNo: tokenNo,
+          prmDatePrmToCnt: _formatDate(DateTime.now()),
+          prmCurntCnt: (i + 1).toString(),
+          PrmToCnt: _buyingSheet.length.toString(),
+          prmAccId: prmAccId,
+          prmItemId: _buyingSheet[i].itemId,
+          prmUomId: _buyingSheet[i].boxUomId,
+          prmTaxId: '',
+          prmPackId: _selectedOrderTableUom[i].id,
+          prmNoPacks: _orderQtyControllers[i].text,
+          prmConVal: _conValControllers[i].text,
+          prmCmpId: prmCmpId,
+          prmBrId: prmBrId,
+          prmFaId: prmFaId,
+          prmUId: prmUId,
+
+          // prmRate: _rateControllers[i].text,
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      Navigator.pop(context);
+    }
   }
 
   @override

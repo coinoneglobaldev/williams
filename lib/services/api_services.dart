@@ -457,4 +457,78 @@ class ApiServices {
       rethrow;
     }
   }
+
+  Future<String> fnGetTokenNoUrl({
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+  }) async {
+    String uri = "$getTokenNoUrl?PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
+        "PrmFaId=$prmFaId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+
+      final Map<String, dynamic> responseMap = json.decode(response.body);
+      if (responseMap['ErrorCode'] == 0) {
+        final String tokenNo = responseMap['Data'].toString();
+        return tokenNo;
+      } else {
+        throw ('No Token found: ${responseMap['Message']}');
+      }
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnGetBuyingSheetList: $error');
+      }
+      rethrow;
+    }
+  }
+
+  Future fnSavePoList({
+    required String prmTokenNo,
+    required String prmDatePrmToCnt,
+    required String prmCurntCnt,
+    required String PrmToCnt,
+    required String prmAccId,
+    required String prmItemId,
+    required String prmUomId,
+    required String prmTaxId,
+    required String prmPackId,
+    required String prmNoPacks,
+    required String prmConVal,
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUId,
+  }) async {
+    String uri =
+        "$savePoList?PrmTokenNo=$prmTokenNo&PrmDate=$prmDatePrmToCnt&PrmCurntCnt=$prmCurntCnt&"
+        "PrmToCnt=$PrmToCnt&PrmAccId=$prmAccId&PrmItemId=$prmItemId&PrmUomId=$prmUomId&PrmTaxId=$prmTaxId&"
+        "PrmPackId=$prmPackId&PrmNoPacks=$prmNoPacks&PrmConVal=$prmConVal&PrmCmpId=$prmCmpId&"
+        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri));
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnSavePackingItem: $error');
+      }
+      rethrow;
+    }
+  }
 }
