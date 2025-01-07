@@ -32,6 +32,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   late List<UomAndPackListModel> _selectedOrderTableUom;
   late List<TextEditingController> _orderQtyControllers;
   late List<TextEditingController> _conValControllers;
+  late List<TextEditingController> _rateControllers;
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _itemConValController = TextEditingController();
   final TextEditingController _itemOrderQtyController = TextEditingController();
@@ -650,6 +651,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         _buyingSheet.length,
         (index) => TextEditingController(text: _buyingSheet[index].uomConVal),
       );
+      _rateControllers = List.generate(
+        _buyingSheet.length,
+        (index) => TextEditingController(text: _buyingSheet[index].eachQty),
+      );
       setState(() {
         _isLoading = false;
       });
@@ -747,7 +752,31 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       if (response.isNotEmpty) {
         setState(() {
           _buyingSheet = response;
+          _orderQtyControllers.clear();
+          _selectedOrderTableUom.clear();
+          _conValControllers.clear();
+          _rateControllers.clear();
         });
+        _orderQtyControllers = List.generate(
+          _buyingSheet.length,
+          (index) => TextEditingController(text: _buyingSheet[index].odrEQty),
+        );
+        // _selectedOrderTableUom = List.generate(
+        //   _buyingSheet.length,
+        //   (index) => _oum.where((e) => e.id == _buyingSheet[index].boxUomId).first,
+        // ); TODO: Uncomment this line after adding UOM in BuyingSheetListModel
+        _selectedOrderTableUom = List.generate(
+          _buyingSheet.length,
+          (index) => _oum.first,
+        ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
+        _conValControllers = List.generate(
+          _buyingSheet.length,
+          (index) => TextEditingController(text: _buyingSheet[index].uomConVal),
+        );
+        _rateControllers = List.generate(
+          _buyingSheet.length,
+          (index) => TextEditingController(text: _buyingSheet[index].eachQty),
+        );
         if (!mounted) return;
         Navigator.pop(context);
       } else {
@@ -869,14 +898,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         _buildDataCell(item.eachQty), // For Short Split
         _buildBulkSplitDropdownCell(item, index),
         _buildEditableDataCell(
-          TextEditingController(
-            text: item.odrEQty,
-          ),
+          _orderQtyControllers[index],
         ),
         _buildEditTextDataCell(
-          TextEditingController(
-            text: item.uomConVal,
-          ),
+          _rateControllers[index],
         ),
         _buildCheckboxDataCell(item),
       ],
@@ -982,6 +1007,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     enabledBorder: InputBorder.none,
                   ),
                   keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    controller.text = value;
+                  },
                 ),
               ),
               IconButton(
@@ -1119,6 +1147,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           // prmRate: _rateControllers[i].text,
         );
       }
+      _buyingSheet.clear();
     } catch (e) {
       debugPrint(e.toString());
     } finally {
