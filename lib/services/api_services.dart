@@ -1,13 +1,13 @@
 import 'dart:convert';
-import '../constants.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+
+import '../constants.dart';
 import '../models/buying_sheet_list_order_model.dart';
 import '../models/category_list_model.dart';
-import '../models/customer_list_model.dart';
 import '../models/item_list_model.dart';
 import '../models/login_model.dart';
-import '../models/packing_type_list_model.dart';
 import '../models/sales_order_item_list_model.dart';
 import '../models/sales_order_list_model.dart';
 import '../models/supplier_list_model.dart';

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,14 +29,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   SupplierListModel? _selectedSupplier;
   String? _selectedPreviousOrder;
   UomAndPackListModel? _selectedOrderUom;
-  List<UomAndPackListModel>? _selectedOrderTableUom;
-  late List<TextEditingController> orderQtyControllers;
+  late List<UomAndPackListModel> _selectedOrderTableUom;
+  late List<TextEditingController> _orderQtyControllers;
+  late List<TextEditingController> _conValControllers;
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _itemConValController = TextEditingController();
   final TextEditingController _itemOrderQtyController = TextEditingController();
   final TextEditingController _itemRateController = TextEditingController();
   bool _selectAll = false;
-
   late List<CategoryListModel> _categories = [];
   late List<SupplierListModel> _suppliers = [];
   late List<UomAndPackListModel> _oum = [];
@@ -52,229 +51,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     'Order 3',
   ];
 
-  Future getBuyingSheetList({
-    required String prmFrmDate,
-    required String prmToDate,
-    required String prmCategory,
-    required String prmSupplier,
-    required String prmPreviousOrder,
-  }) async {
-    // print('-------------------------------------------------------------');
-    // print(
-    //     '${prmFrmDate}_${prmToDate}_${prmCategory}_${prmSupplier}_${prmPreviousOrder}');
-    // print('-------------------------------------------------------------');
-
-    try {
-      showDialog(
-        barrierColor: Colors.black.withValues(alpha: 0.8),
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomOverlayLoading();
-        },
-      );
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String prmCmpId = prefs.getString('cmpId')!;
-      String prmBrId = prefs.getString('brId')!;
-      String prmFaId = prefs.getString('faId')!;
-      String prmUId = prefs.getString('userId')!;
-      final response = await ApiServices().fnGetBuyingSheetList(
-        prmFrmDate: prmFrmDate,
-        prmToDate: prmToDate,
-        prmCmpId: prmCmpId,
-        prmBrId: prmBrId,
-        prmFaId: prmFaId,
-        prmUId: prmUId,
-        prmItmGrpId: '0',
-      );
-      if (response.isNotEmpty) {
-        setState(() {
-          _buyingSheet = response;
-        });
-        Navigator.pop(context);
-      } else {
-        throw ('No Items Found');
-      }
-    } catch (e) {
-      _buyingSheet = [];
-      Navigator.pop(context);
-      debugPrint(e.toString());
-      if (!mounted) return;
-      Util.customErrorSnackBar(context, 'Unable to fetch data');
-    }
-  }
-
-  Future<List<ItemListModel>> getItemList() async {
-    try {
-      final response = await ApiServices().getItemList();
-      if (response.isNotEmpty) {
-        return response;
-      } else {
-        throw ('No Items Found');
-      }
-    } catch (e) {
-      throw ('No Items Found');
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     _loadCategories();
-    orderQtyControllers = List.generate(
-      _buyingSheet.length,
-      (index) => TextEditingController(text: _buyingSheet[index].odrEQty),
-    );
-    List.generate(
-      _buyingSheet.length,
-      (index) => _selectedOrderTableUom!.add(UomAndPackListModel(
-        code: '',
-        name: _buyingSheet[index].uom,
-        id: '',
-      )),
-    );
-  }
-
-  void _showDateRangePicker() async {
-    final DateTimeRange? result = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2022),
-      lastDate: DateTime.now().add(Duration(days: 1)),
-      currentDate: DateTime.now(),
-      saveText: 'Done',
-
-      // Customize the picker appearance
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: Colors.blue,
-            colorScheme: const ColorScheme.light(
-              primary: Colors.blue,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black,
-            ),
-            dialogBackgroundColor: Colors.white,
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (result != null) {
-      // Only update if user didn't cancel the picker
-      setState(() {
-        selectedDateRange = result;
-      });
-      //  selectedDateRange!.start.toString().split(' ')[0]
-      // ${selectedDateRange!.end.toString().split(' ')[0]}
-    }
-  }
-
-  String _formatDate(DateTime dte) {
-    DateFormat date = DateFormat('dd/MMM/yyyy');
-    return date.format(dte);
-  }
-
-  Future<void> _loadCategories() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      // final buyingSheetList = await getBuyingSheetList(
-      //   prmFrmDate: _formatDate(DateTime.now()).toString(),
-      //   prmToDate:
-      //       _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
-      // );
-      final categories = await getCategoryList();
-      final suppliers = await getSupplierList();
-      final oum = await getOumList();
-      final items = await getItemList();
-      await getBuyingSheetList(
-        prmFrmDate:
-            _formatDate(DateTime.now().subtract(Duration(days: 5))).toString(),
-        prmToDate:
-            _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
-        prmCategory: '',
-        prmSupplier: '',
-        prmPreviousOrder: '',
-      );
-      setState(() {
-        _categories = categories;
-        _suppliers = suppliers;
-        _items = items;
-        _oum = oum;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      if (!mounted) return;
-      Util.customErrorSnackBar(
-        context,
-        'Category, Suppliers and Previous order not ready!',
-      );
-      if (kDebugMode) {
-        print('Error loading dropdowns: $e');
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    for (var controller in orderQtyControllers) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  Future<List<CategoryListModel>> getCategoryList() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String prmCmpId = prefs.getString('cmpId')!;
-      final response =
-          await ApiServices().getCategoryList(prmCompanyId: prmCmpId);
-      if (response.isNotEmpty) {
-        return response;
-      } else {
-        throw ('No Category found');
-      }
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<List<SupplierListModel>> getSupplierList() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String prmCmpId = prefs.getString('cmpId')!;
-      final response =
-          await ApiServices().getSupplierList(prmCompanyId: prmCmpId);
-      if (response.isNotEmpty) {
-        return response;
-      } else {
-        throw ('No Supplier found');
-      }
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<List<UomAndPackListModel>> getOumList() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String prmCmpId = prefs.getString('cmpId')!;
-      final response =
-          await ApiServices().getPackingType(prmCompanyId: prmCmpId);
-      if (response.isNotEmpty) {
-        return response;
-      } else {
-        throw ('No Oum List found');
-      }
-    } catch (e) {
-      rethrow;
-    }
   }
 
   @override
@@ -747,54 +527,235 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             ),
           ),
           Spacer(),
-          _buildSearchButton(),
+          SizedBox(
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () async {
+                await getBuyingSheetList(
+                  prmFrmDate: _formatDate(selectedDateRange!.start).toString(),
+                  prmToDate: _formatDate(selectedDateRange!.end),
+                  prmCategory: _selectedCategory?.id ?? '',
+                  prmSupplier: _selectedSupplier?.id ?? '',
+                  prmPreviousOrder: _selectedPreviousOrder ?? '',
+                );
+              },
+              // onPressed: _handleSearch,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: buttonColor,
+                maximumSize: const Size(100, 50),
+                minimumSize: const Size(100, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Search'),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSearchButton() {
-    return SizedBox(
-      height: 50,
-      child: ElevatedButton(
-        onPressed: () async {
-          await getBuyingSheetList(
-            prmFrmDate: _formatDate(selectedDateRange!.start).toString(),
-            prmToDate: _formatDate(selectedDateRange!.end),
-            prmCategory: _selectedCategory?.id ?? '',
-            prmSupplier: _selectedSupplier?.id ?? '',
-            prmPreviousOrder: _selectedPreviousOrder ?? '',
-          ).whenComplete(() {
-            setState(() {});
-          });
-        },
-        // onPressed: _handleSearch,
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: buttonColor,
-          maximumSize: const Size(100, 50),
-          minimumSize: const Size(100, 50),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+  void _showDateRangePicker() async {
+    final DateTimeRange? result = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2022),
+      lastDate: DateTime.now().add(Duration(days: 1)),
+      currentDate: DateTime.now(),
+      saveText: 'Done',
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.blue,
+            colorScheme: const ColorScheme.light(
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+            dialogBackgroundColor: Colors.white,
           ),
-        ),
-        child: const Text('Search'),
-      ),
+          child: child!,
+        );
+      },
     );
+    if (result != null) {
+      setState(() {
+        selectedDateRange = result;
+      });
+    }
   }
 
-  void _handleSearch() {
-    if (_selectedCategory == null || _selectedSupplier == null) {
-      Util.customErrorSnackBar(
-        context,
-        'Please select Category and Subcategory!',
-      );
+  String _formatDate(DateTime dte) {
+    try {
+      DateFormat date = DateFormat('dd/MMM/yyyy');
+      return date.format(dte);
+    } catch (e) {
+      return '';
     }
-    if (_selectedCategory != null && _selectedSupplier != null) {
+  }
+
+  Future<void> _loadCategories() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final categories = await getCategoryList();
+      final suppliers = await getSupplierList();
+      final oum = await getOumList();
+      final items = await getItemList();
+      await getBuyingSheetList(
+        prmFrmDate:
+            _formatDate(DateTime.now().subtract(Duration(days: 5))).toString(),
+        prmToDate:
+            _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
+        prmCategory: '',
+        prmSupplier: '',
+        prmPreviousOrder: '',
+      );
+      _categories = categories;
+      _suppliers = suppliers;
+      _items = items;
+      _oum = oum;
+      _orderQtyControllers = List.generate(
+        _buyingSheet.length,
+        (index) => TextEditingController(text: _buyingSheet[index].odrEQty),
+      );
+      // _selectedOrderTableUom = List.generate(
+      //   _buyingSheet.length,
+      //   (index) => _oum.where((e) => e.id == _buyingSheet[index].boxUomId).first,
+      // ); TODO: Uncomment this line after adding UOM in BuyingSheetListModel
+      _selectedOrderTableUom = List.generate(
+        _buyingSheet.length,
+        (index) => _oum.first,
+      ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
+      _conValControllers = List.generate(
+        _buyingSheet.length,
+        (index) => TextEditingController(text: _buyingSheet[index].uomConVal),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (!mounted) return;
       Util.customErrorSnackBar(
         context,
-        'Categories and Subcategories are not yet added!',
+        'Category, Suppliers or Previous order not ready!',
       );
+      debugPrint('Error loading dropdowns: $e');
+    }
+  }
+
+  Future<List<CategoryListModel>> getCategoryList() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      final response =
+          await ApiServices().getCategoryList(prmCompanyId: prmCmpId);
+      if (response.isNotEmpty) {
+        return response;
+      } else {
+        throw ('No Category found');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<SupplierListModel>> getSupplierList() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      final response =
+          await ApiServices().getSupplierList(prmCompanyId: prmCmpId);
+      if (response.isNotEmpty) {
+        return response;
+      } else {
+        throw ('No Supplier found');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<UomAndPackListModel>> getOumList() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      final response =
+          await ApiServices().getPackingType(prmCompanyId: prmCmpId);
+      if (response.isNotEmpty) {
+        return response;
+      } else {
+        throw ('No Oum List found');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future getBuyingSheetList({
+    required String prmFrmDate,
+    required String prmToDate,
+    required String prmCategory,
+    required String prmSupplier,
+    required String prmPreviousOrder,
+  }) async {
+    try {
+      showDialog(
+        barrierColor: Colors.black.withValues(alpha: 0.8),
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomOverlayLoading();
+        },
+      );
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+      final response = await ApiServices().fnGetBuyingSheetList(
+        prmFrmDate: prmFrmDate,
+        prmToDate: prmToDate,
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+        prmUId: prmUId,
+        prmItmGrpId: '0',
+      );
+      if (response.isNotEmpty) {
+        setState(() {
+          _buyingSheet = response;
+        });
+        if (!mounted) return;
+        Navigator.pop(context);
+      } else {
+        throw ('No Items Found');
+      }
+    } catch (e) {
+      _buyingSheet = [];
+      Navigator.pop(context);
+      debugPrint(e.toString());
+      if (!mounted) return;
+      Util.customErrorSnackBar(context, e.toString());
+    }
+  }
+
+  Future<List<ItemListModel>> getItemList() async {
+    try {
+      final response = await ApiServices().getItemList();
+      if (response.isNotEmpty) {
+        return response;
+      } else {
+        throw ('No Items Found');
+      }
+    } catch (e) {
+      throw ('No Items Found');
     }
   }
 
@@ -883,15 +844,24 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       cells: [
         _buildDataCell(item.itemCode),
         _buildNameCell(item.itemName),
-        _buildEditTextDataCell(TextEditingController(text: item.uomConVal)),
+        _buildEditTextDataCell(
+          _conValControllers[index],
+        ),
         _buildDataCell(
-            item.boxQty), // Changed from eachQty to boxQty for Short Bulk
+          item.boxQty,
+        ),
         _buildDataCell(item.eachQty), // For Short Split
         _buildBulkSplitDropdownCell(item, index),
-        _buildEditableDataCell(TextEditingController(
-            text: item.odrEQty)), // Changed to odrEQty for Order Qty
-        _buildEditTextDataCell(TextEditingController(
-            text: item.uomConVal)), // Using uomConVal for Rate
+        _buildEditableDataCell(
+          TextEditingController(
+            text: item.odrEQty,
+          ),
+        ),
+        _buildEditTextDataCell(
+          TextEditingController(
+            text: item.uomConVal,
+          ),
+        ),
         _buildCheckboxDataCell(item),
       ],
     );
@@ -943,7 +913,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   }
 
   DataCell _buildBulkSplitDropdownCell(BuyingSheetListModel item, int index) {
-    //TODO: Add dropdown for Bulk and Split
     return DataCell(
       Center(
         child: ButtonTheme(
@@ -959,11 +928,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   ),
                 )
                 .toList(),
-            value: _selectedOrderTableUom?[index],
+            value: _selectedOrderTableUom[index],
             hint: const Text('Order UOM'),
             onChanged: (UomAndPackListModel? value) {
               setState(() {
-                _selectedOrderTableUom?[index] = value!;
+                _selectedOrderTableUom[index] = value!;
               });
             },
           ),
@@ -1084,5 +1053,17 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       ),
       child: const Text('Order Now'),
     );
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _orderQtyControllers) {
+      controller.dispose();
+    }
+    _itemNameController.dispose();
+    _itemConValController.dispose();
+    _itemOrderQtyController.dispose();
+    _itemRateController.dispose();
+    super.dispose();
   }
 }

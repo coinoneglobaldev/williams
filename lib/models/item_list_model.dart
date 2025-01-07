@@ -22,6 +22,7 @@ class ItemListModel {
   String conVal;
   String groupId;
   String taxId;
+
   @override
   String toString() {
     return code;
