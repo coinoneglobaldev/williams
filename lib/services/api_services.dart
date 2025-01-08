@@ -113,37 +113,6 @@ class ApiServices {
     }
   }
 
-  //todo: remove it if it is not needed
-  // Future<List<CustomerListModel>> getCustomerList() async {
-  //   String uri = getCustomerListUrl;
-  //   if (kDebugMode) {
-  //     print(uri);
-  //   }
-  //   try {
-  //     final response = await http.get(Uri.parse(uri)).timeout(
-  //         const Duration(
-  //           seconds: 15,
-  //         ), onTimeout: () {
-  //       throw 'timeout';
-  //     });
-  //     if (kDebugMode) {
-  //       print("Response: ${response.body}");
-  //     }
-  //     final List<dynamic> responseList = json.decode(response.body);
-  //     if (kDebugMode) {
-  //       print(responseList);
-  //     }
-  //     return responseList
-  //         .map((json) => CustomerListModel.fromJson(json))
-  //         .toList();
-  //   } catch (error) {
-  //     if (kDebugMode) {
-  //       print('Exception in getCustomerList: $error');
-  //     }
-  //     rethrow;
-  //   }
-  // }
-
   Future<List<ItemListModel>> getItemList() async {
     String uri = getItemListUrl;
     if (kDebugMode) {
@@ -318,7 +287,7 @@ class ApiServices {
 
   Future<List<UomAndPackListModel>> getPackingType(
       {required String prmCompanyId}) async {
-    String uri = "$getPackingTypeListData?PrmCompanyId=$prmCompanyId";
+    String uri = "$getPackingTypeListDataUrl?PrmCompanyId=$prmCompanyId";
     if (kDebugMode) {
       print(uri);
     }
@@ -358,7 +327,7 @@ class ApiServices {
     required String prmQty,
     required String prmIsRlz,
   }) async {
-    String uri = "$savePackingItem?PrmIsRlz=$prmIsRlz&PrmAutoId=$prmAutoID&"
+    String uri = "$savePackingItemUrl?PrmIsRlz=$prmIsRlz&PrmAutoId=$prmAutoID&"
         "PrmOrderId=$orderId&PrmShort=$prmShort&PrmCmpId=$prmCmpId&"
         "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUID&PrmQty=$prmQty";
     if (kDebugMode) {
@@ -393,7 +362,7 @@ class ApiServices {
     required String prmUId,
   }) async {
     String uri =
-        "$releaseOrderAllOrder?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
+        "$releaseOrderAllOrderUrl?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
     if (kDebugMode) {
       print(uri);
     }
@@ -510,12 +479,13 @@ class ApiServices {
     required String prmBrId,
     required String prmFaId,
     required String prmUId,
+    required String prmRate,
   }) async {
     String uri =
-        "$savePoList?PrmTokenNo=$prmTokenNo&PrmDate=$prmDatePrmToCnt&PrmCurntCnt=$prmCurntCnt&"
+        "$savePoListUrl?PrmTokenNo=$prmTokenNo&PrmDate=$prmDatePrmToCnt&PrmCurntCnt=$prmCurntCnt&"
         "PrmToCnt=$PrmToCnt&PrmAccId=$prmAccId&PrmItemId=$prmItemId&PrmUomId=$prmUomId&PrmTaxId=$prmTaxId&"
         "PrmPackId=$prmPackId&PrmNoPacks=$prmNoPacks&PrmConVal=$prmConVal&PrmCmpId=$prmCmpId&"
-        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
+        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId&PrmRate=$prmRate";
     if (kDebugMode) {
       print(uri);
     }
