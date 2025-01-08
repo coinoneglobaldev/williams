@@ -363,7 +363,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                 text: _itemRateController.text);
 
                             setState(() {
-                              // Add new controllers to the lists
                               _orderQtyControllers.insert(
                                   0, newOrderQtyController);
                               _conValControllers.insert(0, newConValController);
@@ -371,7 +370,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               _selectedOrderTableUom.insert(
                                   0, _selectedOrderUom!);
 
-                              // Add new item to buying sheet
                               _buyingSheet.insert(
                                 0,
                                 BuyingSheetListModel(
@@ -387,18 +385,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   boxUomId: _selectedOrderUom!.id,
                                   uomConVal: _itemConValController.text,
                                   itmCnt: '0',
-                                  isSelected:
-                                      false, // Add default value for isSelected
+                                  isSelected: false,
                                 ),
                               );
 
-                              // Clear input fields
                               _itemNameController.clear();
                               _itemConValController.clear();
                               _itemOrderQtyController.clear();
                               _itemRateController.clear();
-                              selectedItem = null; // Reset selected item
-                              _selectedOrderUom = null; // Reset selected UOM
+                              selectedItem = null;
+                              _selectedOrderUom = null;
                             });
                           },
                           child: Text('Add'),
