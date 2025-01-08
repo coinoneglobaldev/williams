@@ -260,6 +260,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           flex: 2,
                           child: TextField(
                             controller: _itemNameController,
+                            readOnly: true,
                             decoration: InputDecoration(
                               labelText: 'Name',
                               border: OutlineInputBorder(),
@@ -271,6 +272,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           flex: 1,
                           child: TextField(
                             controller: _itemConValController,
+                            keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               labelText: 'Con Val',
                               border: OutlineInputBorder(),
@@ -281,6 +283,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         Expanded(
                           flex: 1,
                           child: TextField(
+                            keyboardType: TextInputType.number,
                             controller: _itemOrderQtyController,
                             decoration: InputDecoration(
                               labelText: 'Order Qty',
@@ -325,6 +328,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           flex: 1,
                           child: TextField(
                             controller: _itemRateController,
+                            keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               labelText: 'Rate',
                               border: OutlineInputBorder(),
@@ -374,10 +378,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   itemCode: selectedItem!.code,
                                   uom: _selectedOrderUom!.name,
                                   itemGroup: selectedItem!.itemGroup,
-                                  boxQty: _itemOrderQtyController.text,
-                                  eachQty: _itemRateController.text,
-                                  odrBQty: '',
-                                  odrEQty: _itemOrderQtyController.text,
+                                  boxQty: '',
+                                  eachQty: '',
+                                  odrBQty: _selectedOrderUom!.id == "21"
+                                      ? '0'
+                                      : _itemOrderQtyController.text,
+                                  odrEQty: _selectedOrderUom!.id == "19"
+                                      ? '0'
+                                      : _itemOrderQtyController.text,
                                   rate: _itemRateController.text,
                                   boxUomId: _selectedOrderUom!.id,
                                   uomConVal: _itemConValController.text,
@@ -718,10 +726,32 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         prmSupplier: '',
         prmPreviousOrder: '',
       );
+
       _orderQtyControllers = List.generate(
         _buyingSheet.length,
-        (index) => TextEditingController(text: _buyingSheet[index].odrEQty),
+        (index) {
+          if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
+              double.parse(_buyingSheet[index].odrEQty) > 0) {
+            double bulkConVal = double.parse(_buyingSheet[index].odrBQty) *
+                double.parse(_buyingSheet[index].uomConVal);
+            double bulkConValSplitVal =
+                bulkConVal + double.parse(_buyingSheet[index].odrEQty);
+            double bulkConValSplit = bulkConValSplitVal /
+                double.parse(_buyingSheet[index].uomConVal);
+            print('bulkConValSplit: $bulkConValSplit');
+            return TextEditingController(text: bulkConValSplit.toString());
+          } else if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
+              double.parse(_buyingSheet[index].odrEQty) == 0) {
+            return TextEditingController(text: _buyingSheet[index].odrBQty);
+          } else if (double.parse(_buyingSheet[index].odrEQty) > 0 &&
+              double.parse(_buyingSheet[index].odrBQty) == 0) {
+            return TextEditingController(text: _buyingSheet[index].odrEQty);
+          } else {
+            return TextEditingController(text: '0');
+          }
+        },
       );
+
       // _selectedOrderTableUom = List.generate(
       //   _buyingSheet.length,
       //   (index) => _oum.where((e) => e.id == _buyingSheet[index].boxUomId).first,
@@ -840,16 +870,51 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         _buyingSheet = response;
         _orderQtyControllers = List.generate(
           _buyingSheet.length,
-          (index) => TextEditingController(text: _buyingSheet[index].odrEQty),
+          (index) {
+            if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
+                double.parse(_buyingSheet[index].odrEQty) > 0) {
+              double bulkConVal = double.parse(_buyingSheet[index].odrBQty) *
+                  double.parse(_buyingSheet[index].uomConVal);
+              double bulkConValSplitVal =
+                  bulkConVal + double.parse(_buyingSheet[index].odrEQty);
+              double bulkConValSplit = bulkConValSplitVal /
+                  double.parse(_buyingSheet[index].uomConVal);
+              print('bulkConValSplit: $bulkConValSplit');
+              return TextEditingController(text: bulkConValSplit.toString());
+            } else if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
+                double.parse(_buyingSheet[index].odrEQty) == 0) {
+              return TextEditingController(text: _buyingSheet[index].odrBQty);
+            } else if (double.parse(_buyingSheet[index].odrEQty) > 0 &&
+                double.parse(_buyingSheet[index].odrBQty) == 0) {
+              return TextEditingController(text: _buyingSheet[index].odrEQty);
+            } else {
+              return TextEditingController(text: '0');
+            }
+          },
         );
-        // _selectedOrderTableUom = List.generate(
-        //   _buyingSheet.length,
-        //   (index) => _oum.where((e) => e.id == _buyingSheet[index].boxUomId).first,
-        // ); TODO: Uncomment this line after adding UOM in BuyingSheetListModel
-
         _selectedOrderTableUom = List.generate(
           _buyingSheet.length,
           (index) => _oum.first,
+        );
+        _selectedOrderTableUom = List.generate(
+          _buyingSheet.length,
+          (index) {
+            if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
+                double.parse(_buyingSheet[index].odrEQty) > 0) {
+              return _selectedOrderTableUom[index] =
+                  _oum.where((e) => e.id == '19').first;
+            } else if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
+                double.parse(_buyingSheet[index].odrEQty) == 0) {
+              return _selectedOrderTableUom[index] =
+                  _oum.where((e) => e.id == '19').first;
+            } else if (double.parse(_buyingSheet[index].odrEQty) > 0 &&
+                double.parse(_buyingSheet[index].odrBQty) == 0) {
+              return _selectedOrderTableUom[index] =
+                  _oum.where((e) => e.id == '21').first;
+            } else {
+              return _selectedOrderTableUom[index] = _oum.first;
+            }
+          },
         ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
         _conValControllers = List.generate(
           _buyingSheet.length,
@@ -986,10 +1051,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         _buildDataCell(item.itemCode),
         _buildNameCell(item.itemName),
         _buildEditTextDataCell(_conValControllers[index]),
-        _buildDataCell(
-          item.boxQty,
-        ),
-        _buildDataCell(item.eachQty), // For Short Split
+        _buildDataCell(item.odrBQty),
+        _buildDataCell(item.odrEQty), // For Short Split
         _buildBulkSplitDropdownCell(item, index),
         _buildEditableDataCell(
           _orderQtyControllers[index],
