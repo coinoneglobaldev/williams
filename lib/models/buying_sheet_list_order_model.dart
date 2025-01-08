@@ -16,7 +16,7 @@ class BuyingSheetListModel {
   String itemId;
   String itemName;
   String itemCode;
-  Uom uom;
+  String uom;
   String itemGroup;
   String boxQty;
   String eachQty;
@@ -47,7 +47,7 @@ class BuyingSheetListModel {
         itemId: json["ItemId"],
         itemName: json["ItemName"],
         itemCode: json["ItemCode"],
-        uom: uomValues.map[json["Uom"]]!,
+        uom: json["Uom"],
         itemGroup: json["ItemGroup"],
         boxQty: json["BoxQty"],
         eachQty: json["EachQty"],
@@ -63,7 +63,7 @@ class BuyingSheetListModel {
         "ItemId": itemId,
         "ItemName": itemName,
         "ItemCode": itemCode,
-        "Uom": uomValues.reverse[uom],
+        "Uom": uom,
         "ItemGroup": itemGroup,
         "BoxQty": boxQty,
         "EachQty": eachQty,
@@ -73,20 +73,4 @@ class BuyingSheetListModel {
         "UomConVal": uomConVal,
         "ItmCnt": itmCnt,
       };
-}
-
-enum Uom { BOX, KG }
-
-final uomValues = EnumValues({"BOX": Uom.BOX, "KG": Uom.KG});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
 }

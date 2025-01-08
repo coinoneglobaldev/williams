@@ -32,16 +32,16 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
         print("Error taking photo: $e");
       }
       if (!mounted) return;
-      Util.customErrorSnackbar(context, "Failed to take photo");
+      Util.customErrorSnackBar(context, "Failed to take photo");
     }
   }
 
   void _uploadPhoto() {
     if (_image != null) {
-      Util.customSuccessSnackbar(context, "Photo uploaded successfully!");
+      Util.customSuccessSnackBar(context, "Photo uploaded successfully!");
       Navigator.pop(context);
     } else {
-      Util.customErrorSnackbar(context, "Please take a photo first!");
+      Util.customErrorSnackBar(context, "Please take a photo first!");
     }
   }
 
@@ -99,7 +99,8 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
                                   Text(
                                     'Tap to Capture',
                                     style: TextStyle(
-                                      color: Colors.white.withValues(alpha:0.8),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.8),
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                     ),

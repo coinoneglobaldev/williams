@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
+import 'package:williams/custom_widgets/util_class.dart';
+
 import '../../common/custom_overlay_loading.dart';
 import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
@@ -55,18 +57,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     } catch (e) {
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          margin: const EdgeInsets.all(10),
-          padding: const EdgeInsets.all(10),
-          content: const Text('Unable to save data'),
-        ),
-      );
+      Util.customErrorSnackBar(context, 'Unable to fetch data');
     }
   }
 
@@ -172,19 +163,7 @@ class _OrderItemViewState extends State<OrderItemView> {
       debugPrint(e.toString());
       if (!mounted) return;
       Navigator.pop(context);
-
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          margin: const EdgeInsets.all(10),
-          padding: const EdgeInsets.all(10),
-          content: const Text('Unable to save data'),
-        ),
-      );
+      Util.customErrorSnackBar(context, 'Unable to save data');
     }
   }
 
@@ -229,18 +208,7 @@ class _OrderItemViewState extends State<OrderItemView> {
 
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          margin: const EdgeInsets.all(10),
-          padding: const EdgeInsets.all(10),
-          content: const Text('Unable to save data'),
-        ),
-      );
+      Util.customErrorSnackBar(context, 'Unable to save data');
     }
   }
 
@@ -278,18 +246,7 @@ class _OrderItemViewState extends State<OrderItemView> {
       if (!mounted) return;
       Navigator.pop(context);
 
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          margin: const EdgeInsets.all(10),
-          padding: const EdgeInsets.all(10),
-          content: const Text('Unable to save data'),
-        ),
-      );
+      Util.customErrorSnackBar(context, 'Unable to save data');
     }
   }
 

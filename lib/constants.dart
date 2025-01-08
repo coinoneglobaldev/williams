@@ -26,6 +26,8 @@ String getPackingTypeListData = '$webAppGeneralUrl/FnGetPackingTypeList';
 String releaseOrderAllOrder = '$transactionUrl/FnIsReleaseAllOrder';
 String savePackingItem = '$transactionUrl/FnIsReleaseOrder';
 String getBuyingSheetListUrl = '$transactionUrl/FnGetBuyingSheetList';
+String getTokenNoUrl = '$transactionUrl/FnGetTokenNo';
+String savePoList = '$transactionUrl/FnSavePoList';
 
 //todo: currently not in use but it will be used in future
 String getCustomerListUrl = '$webAppGeneralUrl/FnGetCustomerList';

@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-LoginModel loginModelFromJson(String str) => LoginModel.fromJson(json.decode(str));
+LoginModel loginModelFromJson(String str) =>
+    LoginModel.fromJson(json.decode(str));
 
 String loginModelToJson(LoginModel data) => json.encode(data.toJson());
 
@@ -20,16 +21,16 @@ class LoginModel {
   });
 
   factory LoginModel.fromJson(Map<String, dynamic> json) => LoginModel(
-    errorCode: json["ErrorCode"],
-    data: List<Datum>.from(json["Data"].map((x) => Datum.fromJson(x))),
-    message: json["Message"],
-  );
+        errorCode: json["ErrorCode"],
+        data: List<Datum>.from(json["Data"].map((x) => Datum.fromJson(x))),
+        message: json["Message"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "ErrorCode": errorCode,
-    "Data": List<dynamic>.from(data.map((x) => x.toJson())),
-    "Message": message,
-  };
+        "ErrorCode": errorCode,
+        "Data": List<dynamic>.from(data.map((x) => x.toJson())),
+        "Message": message,
+      };
 }
 
 class Datum {
@@ -64,34 +65,34 @@ class Datum {
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-    id: json["ID"],
-    userName: json["UserName"],
-    grpid: json["GRPID"],
-    usrImage: json["UsrImage"],
-    cmpId: json["CmpId"],
-    brid: json["BRID"],
-    faid: json["FAID"],
-    appPageName: json["AppPageName"],
-    staffId: json["StaffId"],
-    isAdmin: json["IsAdmin"],
-    desgId: json["DesgId"],
-    userType: json["UserType"],
-    isValiMacAdd: json["IsValiMacAdd"],
-  );
+        id: json["ID"],
+        userName: json["UserName"],
+        grpid: json["GRPID"],
+        usrImage: json["UsrImage"],
+        cmpId: json["CmpId"],
+        brid: json["BRID"],
+        faid: json["FAID"],
+        appPageName: json["AppPageName"],
+        staffId: json["StaffId"],
+        isAdmin: json["IsAdmin"],
+        desgId: json["DesgId"],
+        userType: json["UserType"],
+        isValiMacAdd: json["IsValiMacAdd"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "ID": id,
-    "UserName": userName,
-    "GRPID": grpid,
-    "UsrImage": usrImage,
-    "CmpId": cmpId,
-    "BRID": brid,
-    "FAID": faid,
-    "AppPageName": appPageName,
-    "StaffId": staffId,
-    "IsAdmin": isAdmin,
-    "DesgId": desgId,
-    "UserType": userType,
-    "IsValiMacAdd": isValiMacAdd,
-  };
+        "ID": id,
+        "UserName": userName,
+        "GRPID": grpid,
+        "UsrImage": usrImage,
+        "CmpId": cmpId,
+        "BRID": brid,
+        "FAID": faid,
+        "AppPageName": appPageName,
+        "StaffId": staffId,
+        "IsAdmin": isAdmin,
+        "DesgId": desgId,
+        "UserType": userType,
+        "IsValiMacAdd": isValiMacAdd,
+      };
 }
