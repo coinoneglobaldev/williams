@@ -141,69 +141,6 @@ class ApiServices {
     }
   }
 
-  //todo: remove it if it is not needed
-  // Future<List<PackingTypeListModel>> getPackingTypeList({
-  //   required String prmCompanyId}) async {
-  //   String uri = "$getPackingTypeListUrl?PrmCompanyId=$prmCompanyId";
-  //   if (kDebugMode) {
-  //     print(uri);
-  //   }
-  //   try {
-  //     final response = await http.get(Uri.parse(uri)).timeout(
-  //         const Duration(
-  //           seconds: 15,
-  //         ), onTimeout: () {
-  //       throw 'timeout';
-  //     });
-  //     if (kDebugMode) {
-  //       print("Response: ${response.body}");
-  //     }
-  //     final List<dynamic> responseList = json.decode(response.body);
-  //     if (kDebugMode) {
-  //       print(responseList);
-  //     }
-  //     return responseList
-  //         .map((json) => PackingTypeListModel.fromJson(json))
-  //         .toList();
-  //   } catch (error) {
-  //     if (kDebugMode) {
-  //       print('Exception in getPackingTypeList: $error');
-  //     }
-  //     rethrow;
-  //   }
-  // }
-
-  // Future<List<UomAndPackListModel>> getUomList(
-  //     {required String prmCompanyId}) async {
-  //   String uri = "$getUomListUrl?PrmCompanyId=$prmCompanyId";
-  //   if (kDebugMode) {
-  //     print(uri);
-  //   }
-  //   try {
-  //     final response = await http.get(Uri.parse(uri)).timeout(
-  //         const Duration(
-  //           seconds: 15,
-  //         ), onTimeout: () {
-  //       throw 'timeout';
-  //     });
-  //     if (kDebugMode) {
-  //       print("Response: ${response.body}");
-  //     }
-  //     final List<dynamic> responseList = json.decode(response.body);
-  //     if (kDebugMode) {
-  //       print(responseList);
-  //     }
-  //     return responseList
-  //         .map((json) => UomAndPackListModel.fromJson(json))
-  //         .toList();
-  //   } catch (error) {
-  //     if (kDebugMode) {
-  //       print('Exception in getUomList: $error');
-  //     }
-  //     rethrow;
-  //   }
-  // }
-
   Future<List<SalesOrderListModel>> getSalesOrderList({
     required String prmFrmDate,
     required String prmToDate,
@@ -497,6 +434,31 @@ class ApiServices {
     } catch (error) {
       if (kDebugMode) {
         print('Exception in fnSavePackingItem: $error');
+      }
+      rethrow;
+    }
+  }
+
+  Future fnCheckSelection({
+    required String prmOrderId,
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUId,
+  }) async {
+    String uri = "$checkSelectionUrl?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&"
+        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri));
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnCheckSelection: $error');
       }
       rethrow;
     }

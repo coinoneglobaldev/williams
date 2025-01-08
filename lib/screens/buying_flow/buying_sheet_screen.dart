@@ -414,6 +414,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               for (var item in _buyingSheet) {
                                 item.isSelected = _selectAll;
                               }
+                              if (_selectAll) {
+                                _fnCheckSelection();
+                              }
                             });
                           },
                           child:
@@ -736,6 +739,26 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       }
     } catch (e) {
       rethrow;
+    }
+  }
+
+//todo: check the logic
+  Future _fnCheckSelection() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+      final response = await ApiServices().fnCheckSelection(
+        prmOrderId: '0',
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+        prmUId: prmUId,
+      );
+    } catch (e) {
+      debugPrint("Error in fnCheckSelection: ${e.toString()}");
     }
   }
 
