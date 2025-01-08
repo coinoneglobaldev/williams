@@ -414,6 +414,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               for (var item in _buyingSheet) {
                                 item.isSelected = _selectAll;
                               }
+                              if (_selectAll) {
+                                _fnCheckSelection();
+                              }
                             });
                           },
                           child:
@@ -736,6 +739,26 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       }
     } catch (e) {
       rethrow;
+    }
+  }
+
+//todo: check the logic
+  Future _fnCheckSelection() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+      final response = await ApiServices().fnCheckSelection(
+        prmOrderId: '0',
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+        prmUId: prmUId,
+      );
+    } catch (e) {
+      debugPrint("Error in fnCheckSelection: ${e.toString()}");
     }
   }
 
@@ -1130,12 +1153,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           return const CustomOverlayLoading();
         },
       );
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String prmCmpId = prefs.getString('cmpId')!;
       String prmBrId = prefs.getString('brId')!;
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
       String prmAccId = prefs.getString('accId')!;
+
       final String tokenNo = await ApiServices().fnGetTokenNoUrl(
         prmCmpId: prmCmpId,
         prmBrId: prmBrId,
@@ -1159,15 +1184,15 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           prmBrId: prmBrId,
           prmFaId: prmFaId,
           prmUId: prmUId,
-
-          // prmRate: _rateControllers[i].text,
+          prmRate: _rateControllers[i].text,
         );
       }
       _buyingSheet.clear();
-    } catch (e) {
-      debugPrint(e.toString());
-    } finally {
       Navigator.pop(context);
+      Util.customSuccessSnackBar(context, 'Order saved successfully');
+    } catch (e) {
+      Navigator.pop(context);
+      Util.customErrorSnackBar(context, 'Error: ${e.toString()}');
     }
   }
 

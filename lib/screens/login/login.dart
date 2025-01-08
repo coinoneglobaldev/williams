@@ -62,6 +62,10 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
       pref.setString('userType', userData.userType.toString()),
       pref.setString('userName', _usernameController.text.trim()),
     ]);
+    print("cmpId:${pref.getString('cmpId')}");
+    print("brId:${pref.getString('brId')}");
+    print("faId:${pref.getString('faId')}");
+    print("userId:${pref.getString('userId')}");
   }
 
   void _navigateToBackground(String userType) {

@@ -6,7 +6,7 @@ Color secondaryColor = Colors.grey.shade800;
 Color buttonColor = Colors.blue.shade900;
 Color textColor = Colors.white;
 
-const String appVersion = '0.0.1';
+const String appVersion = '1.0.10';
 
 String baseUrl = 'https://sysware-lasovrana.co.uk/lasov';
 
@@ -16,19 +16,22 @@ String transactionUrl = '$baseUrl/WebAppTRansaction.asmx';
 
 String loginUrl = '$webAppLogUrl/FnGetUserLogIn';
 
-String getCategoryListUrl = '$webAppGeneralUrl/FnGetCategoryList';
-String getSupplierListUrl = '$webAppGeneralUrl/FnGetSupplierList';
-String getUomListUrl = '$webAppGeneralUrl/FnGetUomList';
-
-String getSalesOrderListUrl = '$transactionUrl/FnGetSalesOrderList';
-String getSalesOrderItemListUrl = '$transactionUrl/FnGetSalesOrderItemList';
-String getPackingTypeListData = '$webAppGeneralUrl/FnGetPackingTypeList';
-String releaseOrderAllOrder = '$transactionUrl/FnIsReleaseAllOrder';
-String savePackingItem = '$transactionUrl/FnIsReleaseOrder';
-String getBuyingSheetListUrl = '$transactionUrl/FnGetBuyingSheetList';
-String getTokenNoUrl = '$transactionUrl/FnGetTokenNo';
-String savePoList = '$transactionUrl/FnSavePoList';
-
-//todo: currently not in use but it will be used in future
-String getCustomerListUrl = '$webAppGeneralUrl/FnGetCustomerList';
+// used in buying
 String getItemListUrl = '$webAppGeneralUrl/FnGetItemList';
+String savePoListUrl = '$transactionUrl/FnSavePoList';
+String getTokenNoUrl = '$transactionUrl/FnGetTokenNo';
+String getBuyingSheetListUrl = '$transactionUrl/FnGetBuyingSheetList';
+String getSupplierListUrl = '$webAppGeneralUrl/FnGetSupplierList';
+String getCategoryListUrl = '$webAppGeneralUrl/FnGetCategoryList';
+String checkSelectionUrl = '$transactionUrl/FnChekcSelection';
+
+// used in Sales order
+String savePackingItemUrl = '$transactionUrl/FnIsReleaseOrder';
+String releaseOrderAllOrderUrl = '$transactionUrl/FnIsReleaseAllOrder';
+String getSalesOrderListUrl = '$transactionUrl/FnGetSalesOrderList';
+
+// used in buying and Sales order
+String getPackingTypeListDataUrl = '$webAppGeneralUrl/FnGetPackingTypeList';
+String getSalesOrderItemListUrl = '$transactionUrl/FnGetSalesOrderItemList';
+
+//used in driver
