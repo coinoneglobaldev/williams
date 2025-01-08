@@ -1,14 +1,20 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../common/orientation_setup.dart';
 import '../../common/responsive.dart';
 import '../../constants.dart';
 import '../../custom_screens/custom_network_error.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
+import '../../custom_widgets/util_class.dart';
+import '../../models/login_model.dart';
 import '../../providers/connectivity_status_provider.dart';
+import '../../services/api_services.dart';
 import '../buying_flow/buying_sheet_screen.dart';
 import '../driver_flow/delivery_items_list_screen.dart';
 import '../packing_flow/sales_order_list.dart';
@@ -23,6 +29,7 @@ class ScreenLogin extends ConsumerStatefulWidget {
 }
 
 class _ScreenLoginState extends ConsumerState<ScreenLogin> {
+  ApiServices apiServices = ApiServices();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isRememberMe = true;
@@ -38,7 +45,42 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     super.dispose();
   }
 
-  _fnNavigateToHomePage() {
+  Future<void> _saveUserData(LoginModel loginData) async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    final userData = loginData.data[0];
+    await Future.wait([
+      pref.setString('userId', userData.id.toString()),
+      pref.setString('groupId', userData.grpid.toString()),
+      pref.setString('userImage', userData.usrImage.toString()),
+      pref.setString('cmpId', userData.cmpId.toString()),
+      pref.setString('brId', userData.brid.toString()),
+      pref.setString('faId', userData.faid.toString()),
+      pref.setString('appPageName', userData.appPageName.toString()),
+      pref.setString('accId', userData.staffId.toString()),
+      pref.setString('isAdmin', userData.isAdmin.toString()),
+      pref.setString('designId', userData.desgId.toString()),
+      pref.setString('userType', userData.userType.toString()),
+      pref.setString('userName', _usernameController.text.trim()),
+    ]);
+  }
+
+  void _navigateToBackground(String userType) {
+    switch (userType) {
+      case 'BSHT':
+        _fnNavigateToBuyerPage();
+        break;
+      case 'PACK':
+        _fnNavigateToPackingPage();
+        break;
+      case 'DRVR':
+        _fnNavigateToDriverPage();
+        break;
+      default:
+        _fnNavigateToLoginPage();
+    }
+  }
+
+  _fnNavigateToPackingPage() {
     // Set landscape orientation for admin
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
@@ -48,6 +90,20 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
       context,
       CupertinoPageRoute(
         builder: (context) => const SalesOrderList(),
+      ),
+    );
+  }
+
+  _fnNavigateToBuyerPage() {
+    // Set landscape orientation for buyer
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    Navigator.pushReplacement(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const BuyingSheetScreen(),
       ),
     );
   }
@@ -66,16 +122,12 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     );
   }
 
-  _fnNavigateToBuyerPage() {
-    // Set landscape orientation for buyer
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+  _fnNavigateToLoginPage() {
+    // Set portrait orientation for driver
     Navigator.pushReplacement(
       context,
       CupertinoPageRoute(
-        builder: (context) => const BuyingSheetScreen(),
+        builder: (context) => const ScreenLogin(),
       ),
     );
   }
@@ -302,30 +354,43 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                     setState(() {
                       _isButtonLoading = true;
                     });
-                    String username = _usernameController.text.trim();
-                    String password = _passwordController.text.trim();
-                    await Future.delayed(
-                      const Duration(seconds: 2),
-                      () {
-                        if (username == 'p' && password == 'p') {
-                          _fnNavigateToHomePage();
-                        } else if (username == 'd' && password == 'd') {
-                          _fnNavigateToDriverPage();
-                        } else if (username == 'b' && password == 'b') {
-                          _fnNavigateToBuyerPage();
-                        } else {
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Invalid username or password'),
-                            ),
-                          );
-                          setState(() {
-                            _isButtonLoading = false;
-                          });
-                        }
-                      },
-                    );
+                    try {
+                      LoginModel loginData = await apiServices.getUserLogIn(
+                        prmUsername: _usernameController.text.trim(),
+                        prmPassword: _passwordController.text.trim(),
+                        prmMacAddress: '',
+                        prmIpAddress: '',
+                        prmLat: '',
+                        prmLong: '',
+                        prmAppType: '',
+                      );
+                      if (!mounted) return;
+                      if (loginData.errorCode == 0) {
+                        await _saveUserData(loginData);
+                        _navigateToBackground(loginData.data[0].userType);
+                      } else {
+                        if (!context.mounted) return;
+                        Util.customErrorSnackBar(
+                          context,
+                          "Error: ${loginData.message}",
+                        );
+                      }
+                    } catch (e) {
+                      if (kDebugMode) {
+                        print('Login error: $e');
+                      }
+                      if (!context.mounted) return;
+                      Util.customErrorSnackBar(
+                        context,
+                        "An error occurred during login. Please try again.",
+                      );
+                    } finally {
+                      if (mounted) {
+                        setState(() {
+                          _isButtonLoading = false;
+                        });
+                      }
+                    }
                   },
                   child: _isButtonLoading
                       ? const CustomLogoSpinner(
@@ -518,31 +583,44 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                           setState(() {
                             _isButtonLoading = true;
                           });
-                          String username = _usernameController.text.trim();
-                          String password = _passwordController.text.trim();
-                          await Future.delayed(
-                            const Duration(seconds: 2),
-                            () {
-                              if (username == 'p' && password == 'p') {
-                                _fnNavigateToHomePage();
-                              } else if (username == 'd' && password == 'd') {
-                                _fnNavigateToDriverPage();
-                              } else if (username == 'b' && password == 'b') {
-                                _fnNavigateToBuyerPage();
-                              } else {
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('Invalid username or password'),
-                                  ),
-                                );
-                                setState(() {
-                                  _isButtonLoading = false;
-                                });
-                              }
-                            },
-                          );
+                          try {
+                            LoginModel loginData =
+                                await apiServices.getUserLogIn(
+                              prmUsername: _usernameController.text.trim(),
+                              prmPassword: _passwordController.text.trim(),
+                              prmMacAddress: '',
+                              prmIpAddress: '',
+                              prmLat: '',
+                              prmLong: '',
+                              prmAppType: '',
+                            );
+                            if (!mounted) return;
+                            if (loginData.errorCode == 0) {
+                              await _saveUserData(loginData);
+                              _navigateToBackground(loginData.data[0].userType);
+                            } else {
+                              if (!context.mounted) return;
+                              Util.customErrorSnackBar(
+                                context,
+                                "Error: ${loginData.message}",
+                              );
+                            }
+                          } catch (e) {
+                            if (kDebugMode) {
+                              print('Login error: $e');
+                            }
+                            if (!context.mounted) return;
+                            Util.customErrorSnackBar(
+                              context,
+                              "An error occurred during login. Please try again.",
+                            );
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                _isButtonLoading = false;
+                              });
+                            }
+                          }
                         },
                         child: _isButtonLoading
                             ? const CustomLogoSpinner(

@@ -8,15 +8,27 @@ Color textColor = Colors.white;
 
 const String appVersion = '0.0.1';
 
-String imageBaseUrl = 'https://coinoneglobal.in/crm/';
+String baseUrl = 'https://sysware-lasovrana.co.uk/lasov';
 
-String loginBaseUrl = 'https://coinoneglobal.in/teresa_trial/webapplog.asmx';
-String loginUrl = '/FnGetUserLogIn';
+String webAppLogUrl = '$baseUrl/WebAppLog.asmx';
+String webAppGeneralUrl = '$baseUrl/WebAppGeneral.asmx';
+String transactionUrl = '$baseUrl/WebAppTRansaction.asmx';
 
-String baseUrl = 'https://coinoneglobal.in/teresa_trial/webtemplate.asmx';
-String getCategoryUrl = '/FnGetTemplateCategoryList';
-String getSubCategoryUrl = '/FnGetTemplateSubCategoryList';
-String getFilterUrl = '/FnGetTemplateFilterGroupList';
-String getSubFilterUrl = '/FnGetTemplateFilterSubList';
-String getItemUrl = '/FnGetTemplateList';
-String imageUploadUrl = '/FnUploadFile';
+String loginUrl = '$webAppLogUrl/FnGetUserLogIn';
+
+String getCategoryListUrl = '$webAppGeneralUrl/FnGetCategoryList';
+String getSupplierListUrl = '$webAppGeneralUrl/FnGetSupplierList';
+String getUomListUrl = '$webAppGeneralUrl/FnGetUomList';
+
+String getSalesOrderListUrl = '$transactionUrl/FnGetSalesOrderList';
+String getSalesOrderItemListUrl = '$transactionUrl/FnGetSalesOrderItemList';
+String getPackingTypeListData = '$webAppGeneralUrl/FnGetPackingTypeList';
+String releaseOrderAllOrder = '$transactionUrl/FnIsReleaseAllOrder';
+String savePackingItem = '$transactionUrl/FnIsReleaseOrder';
+String getBuyingSheetListUrl = '$transactionUrl/FnGetBuyingSheetList';
+String getTokenNoUrl = '$transactionUrl/FnGetTokenNo';
+String savePoList = '$transactionUrl/FnSavePoList';
+
+//todo: currently not in use but it will be used in future
+String getCustomerListUrl = '$webAppGeneralUrl/FnGetCustomerList';
+String getItemListUrl = '$webAppGeneralUrl/FnGetItemList';

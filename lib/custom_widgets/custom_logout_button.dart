@@ -39,7 +39,7 @@ class _CustomLogoutConfirmationState extends State<CustomLogoutConfirmation> {
       ),
       actions: <Widget>[
         SizedBox(
-          height: 35,
+          height: 40,
           child: TextButton(
             onPressed: () {
               Navigator.pushAndRemoveUntil(
@@ -57,7 +57,7 @@ class _CustomLogoutConfirmationState extends State<CustomLogoutConfirmation> {
           ),
         ),
         SizedBox(
-          height: 35,
+          height: 40,
           child: TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: const Text(
