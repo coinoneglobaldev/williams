@@ -46,6 +46,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   List<BuyingSheetListModel> _buyingSheet = [];
   ItemListModel? selectedItem;
 
+  bool btnIsEnabled = false;
+
   final List<String> _previousOrders = [
     'Order 1',
     'Order 2',
@@ -343,43 +345,60 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                             ),
                           ),
                           onPressed: () {
-                            // Add new item at the beginning of _buyingSheet
+                            if (selectedItem == null ||
+                                _selectedOrderUom == null) {
+                              Util.customErrorSnackBar(
+                                context,
+                                'Please select an item and UOM first',
+                              );
+                              return;
+                            }
 
-                            print(_itemOrderQtyController.text);
-                            // Insert new controllers at the beginning of their respective lists
-                            _orderQtyControllers.insert(
-                                0,
-                                TextEditingController(
-                                    text: _itemOrderQtyController.text));
-                            _conValControllers.insert(
-                                0,
-                                TextEditingController(
-                                    text: _itemConValController.text));
-                            _selectedOrderTableUom.insert(
-                                0, _selectedOrderUom!);
-                            _buyingSheet.insert(
-                              0,
-                              BuyingSheetListModel(
-                                itemId: selectedItem!.id,
-                                itemName: _itemNameController.text,
-                                itemCode: selectedItem!.code,
-                                uom: _selectedOrderUom!.name,
-                                itemGroup: selectedItem!.itemGroup,
-                                boxQty: _itemOrderQtyController.text,
-                                eachQty: _itemRateController.text,
-                                odrBQty: '',
-                                odrEQty: _itemOrderQtyController.text,
-                                boxUomId: _selectedOrderUom!.id,
-                                uomConVal: _itemConValController.text,
-                                itmCnt: '0',
-                              ),
-                            );
+                            // Create new controllers
+                            final newOrderQtyController = TextEditingController(
+                                text: _itemOrderQtyController.text);
+                            final newConValController = TextEditingController(
+                                text: _itemConValController.text);
+                            final newRateController = TextEditingController(
+                                text: _itemRateController.text);
+
                             setState(() {
+                              // Add new controllers to the lists
+                              _orderQtyControllers.insert(
+                                  0, newOrderQtyController);
+                              _conValControllers.insert(0, newConValController);
+                              _rateControllers.insert(0, newRateController);
+                              _selectedOrderTableUom.insert(
+                                  0, _selectedOrderUom!);
+
+                              // Add new item to buying sheet
+                              _buyingSheet.insert(
+                                0,
+                                BuyingSheetListModel(
+                                  itemId: selectedItem!.id,
+                                  itemName: _itemNameController.text,
+                                  itemCode: selectedItem!.code,
+                                  uom: _selectedOrderUom!.name,
+                                  itemGroup: selectedItem!.itemGroup,
+                                  boxQty: _itemOrderQtyController.text,
+                                  eachQty: _itemRateController.text,
+                                  odrBQty: '',
+                                  odrEQty: _itemOrderQtyController.text,
+                                  boxUomId: _selectedOrderUom!.id,
+                                  uomConVal: _itemConValController.text,
+                                  itmCnt: '0',
+                                  isSelected:
+                                      false, // Add default value for isSelected
+                                ),
+                              );
+
                               // Clear input fields
                               _itemNameController.clear();
                               _itemConValController.clear();
                               _itemOrderQtyController.clear();
                               _itemRateController.clear();
+                              selectedItem = null; // Reset selected item
+                              _selectedOrderUom = null; // Reset selected UOM
                             });
                           },
                           child: Text('Add'),
@@ -547,15 +566,18 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           SizedBox(
             height: 50,
             child: ElevatedButton(
-              onPressed: () async {
-                await getBuyingSheetList(
-                  prmFrmDate: _formatDate(selectedDateRange!.start).toString(),
-                  prmToDate: _formatDate(selectedDateRange!.end),
-                  prmCategory: _selectedCategory?.id ?? '',
-                  prmSupplier: _selectedSupplier?.id ?? '',
-                  prmPreviousOrder: _selectedPreviousOrder ?? '',
-                );
-              },
+              onPressed: selectedDateRange != null
+                  ? () async {
+                      await getBuyingSheetList(
+                        prmFrmDate:
+                            _formatDate(selectedDateRange!.start).toString(),
+                        prmToDate: _formatDate(selectedDateRange!.end),
+                        prmCategory: _selectedCategory?.id ?? '',
+                        prmSupplier: _selectedSupplier?.id ?? '',
+                        prmPreviousOrder: _selectedPreviousOrder ?? '',
+                      );
+                    }
+                  : null,
               // onPressed: _handleSearch,
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
@@ -622,6 +644,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       final suppliers = await getSupplierList();
       final oum = await getOumList();
       final items = await getItemList();
+
+      _categories = categories;
+      _suppliers = suppliers;
+      _items = items;
+      _oum = oum;
+
       await getBuyingSheetList(
         prmFrmDate:
             _formatDate(DateTime.now().subtract(Duration(days: 5))).toString(),
@@ -631,10 +659,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         prmSupplier: '',
         prmPreviousOrder: '',
       );
-      _categories = categories;
-      _suppliers = suppliers;
-      _items = items;
-      _oum = oum;
       _orderQtyControllers = List.generate(
         _buyingSheet.length,
         (index) => TextEditingController(text: _buyingSheet[index].odrEQty),
@@ -643,10 +667,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       //   _buyingSheet.length,
       //   (index) => _oum.where((e) => e.id == _buyingSheet[index].boxUomId).first,
       // ); TODO: Uncomment this line after adding UOM in BuyingSheetListModel
-      _selectedOrderTableUom = List.generate(
-        _buyingSheet.length,
-        (index) => _oum.first,
-      ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
+      // _selectedOrderTableUom = List.generate(
+      //   _buyingSheet.length,
+      //   (index) => _oum.first,
+      // ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
       _conValControllers = List.generate(
         _buyingSheet.length,
         (index) => TextEditingController(text: _buyingSheet[index].uomConVal),
@@ -750,13 +774,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         prmItmGrpId: '0',
       );
       if (response.isNotEmpty) {
-        setState(() {
-          _buyingSheet = response;
-          _orderQtyControllers.clear();
-          _selectedOrderTableUom.clear();
-          _conValControllers.clear();
-          _rateControllers.clear();
-        });
+        _buyingSheet = response;
         _orderQtyControllers = List.generate(
           _buyingSheet.length,
           (index) => TextEditingController(text: _buyingSheet[index].odrEQty),
@@ -765,6 +783,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         //   _buyingSheet.length,
         //   (index) => _oum.where((e) => e.id == _buyingSheet[index].boxUomId).first,
         // ); TODO: Uncomment this line after adding UOM in BuyingSheetListModel
+
         _selectedOrderTableUom = List.generate(
           _buyingSheet.length,
           (index) => _oum.first,
@@ -777,6 +796,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           _buyingSheet.length,
           (index) => TextEditingController(text: _buyingSheet[index].eachQty),
         );
+        setState(() {});
         if (!mounted) return;
         Navigator.pop(context);
       } else {
