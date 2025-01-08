@@ -1141,16 +1141,28 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         prmBrId: prmBrId,
         prmFaId: prmFaId,
       );
-      //TODO:bug fix
-      for (int i = 0; i < _buyingSheet.length; i++) {
+      List<BuyingSheetListModel> selectedItems = [];
+      for (var item in _buyingSheet) {
+        if (item.isSelected) {
+          selectedItems.add(item);
+        }
+      }
+      if (selectedItems.isEmpty) {
+        Util.customErrorSnackBar(
+          context,
+          'Please select at least one item to order',
+        );
+        return;
+      }
+      for (int i = 0; i < selectedItems.length; i++) {
         await ApiServices().fnSavePoList(
           prmTokenNo: tokenNo,
           prmDatePrmToCnt: _formatDate(DateTime.now()),
           prmCurntCnt: (i + 1).toString(),
-          PrmToCnt: _buyingSheet.length.toString(),
+          PrmToCnt: selectedItems.length.toString(),
           prmAccId: prmAccId,
-          prmItemId: _buyingSheet[i].itemId,
-          prmUomId: _buyingSheet[i].boxUomId,
+          prmItemId: selectedItems[i].itemId,
+          prmUomId: selectedItems[i].boxUomId,
           prmTaxId: '',
           prmPackId: _selectedOrderTableUom[i].id,
           prmNoPacks: _orderQtyControllers[i].text,
@@ -1163,7 +1175,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           // prmRate: _rateControllers[i].text,
         );
       }
-      _buyingSheet.clear();
+      setState(() {
+        _buyingSheet.clear();
+      });
     } catch (e) {
       debugPrint(e.toString());
     } finally {
