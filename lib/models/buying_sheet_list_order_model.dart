@@ -22,6 +22,7 @@ class BuyingSheetListModel {
   String eachQty;
   String odrBQty;
   String odrEQty;
+  String rate;
   String boxUomId;
   String uomConVal;
   String itmCnt;
@@ -37,6 +38,7 @@ class BuyingSheetListModel {
     required this.eachQty,
     required this.odrBQty,
     required this.odrEQty,
+    required this.rate,
     required this.boxUomId,
     required this.uomConVal,
     required this.itmCnt,
@@ -53,6 +55,7 @@ class BuyingSheetListModel {
         eachQty: json["EachQty"],
         odrBQty: json["OdrBQty"],
         odrEQty: json["OdrEQty"],
+        rate: json["Rate"],
         boxUomId: json["BoxUomId"],
         uomConVal: json["UomConVal"],
         itmCnt: json["ItmCnt"],
@@ -69,6 +72,7 @@ class BuyingSheetListModel {
         "EachQty": eachQty,
         "OdrBQty": odrBQty,
         "OdrEQty": odrEQty,
+        "Rate": rate,
         "BoxUomId": boxUomId,
         "UomConVal": uomConVal,
         "ItmCnt": itmCnt,

@@ -24,6 +24,7 @@ String getBuyingSheetListUrl = '$transactionUrl/FnGetBuyingSheetList';
 String getSupplierListUrl = '$webAppGeneralUrl/FnGetSupplierList';
 String getCategoryListUrl = '$webAppGeneralUrl/FnGetCategoryList';
 String checkSelectionUrl = '$transactionUrl/FnChekcSelection';
+String getPreviousOrderCounts = '$transactionUrl/FnGetPreviousOrderCount';
 
 // used in Sales order
 String savePackingItemUrl = '$transactionUrl/FnIsReleaseOrder';

@@ -9,6 +9,7 @@ import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../custom_widgets/util_class.dart';
+import '../../models/PreviousOrderCountModel.dart';
 import '../../models/buying_sheet_list_order_model.dart';
 import '../../models/category_list_model.dart';
 import '../../models/item_list_model.dart';
@@ -27,7 +28,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   DateTimeRange? selectedDateRange;
   CategoryListModel? _selectedCategory;
   SupplierListModel? _selectedSupplier;
-  String? _selectedPreviousOrder;
+  PreviousOrderCountModel? _selectedPreviousOrder;
   UomAndPackListModel? _selectedOrderUom;
   late List<UomAndPackListModel> _selectedOrderTableUom;
   late List<TextEditingController> _orderQtyControllers;
@@ -42,17 +43,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   late List<SupplierListModel> _suppliers = [];
   late List<UomAndPackListModel> _oum = [];
   late List<ItemListModel> _items = [];
+  late List<PreviousOrderCountModel> _previousOrders;
   bool _isLoading = false;
   List<BuyingSheetListModel> _buyingSheet = [];
   ItemListModel? selectedItem;
 
   bool btnIsEnabled = false;
-
-  final List<String> _previousOrders = [
-    'Order 1',
-    'Order 2',
-    'Order 3',
-  ];
 
   @override
   void initState() {
@@ -382,10 +378,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   eachQty: _itemRateController.text,
                                   odrBQty: '',
                                   odrEQty: _itemOrderQtyController.text,
+                                  rate: _itemRateController.text,
                                   boxUomId: _selectedOrderUom!.id,
                                   uomConVal: _itemConValController.text,
                                   itmCnt: '0',
-                                  isSelected: false,
+                                  isSelected: true,
                                 ),
                               );
 
@@ -414,9 +411,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               for (var item in _buyingSheet) {
                                 item.isSelected = _selectAll;
                               }
-                              if (_selectAll) {
-                                _fnCheckSelection();
-                              }
                             });
                           },
                           child:
@@ -432,14 +426,31 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         : _buyingSheetTable(data: _buyingSheet),
                   ),
                   const SizedBox(height: 10),
-                  SizedBox(
-                    height: 50,
-                    child: _buyingSheet.isEmpty
-                        ? SizedBox()
-                        : Align(
-                            alignment: Alignment.centerRight,
-                            child: _buildSaveButton(),
-                          ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(height: 10),
+                      Text(
+                        'Total Items: ${_buyingSheet.length}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "Selected Date Range: ${selectedDateRange != null ? _formatDate(selectedDateRange!.start) + ' - ' + _formatDate(selectedDateRange!.end) : _formatDate(DateTime.now()).toString() + ' - ' + _formatDate(DateTime.now().add(Duration(days: 1))).toString()}",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 50,
+                        child: _buyingSheet.isEmpty
+                            ? SizedBox()
+                            : _buildSaveButton(),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -478,6 +489,22 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   setState(() {
                     _selectedCategory = value!;
                   });
+                  try {
+                    getBuyingSheetList(
+                      prmFrmDate: selectedDateRange != null
+                          ? _formatDate(selectedDateRange!.start)
+                          : _formatDate(DateTime.now()).toString(),
+                      prmToDate: selectedDateRange != null
+                          ? _formatDate(selectedDateRange!.end)
+                          : _formatDate(DateTime.now().add(Duration(days: 1)))
+                              .toString(),
+                      prmCategory: _selectedCategory!.id,
+                      prmSupplier: _selectedSupplier?.id ?? '',
+                      prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
+                    );
+                  } catch (e) {
+                    Util.customErrorSnackBar(context, e.toString());
+                  }
                 },
               ),
             ),
@@ -510,6 +537,22 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   setState(() {
                     _selectedSupplier = value;
                   });
+                  try {
+                    getBuyingSheetList(
+                      prmFrmDate: selectedDateRange != null
+                          ? _formatDate(selectedDateRange!.start)
+                          : _formatDate(DateTime.now()).toString(),
+                      prmToDate: selectedDateRange != null
+                          ? _formatDate(selectedDateRange!.end)
+                          : _formatDate(DateTime.now().add(Duration(days: 1)))
+                              .toString(),
+                      prmCategory: _selectedCategory!.id,
+                      prmSupplier: _selectedSupplier?.id ?? '',
+                      prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
+                    );
+                  } catch (e) {
+                    Util.customErrorSnackBar(context, e.toString());
+                  }
                 },
               ),
             ),
@@ -519,7 +562,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             flex: 3,
             child: ButtonTheme(
               alignedDropdown: true,
-              child: DropdownButtonFormField<String>(
+              child: DropdownButtonFormField<PreviousOrderCountModel>(
                 isExpanded: true,
                 decoration: InputDecoration(
                   contentPadding:
@@ -532,7 +575,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     .map(
                       (e) => DropdownMenuItem(
                         value: e,
-                        child: Text(e),
+                        child: Text(e.name),
                       ),
                     )
                     .toList(),
@@ -542,6 +585,22 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   setState(() {
                     _selectedPreviousOrder = value;
                   });
+                  try {
+                    getBuyingSheetList(
+                      prmFrmDate: selectedDateRange != null
+                          ? _formatDate(selectedDateRange!.start)
+                          : _formatDate(DateTime.now()).toString(),
+                      prmToDate: selectedDateRange != null
+                          ? _formatDate(selectedDateRange!.end)
+                          : _formatDate(DateTime.now().add(Duration(days: 1)))
+                              .toString(),
+                      prmCategory: _selectedCategory!.id,
+                      prmSupplier: _selectedSupplier?.id ?? '',
+                      prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
+                    );
+                  } catch (e) {
+                    Util.customErrorSnackBar(context, e.toString());
+                  }
                 },
               ),
             ),
@@ -573,7 +632,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         prmToDate: _formatDate(selectedDateRange!.end),
                         prmCategory: _selectedCategory?.id ?? '',
                         prmSupplier: _selectedSupplier?.id ?? '',
-                        prmPreviousOrder: _selectedPreviousOrder ?? '',
+                        prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
                       );
                     }
                   : null,
@@ -643,15 +702,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       final suppliers = await getSupplierList();
       final oum = await getOumList();
       final items = await getItemList();
+      final previousOrder = await getPreviousOrderCount();
 
       _categories = categories;
       _suppliers = suppliers;
       _items = items;
       _oum = oum;
+      _previousOrders = previousOrder;
 
       await getBuyingSheetList(
-        prmFrmDate:
-            _formatDate(DateTime.now().subtract(Duration(days: 5))).toString(),
+        prmFrmDate: _formatDate(DateTime.now()).toString(),
         prmToDate:
             _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
         prmCategory: '',
@@ -676,7 +736,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       );
       _rateControllers = List.generate(
         _buyingSheet.length,
-        (index) => TextEditingController(text: _buyingSheet[index].eachQty),
+        (index) => TextEditingController(text: _buyingSheet[index].rate),
       );
       setState(() {
         _isLoading = false;
@@ -743,24 +803,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   }
 
 //todo: check the logic
-  Future _fnCheckSelection() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String prmCmpId = prefs.getString('cmpId')!;
-      String prmBrId = prefs.getString('brId')!;
-      String prmFaId = prefs.getString('faId')!;
-      String prmUId = prefs.getString('userId')!;
-      final response = await ApiServices().fnCheckSelection(
-        prmOrderId: '0',
-        prmCmpId: prmCmpId,
-        prmBrId: prmBrId,
-        prmFaId: prmFaId,
-        prmUId: prmUId,
-      );
-    } catch (e) {
-      debugPrint("Error in fnCheckSelection: ${e.toString()}");
-    }
-  }
 
   Future getBuyingSheetList({
     required String prmFrmDate,
@@ -790,7 +832,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         prmBrId: prmBrId,
         prmFaId: prmFaId,
         prmUId: prmUId,
-        prmItmGrpId: '0',
+        prmItmGrpId: prmCategory,
+        prmAccId: prmSupplier,
+        prmPrvOrderCount: prmPreviousOrder,
       );
       if (response.isNotEmpty) {
         _buyingSheet = response;
@@ -813,7 +857,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         );
         _rateControllers = List.generate(
           _buyingSheet.length,
-          (index) => TextEditingController(text: _buyingSheet[index].eachQty),
+          (index) => TextEditingController(text: _buyingSheet[index].rate),
         );
         setState(() {});
         if (!mounted) return;
@@ -840,6 +884,19 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       }
     } catch (e) {
       throw ('No Items Found');
+    }
+  }
+
+  Future<List<PreviousOrderCountModel>> getPreviousOrderCount() async {
+    try {
+      final response = await ApiServices().getPreviousOrderCount();
+      if (response.isNotEmpty) {
+        return response;
+      } else {
+        throw ('No Previous Found');
+      }
+    } catch (e) {
+      throw ('No Previous Found');
     }
   }
 
@@ -928,9 +985,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       cells: [
         _buildDataCell(item.itemCode),
         _buildNameCell(item.itemName),
-        _buildEditTextDataCell(
-          _conValControllers[index],
-        ),
+        _buildEditTextDataCell(_conValControllers[index]),
         _buildDataCell(
           item.boxQty,
         ),
@@ -1125,13 +1180,15 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   Widget _buildSaveButton() {
     return ElevatedButton(
-      onPressed: () {
-        // Util.customSuccessSnackBar(
-        //   context,
-        //   'Saved Successfully!',
-        // );
-        _orderNow();
-      },
+      onPressed: _selectedSupplier == null || _selectedCategory == null
+          ? null
+          : () {
+              // Util.customSuccessSnackBar(
+              //   context,
+              //   'Saved Successfully!',
+              // );
+              _orderNow();
+            },
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
         minimumSize: const Size(300, 50),
@@ -1202,6 +1259,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       setState(() {
         _buyingSheet.clear();
       });
+      Util.customSuccessSnackBar(
+        context,
+        'Order placed successfully!',
+      );
     } catch (e) {
       Navigator.pop(context);
       Util.customErrorSnackBar(context, 'Error: ${e.toString()}');
