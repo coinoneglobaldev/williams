@@ -509,7 +509,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                       prmCategory: _selectedCategory!.id,
                       prmSupplier: _selectedSupplier?.id ?? '',
                       prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
-                    );
+                    ).whenComplete(() {
+                      setState(() {});
+                    });
                   } catch (e) {
                     Util.customErrorSnackBar(context, e.toString());
                   }
@@ -554,10 +556,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           ? _formatDate(selectedDateRange!.end)
                           : _formatDate(DateTime.now().add(Duration(days: 1)))
                               .toString(),
-                      prmCategory: _selectedCategory!.id,
+                      prmCategory: _selectedCategory?.id ?? '',
                       prmSupplier: _selectedSupplier?.id ?? '',
                       prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
-                    );
+                    ).whenComplete(() {
+                      setState(() {});
+                    });
                   } catch (e) {
                     Util.customErrorSnackBar(context, e.toString());
                   }
@@ -602,10 +606,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           ? _formatDate(selectedDateRange!.end)
                           : _formatDate(DateTime.now().add(Duration(days: 1)))
                               .toString(),
-                      prmCategory: _selectedCategory!.id,
+                      prmCategory: _selectedCategory?.id ?? '',
                       prmSupplier: _selectedSupplier?.id ?? '',
                       prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
-                    );
+                    ).whenComplete(() {
+                      setState(() {});
+                    });
                   } catch (e) {
                     Util.customErrorSnackBar(context, e.toString());
                   }
@@ -713,6 +719,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       final previousOrder = await getPreviousOrderCount();
 
       _categories = categories;
+      _categories.insert(
+        0,
+        CategoryListModel(
+          id: '0',
+          name: 'All',
+          code: '',
+        ),
+      );
       _suppliers = suppliers;
       _items = items;
       _oum = oum;
@@ -1243,7 +1257,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   Widget _buildSaveButton() {
     return ElevatedButton(
-      onPressed: _selectedSupplier == null || _selectedCategory == null
+      onPressed: _selectedSupplier == null
           ? null
           : () {
               // Util.customSuccessSnackBar(
@@ -1279,7 +1293,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       String prmBrId = prefs.getString('brId')!;
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
-      String prmAccId = prefs.getString('accId')!;
 
       final String tokenNo = await ApiServices().fnGetTokenNoUrl(
         prmCmpId: prmCmpId,
@@ -1305,7 +1318,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           prmDatePrmToCnt: _formatDate(DateTime.now()),
           prmCurntCnt: (i + 1).toString(),
           PrmToCnt: selectedItems.length.toString(),
-          prmAccId: prmAccId,
+          prmAccId: _selectedSupplier!.id,
           prmItemId: selectedItems[i].itemId,
           prmUomId: selectedItems[i].boxUomId,
           prmTaxId: '',
