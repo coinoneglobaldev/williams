@@ -38,6 +38,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   final TextEditingController _itemConValController = TextEditingController();
   final TextEditingController _itemOrderQtyController = TextEditingController();
   final TextEditingController _itemRateController = TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
   bool _selectAll = false;
   late List<CategoryListModel> _categories = [];
   late List<SupplierListModel> _suppliers = [];
@@ -136,17 +137,26 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     textEditingValue.text.toLowerCase());
                               });
                             },
-                            onSelected: (ItemListModel selection) async {
+                            onSelected: (ItemListModel selection) {
                               setState(() {
                                 selectedItem = selection;
+                                _codeController.text = selection.code;
+                                _itemNameController.text = selection.name;
+                                _itemConValController.text = selection.conVal;
+                                _itemRateController.text = selection.bulkRate;
                               });
                             },
                             fieldViewBuilder: (BuildContext context,
-                                editingCurrentSupervisorController,
+                                TextEditingController fieldController,
                                 FocusNode fieldFocusNode,
                                 VoidCallback onFieldSubmitted) {
+                              if (_codeController.text !=
+                                  fieldController.text) {
+                                fieldController.text = _codeController.text;
+                              }
+
                               return TextFormField(
-                                controller: editingCurrentSupervisorController,
+                                controller: fieldController,
                                 focusNode: fieldFocusNode,
                                 decoration: InputDecoration(
                                   labelText: 'Code',
@@ -154,6 +164,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
+                                onChanged: (value) {
+                                  _codeController.text = value;
+                                },
                                 onFieldSubmitted: (String value) {
                                   onFieldSubmitted();
                                 },
@@ -169,18 +182,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   color: Colors.transparent,
                                   elevation: 25,
                                   child: Container(
-                                    margin: const EdgeInsets.only(
-                                      top: 5,
-                                    ),
+                                    margin: const EdgeInsets.only(top: 5),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
-                                      // Background color
                                       borderRadius: BorderRadius.circular(10),
-                                      // Border radius
                                       border: Border.all(
                                         color: Colors.black,
                                         width: 2,
-                                      ), // Border color
+                                      ),
                                     ),
                                     constraints: BoxConstraints(
                                       maxHeight:
@@ -195,13 +204,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                         return GestureDetector(
                                           onTap: () {
                                             onSelected(option);
-                                            _itemNameController.text =
-                                                option.name;
-                                            _itemConValController.text =
-                                                option.conVal;
-                                            _itemRateController.text =
-                                                option.bulkRate;
-                                            selectedItem = option;
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -393,7 +395,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   isSelected: true,
                                 ),
                               );
-
+                              _codeController.clear();
                               _itemNameController.clear();
                               _itemConValController.clear();
                               _itemOrderQtyController.clear();
@@ -1244,11 +1246,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             fillColor: WidgetStateProperty.all(Colors.white),
             value: item.isSelected,
             side: const BorderSide(color: Colors.black, width: 1),
-            onChanged: (bool? value) {
-              setState(() {
-                item.isSelected = value ?? false;
-              });
-            },
+            onChanged: (bool? value) => _handleItemSelection(item, value),
           ),
         ),
       ),
@@ -1347,15 +1345,23 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    for (var controller in _orderQtyControllers) {
-      controller.dispose();
+  void _handleItemSelection(BuyingSheetListModel item, bool? value) {
+    setState(() {
+      item.isSelected = value ?? false;
+
+      _selectAll = _buyingSheet.every((item) => item.isSelected);
+    });
+
+    @override
+    void dispose() {
+      for (var controller in _orderQtyControllers) {
+        controller.dispose();
+      }
+      _itemNameController.dispose();
+      _itemConValController.dispose();
+      _itemOrderQtyController.dispose();
+      _itemRateController.dispose();
+      super.dispose();
     }
-    _itemNameController.dispose();
-    _itemConValController.dispose();
-    _itemOrderQtyController.dispose();
-    _itemRateController.dispose();
-    super.dispose();
   }
 }
