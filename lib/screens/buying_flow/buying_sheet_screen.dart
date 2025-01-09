@@ -51,6 +51,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   bool btnIsEnabled = false;
 
+  int _selectedCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -421,6 +423,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               for (var item in _buyingSheet) {
                                 item.isSelected = _selectAll;
                               }
+                              _selectedCount = _buyingSheet
+                                  .where((item) => item.isSelected)
+                                  .length;
                             });
                           },
                           child:
@@ -512,6 +517,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                       prmSupplier: _selectedSupplier?.id ?? '',
                       prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
                     ).whenComplete(() {
+                      _selectAll = false;
+                      _selectedCount = 0;
                       setState(() {});
                     });
                   } catch (e) {
@@ -562,6 +569,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                       prmSupplier: _selectedSupplier?.id ?? '',
                       prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
                     ).whenComplete(() {
+                      _selectAll = false;
+                      _selectedCount = 0;
+
                       setState(() {});
                     });
                   } catch (e) {
@@ -612,6 +622,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                       prmSupplier: _selectedSupplier?.id ?? '',
                       prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
                     ).whenComplete(() {
+                      _selectAll = false;
+                      _selectedCount = 0;
+
                       setState(() {});
                     });
                   } catch (e) {
@@ -1271,7 +1284,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      child: const Text('Order Now'),
+      child: Text('Order Now (${_selectedCount})'),
     );
   }
 
@@ -1332,6 +1345,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       }
       setState(() {
         _buyingSheet.clear();
+        _selectedCount = 0;
       });
       Util.customSuccessSnackBar(
         context,
@@ -1350,6 +1364,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       item.isSelected = value ?? false;
 
       _selectAll = _buyingSheet.every((item) => item.isSelected);
+
+      _selectedCount = _buyingSheet.where((item) => item.isSelected).length;
     });
 
     @override
