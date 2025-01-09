@@ -485,8 +485,8 @@ class _SalesOrderListState extends State<SalesOrderList> {
                   color: WidgetStateProperty.resolveWith<Color>(
                       (Set<WidgetState> states) {
                     return index.isEven
-                        ? Colors.grey.shade200
-                        : Colors.grey.shade100;
+                        ? Colors.purple.shade50
+                        : Colors.purple.shade100;
                   }),
                   cells: [
                     DataCell(
