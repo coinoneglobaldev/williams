@@ -25,6 +25,8 @@ class BuyingSheetScreen extends StatefulWidget {
 }
 
 class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
+  FocusNode _orderQtyFocus = FocusNode();
+  FocusNode _rateFocus = FocusNode();
   DateTimeRange? selectedDateRange;
   CategoryListModel? _selectedCategory;
   SupplierListModel? _selectedSupplier;
@@ -52,6 +54,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   bool btnIsEnabled = false;
 
   int _selectedCount = 0;
+
+  double _totalAmount = 0.0;
 
   @override
   void initState() {
@@ -146,7 +150,18 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                 _itemNameController.text = selection.name;
                                 _itemConValController.text = selection.conVal;
                                 _itemRateController.text = selection.bulkRate;
+                                _selectedOrderUom = _oum
+                                    .where(
+                                      (e) => e.id == '19',
+                                    )
+                                    .first;
                               });
+                              _itemOrderQtyController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset:
+                                    _itemOrderQtyController.text.length,
+                              );
+                              _orderQtyFocus.requestFocus();
                             },
                             fieldViewBuilder: (BuildContext context,
                                 TextEditingController fieldController,
@@ -289,6 +304,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           child: TextField(
                             keyboardType: TextInputType.number,
                             controller: _itemOrderQtyController,
+                            onSubmitted: (value) {
+                              // Select all text in the TextField
+                              _itemRateController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset: _itemRateController.text.length,
+                              );
+                              // Reqest focus on the TextField
+                              _rateFocus.requestFocus();
+                            },
+                            focusNode: _orderQtyFocus,
                             decoration: InputDecoration(
                               labelText: 'Order Qty',
                               border: OutlineInputBorder(),
@@ -331,6 +356,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         Expanded(
                           flex: 1,
                           child: TextField(
+                            focusNode: _rateFocus,
                             controller: _itemRateController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
@@ -397,6 +423,22 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   isSelected: true,
                                 ),
                               );
+                              _selectedCount = _buyingSheet
+                                  .where((item) => item.isSelected)
+                                  .length;
+                              _totalAmount = _buyingSheet
+                                  .asMap()
+                                  .entries
+                                  .where((entry) => entry.value.isSelected)
+                                  .map((entry) {
+                                try {
+                                  return double.parse(entry.value.rate) *
+                                      double.parse(
+                                          _orderQtyControllers[entry.key].text);
+                                } catch (e) {
+                                  return 0.0;
+                                }
+                              }).fold(0, (a, b) => a + b);
                               _codeController.clear();
                               _itemNameController.clear();
                               _itemConValController.clear();
@@ -426,6 +468,25 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               _selectedCount = _buyingSheet
                                   .where((item) => item.isSelected)
                                   .length;
+
+                              if (_selectAll) {
+                                _totalAmount = _buyingSheet
+                                    .asMap()
+                                    .entries
+                                    .where((entry) => entry.value.isSelected)
+                                    .map((entry) {
+                                  try {
+                                    return double.parse(entry.value.rate) *
+                                        double.parse(
+                                            _orderQtyControllers[entry.key]
+                                                .text);
+                                  } catch (e) {
+                                    return 0.0;
+                                  }
+                                }).fold(0, (a, b) => a + b);
+                              } else {
+                                _totalAmount = 0.0;
+                              }
                             });
                           },
                           child:
@@ -453,7 +514,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         ),
                       ),
                       Text(
-                        "Selected Date Range: ${selectedDateRange != null ? _formatDate(selectedDateRange!.start) + ' - ' + _formatDate(selectedDateRange!.end) : _formatDate(DateTime.now()).toString() + ' - ' + _formatDate(DateTime.now().add(Duration(days: 1))).toString()}",
+                        "Date: ${selectedDateRange != null ? _formatDate(selectedDateRange!.start) + ' - ' + _formatDate(selectedDateRange!.end) : _formatDate(DateTime.now()).toString() + ' - ' + _formatDate(DateTime.now().add(Duration(days: 1))).toString()}",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Total Amount : £ $_totalAmount',
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -738,11 +806,23 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         0,
         CategoryListModel(
           id: '0',
-          name: 'All',
+          name: 'All Categories',
           code: '',
         ),
       );
       _suppliers = suppliers;
+      _suppliers.insert(
+        0,
+        SupplierListModel(
+          id: '0',
+          name: 'All Suppliers',
+          code: '',
+          address: '',
+          email: '',
+          mobNo: '',
+          phoneNo: '',
+        ),
+      );
       _items = items;
       _oum = oum;
       _previousOrders = previousOrder;
@@ -1290,6 +1370,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   Future<void> _orderNow() async {
     try {
+      if (_selectedSupplier!.name == 'All') {
+        Util.customErrorSnackBar(context, 'Please select a supplier to order');
+        return;
+      }
       showDialog(
         barrierColor: Colors.black.withValues(alpha: 0.8),
         barrierDismissible: false,
@@ -1343,10 +1427,24 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           prmRate: _rateControllers[i].text,
         );
       }
+      Navigator.pop(context);
+
       setState(() {
         _buyingSheet.clear();
+        _selectedCategory = null;
+        _selectedSupplier = null;
+        _selectedPreviousOrder = null;
         _selectedCount = 0;
+        _totalAmount = 0.0;
       });
+      await getBuyingSheetList(
+        prmFrmDate: _formatDate(DateTime.now()).toString(),
+        prmToDate:
+            _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
+        prmCategory: '',
+        prmSupplier: '',
+        prmPreviousOrder: '',
+      );
       Util.customSuccessSnackBar(
         context,
         'Order placed successfully!',
@@ -1354,8 +1452,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     } catch (e) {
       Navigator.pop(context);
       Util.customErrorSnackBar(context, 'Error: ${e.toString()}');
-    } finally {
-      Navigator.pop(context);
     }
   }
 
@@ -1366,6 +1462,21 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       _selectAll = _buyingSheet.every((item) => item.isSelected);
 
       _selectedCount = _buyingSheet.where((item) => item.isSelected).length;
+
+      _totalAmount = _buyingSheet
+          .asMap()
+          .entries
+          .where((entry) => entry.value.isSelected)
+          .map((entry) {
+        try {
+          return double.parse(entry.value.rate) *
+              double.parse(
+                _orderQtyControllers[entry.key].text,
+              );
+        } catch (e) {
+          return 0.0;
+        }
+      }).fold(0, (a, b) => a + b);
     });
 
     @override
