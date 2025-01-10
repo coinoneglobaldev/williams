@@ -13,6 +13,7 @@ String buyingSheetListModelToJson(List<BuyingSheetListModel> data) =>
 
 class BuyingSheetListModel {
   bool isSelected;
+  String totalQty;
   String itemId;
   String itemName;
   String itemCode;
@@ -29,6 +30,7 @@ class BuyingSheetListModel {
 
   BuyingSheetListModel({
     this.isSelected = false,
+    this.totalQty = '0',
     required this.itemId,
     required this.itemName,
     required this.itemCode,
@@ -63,6 +65,7 @@ class BuyingSheetListModel {
 
   Map<String, dynamic> toJson() => {
         "IsSelected": isSelected,
+        "TotalQty": totalQty,
         "ItemId": itemId,
         "ItemName": itemName,
         "ItemCode": itemCode,

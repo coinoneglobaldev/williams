@@ -63,6 +63,25 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     _loadCategories();
   }
 
+  double calculateTotalAmount({
+    required List<BuyingSheetListModel> buyingSheet,
+    required List<TextEditingController> orderQtyControllers,
+  }) {
+    return buyingSheet
+        .asMap()
+        .entries
+        .where((entry) => entry.value.isSelected)
+        .map((entry) {
+      try {
+        final rate = double.parse(entry.value.rate);
+        final quantity = double.parse(entry.value.totalQty);
+        return rate * quantity;
+      } catch (e) {
+        return 0.0;
+      }
+    }).fold(0, (sum, amount) => sum + amount);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
@@ -421,24 +440,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   uomConVal: _itemConValController.text,
                                   itmCnt: '0',
                                   isSelected: true,
+                                  totalQty: _itemOrderQtyController.text,
                                 ),
                               );
                               _selectedCount = _buyingSheet
                                   .where((item) => item.isSelected)
                                   .length;
-                              _totalAmount = _buyingSheet
-                                  .asMap()
-                                  .entries
-                                  .where((entry) => entry.value.isSelected)
-                                  .map((entry) {
-                                try {
-                                  return double.parse(entry.value.rate) *
-                                      double.parse(
-                                          _orderQtyControllers[entry.key].text);
-                                } catch (e) {
-                                  return 0.0;
-                                }
-                              }).fold(0, (a, b) => a + b);
+                              _totalAmount = calculateTotalAmount(
+                                  buyingSheet: _buyingSheet,
+                                  orderQtyControllers: _orderQtyControllers);
+                              setState(() {});
                               _codeController.clear();
                               _itemNameController.clear();
                               _itemConValController.clear();
@@ -1159,16 +1170,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       cells: [
         _buildDataCell(item.itemCode),
         _buildNameCell(item.itemName),
-        _buildEditTextDataCell(_conValControllers[index]),
+        _buildEditTextConValDataCell(_conValControllers[index]),
         _buildDataCell(item.odrBQty),
         _buildDataCell(item.odrEQty), // For Short Split
         _buildBulkSplitDropdownCell(item, index),
-        _buildEditableDataCell(
-          _orderQtyControllers[index],
-        ),
-        _buildEditTextDataCell(
-          _rateControllers[index],
-        ),
+        _buildEditableDataCell(_orderQtyControllers[index], index),
+        _buildEditTextRateDataCell(_rateControllers[index], index),
         _buildCheckboxDataCell(item),
       ],
     );
@@ -1248,7 +1255,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  DataCell _buildEditableDataCell(TextEditingController controller) {
+  DataCell _buildEditableDataCell(TextEditingController controller, int index) {
     return DataCell(
       Center(
         child: SizedBox(
@@ -1257,7 +1264,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                  onPressed: () => _decrementValue(controller),
+                  onPressed: () => _decrementValue(controller, index),
                   icon: const Icon(Icons.remove)),
               SizedBox(
                 width: 80,
@@ -1275,11 +1282,17 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
                     controller.text = value;
+                    _buyingSheet[index].totalQty = value.isEmpty ? '0' : value;
+
+                    _totalAmount = calculateTotalAmount(
+                        buyingSheet: _buyingSheet,
+                        orderQtyControllers: _orderQtyControllers);
+                    setState(() {});
                   },
                 ),
               ),
               IconButton(
-                  onPressed: () => _incrementValue(controller),
+                  onPressed: () => _incrementValue(controller, index),
                   icon: const Icon(Icons.add)),
             ],
           ),
@@ -1288,7 +1301,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  DataCell _buildEditTextDataCell(TextEditingController controller) {
+  DataCell _buildEditTextConValDataCell(TextEditingController controller) {
     return DataCell(
       Center(
         child: SizedBox(
@@ -1305,26 +1318,72 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               enabledBorder: InputBorder.none,
             ),
             keyboardType: TextInputType.number,
+            onChanged: (value) {
+              controller.text = value;
+            },
           ),
         ),
       ),
     );
   }
 
-  void _incrementValue(TextEditingController controller) {
+  DataCell _buildEditTextRateDataCell(
+      TextEditingController controller, int index) {
+    return DataCell(
+      Center(
+        child: SizedBox(
+          width: 70,
+          child: TextField(
+            controller: controller,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.black),
+            decoration: InputDecoration(
+              hintText: 'Enter value',
+              hintStyle: TextStyle(color: Colors.grey.shade500),
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+            ),
+            keyboardType: TextInputType.number,
+            onChanged: (value) {
+              _buyingSheet[index].rate = value;
+              _totalAmount = calculateTotalAmount(
+                  buyingSheet: _buyingSheet,
+                  orderQtyControllers: _orderQtyControllers);
+              setState(() {});
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _incrementValue(TextEditingController controller, int index) {
     try {
       double currentValue =
           double.parse(controller.text.isEmpty ? '0' : controller.text);
       controller.text = (currentValue + 1).toString();
+      _buyingSheet[index].totalQty = (currentValue + 1).toString();
+      _totalAmount = calculateTotalAmount(
+          buyingSheet: _buyingSheet, orderQtyControllers: _orderQtyControllers);
+      setState(() {});
     } catch (e) {
       controller.text = 'error';
     }
   }
 
-  void _decrementValue(TextEditingController controller) {
-    double currentValue = double.parse(controller.text);
-    if (currentValue > 0) {
-      controller.text = (currentValue - 1).toString();
+  void _decrementValue(TextEditingController controller, int index) {
+    try {
+      double currentValue = double.parse(controller.text);
+      if (currentValue > 0) {
+        _buyingSheet[index].totalQty = (currentValue - 1).toString();
+        controller.text = (currentValue - 1).toString();
+      }
+      _totalAmount = calculateTotalAmount(
+          buyingSheet: _buyingSheet, orderQtyControllers: _orderQtyControllers);
+      setState(() {});
+    } catch (e) {
+      controller.text = 'error';
     }
   }
 
