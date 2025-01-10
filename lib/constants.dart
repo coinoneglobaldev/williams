@@ -30,6 +30,7 @@ String getPreviousOrderCounts = '$transactionUrl/FnGetPreviousOrderCount';
 String savePackingItemUrl = '$transactionUrl/FnIsReleaseOrder';
 String releaseOrderAllOrderUrl = '$transactionUrl/FnIsReleaseAllOrder';
 String getSalesOrderListUrl = '$transactionUrl/FnGetSalesOrderList';
+String fnGetRoundListUrl = '$transactionUrl/FnGetRoundList';
 
 // used in buying and Sales order
 String getPackingTypeListDataUrl = '$webAppGeneralUrl/FnGetPackingTypeList';

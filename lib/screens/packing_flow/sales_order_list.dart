@@ -10,6 +10,7 @@ import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
+import '../../models/round_type_model.dart';
 import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
 import '../../models/uom_list_model.dart';
@@ -24,21 +25,22 @@ class SalesOrderList extends StatefulWidget {
 
 class _SalesOrderListState extends State<SalesOrderList> {
   DateTime startDate = DateTime.now();
+  bool isLoading = true;
   DateTime endDate = DateTime.now();
   ApiServices apiServices = ApiServices();
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
   final TextEditingController roundController = TextEditingController();
 
-  List<String> rounds = ['All Rounds', 'Round 1', 'Round 2', 'Round 3'];
-  String? selectedRound;
+  late List<RoundTypeModel> roundTypeList;
+  RoundTypeModel? selectedRound;
 
   @override
   void initState() {
     super.initState();
     startDateController.text = _formatDate(DateTime.now());
     endDateController.text = _formatDate(DateTime.now().add(Duration(days: 1)));
-    selectedRound = rounds[0];
+    _fnLoadRound();
   }
 
   @override
@@ -51,6 +53,23 @@ class _SalesOrderListState extends State<SalesOrderList> {
   String _formatDate(DateTime dte) {
     DateFormat date = DateFormat('dd/MMM/yyyy');
     return date.format(dte);
+  }
+
+  Future _fnLoadRound() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      roundTypeList = await apiServices.fnGetRoundList(prmCompanyId: prmCmpId);
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      debugPrint("Exception on _fnLoadRound $e");
+      roundTypeList = [];
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<List<SalesOrderListModel>> getSalesOrderList({
@@ -156,181 +175,193 @@ class _SalesOrderListState extends State<SalesOrderList> {
             builder: (context) => const ScreenCustomExitConfirmation(),
           );
         },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Sales Orders',
-                      style: TextStyle(
-                        fontSize: 35.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      flex: 4,
-                      child: TextField(
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          suffixIcon: Icon(Icons.calendar_today),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 16),
-                          label: Text('Start Date'),
-                        ),
-                        controller: startDateController,
-                        onTap: _selectStartDate,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      flex: 4,
-                      child: TextField(
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          suffixIcon: Icon(Icons.calendar_today),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 16),
-                          label: Text('End Date'),
-                        ),
-                        controller: endDateController,
-                        onTap: _selectEndDate,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      flex: 3,
-                      child: DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          labelText: 'Round',
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 16),
-                        ),
-                        value: selectedRound,
-                        items: rounds.map((String round) {
-                          return DropdownMenuItem<String>(
-                            value: round,
-                            child: Text(round),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedRound = newValue;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 5),
-                            _colorMatchingData(
-                              title: 'Hold',
-                              colors: Colors.red.shade500,
+        child: isLoading
+            ? Center(child: CustomLogoSpinner())
+            : Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Sales Orders',
+                            style: TextStyle(
+                              fontSize: 35.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
-                            const SizedBox(height: 6),
-                            _colorMatchingData(
-                              title: 'Release   ',
-                              colors: Colors.green.shade500,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            flex: 4,
+                            child: TextField(
+                              readOnly: true,
+                              decoration: const InputDecoration(
+                                suffixIcon: Icon(Icons.calendar_today),
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 16),
+                                label: Text('Start Date'),
+                              ),
+                              controller: startDateController,
+                              onTap: _selectStartDate,
                             ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 5),
-                            _colorMatchingData(
-                              title: 'Zero Rate',
-                              colors: Colors.blue.shade500,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            flex: 4,
+                            child: TextField(
+                              readOnly: true,
+                              decoration: const InputDecoration(
+                                suffixIcon: Icon(Icons.calendar_today),
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 16),
+                                label: Text('End Date'),
+                              ),
+                              controller: endDateController,
+                              onTap: _selectEndDate,
                             ),
-                            const SizedBox(height: 6),
-                            _colorMatchingData(
-                              title: 'Part Release ',
-                              colors: Colors.orange.shade500,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            flex: 3,
+                            child: DropdownButtonFormField<RoundTypeModel>(
+                              decoration: const InputDecoration(
+                                labelText: 'Round',
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 16),
+                              ),
+                              value: selectedRound,
+                              items: roundTypeList
+                                  .map(
+                                    (RoundTypeModel round) => DropdownMenuItem(
+                                      value: round,
+                                      child: Text(
+                                        round.round,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (RoundTypeModel? value) {
+                                selectedRound = value;
+                                setState(() {});
+                              },
                             ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 5),
-                            _colorMatchingData(
-                              title: 'Processing',
-                              colors: Colors.black,
-                            ),
-                            const SizedBox(height: 20),
-                          ],
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.logout,
-                        color: Colors.black,
-                      ),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) =>
-                              const CustomLogoutConfirmation(),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                FutureBuilder<List<SalesOrderListModel>>(
-                  future: getSalesOrderList(
-                    prmFrmDate: startDateController.text,
-                    prmToDate: endDateController.text,
-                    prmRound: '',
-                  ),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CustomLogoSpinner(
-                        color: Colors.black,
-                      );
-                    } else if (snapshot.hasError) {
-                      return SizedBox(
-                        height: MediaQuery.of(context).size.height / 1.5,
-                        width: MediaQuery.of(context).size.width,
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                          ),
+                          const SizedBox(width: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                snapshot.error.toString(),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )
-                            ]),
-                      );
-                    } else {
-                      return _buildSalesOrderTable(orderList: snapshot.data!);
-                    }
-                  },
-                )
-              ],
-            ),
-          ),
-        ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 5),
+                                  _colorMatchingData(
+                                    title: 'Hold',
+                                    colors: Colors.red.shade500,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  _colorMatchingData(
+                                    title: 'Release   ',
+                                    colors: Colors.green.shade500,
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 5),
+                                  _colorMatchingData(
+                                    title: 'Zero Rate',
+                                    colors: Colors.blue.shade500,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  _colorMatchingData(
+                                    title: 'Part Release ',
+                                    colors: Colors.orange.shade500,
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 5),
+                                  _colorMatchingData(
+                                    title: 'Processing',
+                                    colors: Colors.black,
+                                  ),
+                                  const SizedBox(height: 20),
+                                ],
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.logout,
+                              color: Colors.black,
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    const CustomLogoutConfirmation(),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      FutureBuilder<List<dynamic>>(
+                        future: Future.wait([
+                          getSalesOrderList(
+                            prmFrmDate: startDateController.text,
+                            prmToDate: endDateController.text,
+                            prmRound: selectedRound?.round ?? '',
+                          ),
+                        ]),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CustomLogoSpinner(
+                              color: Colors.black,
+                            );
+                          } else if (snapshot.hasError) {
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height / 1.5,
+                              width: MediaQuery.of(context).size.width,
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      snapshot.error.toString(),
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  ]),
+                            );
+                          } else {
+                            return _buildSalesOrderTable(
+                                orderList: snapshot.data![0]);
+                          }
+                        },
+                      )
+                    ],
+                  ),
+                ),
+              ),
       ),
     );
   }

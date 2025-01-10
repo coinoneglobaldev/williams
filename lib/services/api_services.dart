@@ -9,6 +9,7 @@ import '../models/buying_sheet_list_order_model.dart';
 import '../models/category_list_model.dart';
 import '../models/item_list_model.dart';
 import '../models/login_model.dart';
+import '../models/round_type_model.dart';
 import '../models/sales_order_item_list_model.dart';
 import '../models/sales_order_list_model.dart';
 import '../models/supplier_list_model.dart';
@@ -474,6 +475,39 @@ class ApiServices {
     } catch (error) {
       if (kDebugMode) {
         print('Exception in getPreviousOrderCount: $error');
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<RoundTypeModel>> fnGetRoundList({
+    required String prmCompanyId,
+  }) async {
+    String uri = "$fnGetRoundListUrl?PrmCompanyId=$prmCompanyId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (response.body.isEmpty) {
+        throw ('No Sales Order found');
+      }
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList.map((json) => RoundTypeModel.fromJson(json)).toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnGetRoundList: $error');
       }
       rethrow;
     }
