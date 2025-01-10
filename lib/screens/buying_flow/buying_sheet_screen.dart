@@ -431,8 +431,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   itemCode: selectedItem!.code,
                                   uom: _selectedOrderUom!.name,
                                   itemGroup: selectedItem!.itemGroup,
-                                  boxQty: '',
-                                  eachQty: '',
                                   odrBQty: _selectedOrderUom!.id == "21"
                                       ? '0'
                                       : _itemOrderQtyController.text,
@@ -445,6 +443,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   itmCnt: '0',
                                   isSelected: true,
                                   totalQty: _itemOrderQtyController.text,
+                                  eStockQty:
+                                      '0', //TODO: Add eStockQty in BuyingSheetListModel
+                                  actualNeededQty: '0',
+                                  bulk: '0',
+                                  split: '0',
                                 ),
                               );
                               _selectedCount = _buyingSheet
@@ -995,7 +998,56 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         prmPrvOrderCount: prmPreviousOrder,
       );
       if (response.isNotEmpty) {
-        _buyingSheet = response;
+        List<BuyingSheetListModel> _tempList = response;
+
+        List.generate(_tempList.length, (index) {
+          try {
+            double actualNeededQty =
+                double.parse(_tempList[index].eStockQty.toString()) -
+                    double.parse(_tempList[index].odrEQty.toString());
+
+            _tempList[index].actualNeededQty = actualNeededQty.abs().toString();
+            return _tempList[index];
+          } catch (e) {
+            print('Error calculating actual needed qty: $e');
+            return _tempList[index];
+          }
+        });
+
+        List.generate(_tempList.length, (index) {
+          try {
+            double split =
+                double.parse(_tempList[index].actualNeededQty.toString()) %
+                    double.parse(_tempList[index].uomConVal.toString());
+            _tempList[index].split = split.abs().ceil().toString();
+            return _tempList[index];
+          } catch (e) {
+            print('Error calculating split: $e');
+            return _tempList[index];
+          }
+        });
+
+        List.generate(_tempList.length, (index) {
+          try {
+            double semiBulk =
+                double.parse(_tempList[index].actualNeededQty.toString()) -
+                    (double.parse(_tempList[index].actualNeededQty.toString()) %
+                        double.parse(_tempList[index].uomConVal.toString()));
+            double bulk = semiBulk.abs() /
+                double.parse(_tempList[index].uomConVal.toString());
+
+            _tempList[index].bulk = bulk.abs().ceil().toString();
+            return _tempList[index];
+          } catch (e) {
+            print('Error calculating bulk: $e');
+            return _tempList[index];
+          }
+        });
+        _buyingSheet = _tempList;
+        _selectedOrderTableUom = List.generate(
+          _buyingSheet.length,
+          (index) => _oum.first,
+        );
         _orderQtyControllers = List.generate(
           _buyingSheet.length,
           (index) {
@@ -1005,10 +1057,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             return TextEditingController(text: result.toString());
           },
         );
-        _selectedOrderTableUom = List.generate(
-          _buyingSheet.length,
-          (index) => _oum.first,
-        );
+
         _selectedOrderTableUom = List.generate(
           _buyingSheet.length,
           (index) {
@@ -1164,8 +1213,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         _buildDataCell(item.itemCode),
         _buildNameCell(item.itemName),
         _buildEditTextConValDataCell(_conValControllers[index], index),
-        _buildDataCell(item.odrBQty),
-        _buildDataCell(item.odrEQty), // For Short Split
+        _buildDataCell(item.bulk),
+        _buildDataCell(item.split), // For Short Split
         _buildBulkSplitDropdownCell(item, index),
         _buildEditableDataCell(_orderQtyControllers[index], index),
         _buildEditTextRateDataCell(_rateControllers[index], index),

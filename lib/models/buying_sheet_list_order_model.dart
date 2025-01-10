@@ -19,14 +19,16 @@ class BuyingSheetListModel {
   String itemCode;
   String uom;
   String itemGroup;
-  String boxQty;
-  String eachQty;
   String odrBQty;
   String odrEQty;
   String rate;
   String boxUomId;
   String uomConVal;
   String itmCnt;
+  String eStockQty;
+  String actualNeededQty;
+  String split;
+  String bulk;
 
   BuyingSheetListModel({
     this.isSelected = false,
@@ -36,14 +38,16 @@ class BuyingSheetListModel {
     required this.itemCode,
     required this.uom,
     required this.itemGroup,
-    required this.boxQty,
-    required this.eachQty,
-    required this.odrBQty,
+    this.odrBQty = '0',
     required this.odrEQty,
     required this.rate,
     required this.boxUomId,
     required this.uomConVal,
     required this.itmCnt,
+    required this.eStockQty,
+    this.actualNeededQty = '0',
+    this.split = '0',
+    this.bulk = '0',
   });
 
   factory BuyingSheetListModel.fromJson(Map<String, dynamic> json) =>
@@ -53,14 +57,12 @@ class BuyingSheetListModel {
         itemCode: json["ItemCode"],
         uom: json["Uom"],
         itemGroup: json["ItemGroup"],
-        boxQty: json["BoxQty"],
-        eachQty: json["EachQty"],
-        odrBQty: json["OdrBQty"],
         odrEQty: json["OdrEQty"],
         rate: json["Rate"],
         boxUomId: json["BoxUomId"],
         uomConVal: json["UomConVal"],
         itmCnt: json["ItmCnt"],
+        eStockQty: json["EStockQty"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -71,13 +73,11 @@ class BuyingSheetListModel {
         "ItemCode": itemCode,
         "Uom": uom,
         "ItemGroup": itemGroup,
-        "BoxQty": boxQty,
-        "EachQty": eachQty,
-        "OdrBQty": odrBQty,
         "OdrEQty": odrEQty,
         "Rate": rate,
         "BoxUomId": boxUomId,
         "UomConVal": uomConVal,
         "ItmCnt": itmCnt,
+        "EStockQty": eStockQty,
       };
 }
