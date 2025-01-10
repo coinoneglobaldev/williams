@@ -601,6 +601,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     ).whenComplete(() {
                       _selectAll = false;
                       _selectedCount = 0;
+                      _totalAmount = 0.0;
                       setState(() {});
                     });
                   } catch (e) {
@@ -653,7 +654,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     ).whenComplete(() {
                       _selectAll = false;
                       _selectedCount = 0;
-
+                      _totalAmount = 0.0;
                       setState(() {});
                     });
                   } catch (e) {
@@ -706,7 +707,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     ).whenComplete(() {
                       _selectAll = false;
                       _selectedCount = 0;
-
+                      _totalAmount = 0.0;
                       setState(() {});
                     });
                   } catch (e) {
@@ -1578,6 +1579,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           prmRate: _rateControllers[i].text,
         );
       }
+      final items = await getItemList();
+      _items = items;
       Navigator.pop(context);
 
       setState(() {
