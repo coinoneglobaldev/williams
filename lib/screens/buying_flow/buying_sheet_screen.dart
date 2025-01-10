@@ -75,7 +75,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       try {
         final rate = double.parse(entry.value.rate);
         final quantity = double.parse(entry.value.totalQty);
-        return rate * quantity;
+        return rate * quantity.ceil();
       } catch (e) {
         return 0.0;
       }
@@ -402,10 +402,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               );
                               return;
                             }
-
+                            int roundedOrderQty =
+                                double.parse(_itemOrderQtyController.text)
+                                    .ceil();
                             // Create new controllers
                             final newOrderQtyController = TextEditingController(
-                                text: _itemOrderQtyController.text);
+                                text: roundedOrderQty.toString());
                             final newConValController = TextEditingController(
                                 text: _itemConValController.text);
                             final newRateController = TextEditingController(
@@ -859,13 +861,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             double bulkConValSplit = bulkConValSplitVal /
                 double.parse(_buyingSheet[index].uomConVal);
             print('bulkConValSplit: $bulkConValSplit');
-            return TextEditingController(text: bulkConValSplit.toString());
+            return TextEditingController(
+                text: bulkConValSplit.ceil().toString());
           } else if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
               double.parse(_buyingSheet[index].odrEQty) == 0) {
-            return TextEditingController(text: _buyingSheet[index].odrBQty);
+            int roundedValue = double.parse(_buyingSheet[index].odrBQty).ceil();
+            return TextEditingController(text: roundedValue.toString());
           } else if (double.parse(_buyingSheet[index].odrEQty) > 0 &&
               double.parse(_buyingSheet[index].odrBQty) == 0) {
-            return TextEditingController(text: _buyingSheet[index].odrEQty);
+            int roundedValue = double.parse(_buyingSheet[index].odrEQty).ceil();
+            return TextEditingController(text: roundedValue.toString());
           } else {
             return TextEditingController(text: '0');
           }
