@@ -17,7 +17,7 @@ String transactionUrl = '$baseUrl/WebAppTRansaction.asmx';
 String loginUrl = '$webAppLogUrl/FnGetUserLogIn';
 
 // used in buying
-String getItemListUrl = '$webAppGeneralUrl/FnGetItemList';
+String getItemListUrl = '$transactionUrl/FnGetItemList';
 String savePoListUrl = '$transactionUrl/FnSavePoList';
 String getTokenNoUrl = '$transactionUrl/FnGetTokenNo';
 String getBuyingSheetListUrl = '$transactionUrl/FnGetBuyingSheetList';

@@ -114,8 +114,15 @@ class ApiServices {
     }
   }
 
-  Future<List<ItemListModel>> getItemList() async {
-    String uri = getItemListUrl;
+  Future<List<ItemListModel>> getItemList(
+      {required String prmFrmDate,
+      required String prmToDate,
+      required String prmCmpId,
+      required String prmBrId,
+      required String prmFaId}) async {
+    String uri =
+        "$getItemListUrl?PrmFrmDate=$prmFrmDate&PrmToDate=$prmToDate&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
+        "PrmFaId=$prmFaId";
     if (kDebugMode) {
       print(uri);
     }

@@ -22,6 +22,8 @@ class ItemListModel {
   String conVal;
   String groupId;
   String taxId;
+  String eStockQty;
+  String rate;
 
   @override
   String toString() {
@@ -39,6 +41,8 @@ class ItemListModel {
     required this.conVal,
     required this.groupId,
     required this.taxId,
+    required this.eStockQty,
+    required this.rate,
   });
 
   factory ItemListModel.fromJson(Map<String, dynamic> json) => ItemListModel(
@@ -52,6 +56,8 @@ class ItemListModel {
         conVal: json["ConVal"],
         groupId: json["GroupId"],
         taxId: json["TaxId"],
+        eStockQty: json["EStockQty"],
+        rate: json["Rate"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -65,5 +71,7 @@ class ItemListModel {
         "ConVal": conVal,
         "GroupId": groupId,
         "TaxId": taxId,
+        "EStockQty": eStockQty,
+        "Rate": rate,
       };
 }

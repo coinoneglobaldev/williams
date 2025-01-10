@@ -59,6 +59,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   double _totalAmount = 0.0;
 
+  String? StockQty;
+
   @override
   void initState() {
     super.initState();
@@ -176,6 +178,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                       (e) => e.id == '19',
                                     )
                                     .first;
+                                StockQty = selection.eStockQty;
                               });
                               _itemOrderQtyController.selection = TextSelection(
                                 baseOffset: 0,
@@ -415,6 +418,22 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                             final newRateController = TextEditingController(
                                 text: _itemRateController.text);
 
+                            double actualNeededQty = double.parse(
+                                    StockQty.toString()) -
+                                double.parse(
+                                    _itemOrderQtyController.text.toString());
+
+                            double split = actualNeededQty.abs() %
+                                double.parse(_itemConValController.text);
+
+                            double semiBulk = actualNeededQty.abs() -
+                                (actualNeededQty.abs() %
+                                    double.parse(_itemConValController.text));
+                            double bulk = semiBulk.abs() /
+                                double.parse(
+                                    _itemConValController.text.toString());
+
+                            log('Actual Needed Qty: ${actualNeededQty.abs()} Split: $split SemiBulk: $semiBulk Bulk: $bulk');
                             setState(() {
                               _orderQtyControllers.insert(
                                   0, newOrderQtyController);
@@ -431,23 +450,17 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   itemCode: selectedItem!.code,
                                   uom: _selectedOrderUom!.name,
                                   itemGroup: selectedItem!.itemGroup,
-                                  odrBQty: _selectedOrderUom!.id == "21"
-                                      ? '0'
-                                      : _itemOrderQtyController.text,
-                                  odrEQty: _selectedOrderUom!.id == "19"
-                                      ? '0'
-                                      : _itemOrderQtyController.text,
+                                  odrBQty: bulk.abs().ceil().toString(),
+                                  odrEQty: split.abs().ceil().toString(),
                                   rate: _itemRateController.text,
                                   boxUomId: _selectedOrderUom!.id,
                                   uomConVal: _itemConValController.text,
                                   itmCnt: '0',
                                   isSelected: true,
                                   totalQty: _itemOrderQtyController.text,
-                                  eStockQty:
-                                      '0', //TODO: Add eStockQty in BuyingSheetListModel
-                                  actualNeededQty: '0',
-                                  bulk: '0',
-                                  split: '0',
+                                  eStockQty: StockQty
+                                      .toString(), //TODO: Add eStockQty in BuyingSheetListModel
+                                  actualNeededQty: actualNeededQty.toString(),
                                 ),
                               );
                               _selectedCount = _buyingSheet
@@ -844,8 +857,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       _orderQtyControllers = List.generate(
         _buyingSheet.length,
         (index) {
-          double result = calculateRoundedValue(_buyingSheet[index].odrBQty,
-              _buyingSheet[index].odrEQty, _buyingSheet[index].uomConVal);
+          double result = calculateRoundedValue(
+            _buyingSheet[index].odrBQty,
+            _buyingSheet[index].odrEQty,
+            _buyingSheet[index].uomConVal,
+          );
           _buyingSheet[index].totalQty = result.toString();
           return TextEditingController(text: result.toString());
         },
@@ -1019,7 +1035,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             double split =
                 double.parse(_tempList[index].actualNeededQty.toString()) %
                     double.parse(_tempList[index].uomConVal.toString());
-            _tempList[index].split = split.abs().ceil().toString();
+            _tempList[index].odrEQty = split.abs().ceil().toString();
             return _tempList[index];
           } catch (e) {
             print('Error calculating split: $e');
@@ -1036,7 +1052,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             double bulk = semiBulk.abs() /
                 double.parse(_tempList[index].uomConVal.toString());
 
-            _tempList[index].bulk = bulk.abs().ceil().toString();
+            _tempList[index].odrBQty = bulk.abs().ceil().toString();
             return _tempList[index];
           } catch (e) {
             print('Error calculating bulk: $e');
@@ -1103,7 +1119,17 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   Future<List<ItemListModel>> getItemList() async {
     try {
-      final response = await ApiServices().getItemList();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      final response = await ApiServices().getItemList(
+          prmFrmDate: _formatDate(DateTime.now()).toString(),
+          prmToDate:
+              _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
+          prmCmpId: prmCmpId,
+          prmBrId: prmBrId,
+          prmFaId: prmFaId);
       if (response.isNotEmpty) {
         return response;
       } else {
@@ -1213,8 +1239,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         _buildDataCell(item.itemCode),
         _buildNameCell(item.itemName),
         _buildEditTextConValDataCell(_conValControllers[index], index),
-        _buildDataCell(item.bulk),
-        _buildDataCell(item.split), // For Short Split
+        _buildDataCell(item.odrBQty),
+        _buildDataCell(item.odrEQty), // For Short Split
         _buildBulkSplitDropdownCell(item, index),
         _buildEditableDataCell(_orderQtyControllers[index], index),
         _buildEditTextRateDataCell(_rateControllers[index], index),
@@ -1362,6 +1388,18 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             ),
             keyboardType: TextInputType.number,
             onChanged: (value) {
+              String stock = _buyingSheet[index].eStockQty;
+              double actualNeededQty = double.parse(StockQty.toString()) -
+                  double.parse(_itemOrderQtyController.text.toString());
+
+              double split = actualNeededQty.abs() %
+                  double.parse(_itemConValController.text);
+
+              double semiBulk = actualNeededQty.abs() -
+                  (actualNeededQty.abs() %
+                      double.parse(_itemConValController.text));
+              double bulk = semiBulk.abs() /
+                  double.parse(_itemConValController.text.toString());
               controller.text = value;
               _buyingSheet[index].uomConVal = value;
               _orderQtyControllers = List.generate(

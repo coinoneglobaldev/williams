@@ -27,8 +27,6 @@ class BuyingSheetListModel {
   String itmCnt;
   String eStockQty;
   String actualNeededQty;
-  String split;
-  String bulk;
 
   BuyingSheetListModel({
     this.isSelected = false,
@@ -46,8 +44,6 @@ class BuyingSheetListModel {
     required this.itmCnt,
     required this.eStockQty,
     this.actualNeededQty = '0',
-    this.split = '0',
-    this.bulk = '0',
   });
 
   factory BuyingSheetListModel.fromJson(Map<String, dynamic> json) =>
