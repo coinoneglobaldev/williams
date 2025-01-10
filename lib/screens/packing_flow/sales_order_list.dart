@@ -60,6 +60,12 @@ class _SalesOrderListState extends State<SalesOrderList> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String prmCmpId = prefs.getString('cmpId')!;
       roundTypeList = await apiServices.fnGetRoundList(prmCompanyId: prmCmpId);
+      roundTypeList.insert(
+        0,
+        RoundTypeModel(
+          round: '',
+        ),
+      );
       setState(() {
         isLoading = false;
       });
@@ -241,7 +247,9 @@ class _SalesOrderListState extends State<SalesOrderList> {
                                     (RoundTypeModel round) => DropdownMenuItem(
                                       value: round,
                                       child: Text(
-                                        round.round,
+                                        round.round == ''
+                                            ? 'All Rounds'
+                                            : round.round,
                                         style: const TextStyle(
                                           color: Colors.black,
                                         ),
@@ -449,7 +457,9 @@ class _SalesOrderListState extends State<SalesOrderList> {
                   .toList()[0],
             ),
           ),
-        );
+        ).whenComplete(() {
+          setState(() {});
+        });
       } catch (e) {
         if (!mounted) return;
         Navigator.pop(context);
