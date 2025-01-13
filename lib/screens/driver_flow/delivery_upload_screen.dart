@@ -1,20 +1,20 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:williams/models/delivery_save_model.dart';
+import 'package:williams/services/api_services.dart';
 import '../../constants.dart';
 import '../../custom_widgets/custom_scaffold_driver.dart';
 import '../../custom_widgets/util_class.dart';
 import '../../models/daily_drop_list_model.dart';
 
 class DeliveryUploadScreen extends StatefulWidget {
-  // final DailyDropListModel deliveryItem;
+  final DailyDropListModel deliveryItem;
 
   const DeliveryUploadScreen({
     super.key,
-    // required this.deliveryItem,
+    required this.deliveryItem,
   });
 
   @override
@@ -24,6 +24,16 @@ class DeliveryUploadScreen extends StatefulWidget {
 class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
   File? _image;
   final ImagePicker _picker = ImagePicker();
+  bool isUploading = false;
+  ApiServices apiServices = ApiServices();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fnCheckLocationEmptyOrNot();
+    });
+  }
 
   Future<void> _takePhoto() async {
     try {
@@ -42,12 +52,107 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
     }
   }
 
-  void _uploadPhoto() {
-    if (_image != null) {
-      Util.customSuccessSnackBar(context, "Photo uploaded successfully!");
-      Navigator.pop(context);
-    } else {
+  void _fnCheckLocationEmptyOrNot() {
+    if (!mounted) return;
+    if (widget.deliveryItem.latitude.isEmpty ||
+        widget.deliveryItem.longitude.isEmpty) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Location not found'),
+          content: const Text('Please update the customer location.'),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                try {
+                  await updateCustomerLocation();
+                } catch (e) {
+                  if (!context.mounted) return;
+                  Util.customErrorSnackBar(
+                    context,
+                    "Failed to update location.\n(${e.toString()})",
+                  );
+                }
+              },
+              child: const Text('OK'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Future<CommonResponseModel> uploadDeliveryPhoto() async {
+    if (_image == null) {
       Util.customErrorSnackBar(context, "Please take a photo first!");
+      throw Exception("No photo selected");
+    }
+
+    setState(() {
+      isUploading = true;
+    });
+
+    try {
+      final result = await apiServices.fnSaveDeliveryDetails(
+        prmAutoId: widget.deliveryItem.autoId,
+        prmId: widget.deliveryItem.id,
+        prmDeliveryImage: '', //todo: upload image
+        prmDeliveryRemarks: 'remarks',
+        prmCmpId: widget.deliveryItem.companyId,
+        prmBrId: widget.deliveryItem.branchId,
+        prmFaId: widget.deliveryItem.faId,
+        prmUId: widget.deliveryItem.userId,
+      );
+      if (!mounted) return result;
+      if (result.message == "Success") {
+        Util.customSuccessSnackBar(context, "Photo uploaded successfully!");
+        Navigator.pop(context);
+        return result;
+      } else {
+        throw Exception("Upload failed: ${result.message}");
+      }
+    } catch (e) {
+      if (!mounted) rethrow;
+      Util.customErrorSnackBar(
+        context,
+        "Failed to upload photo.\n(${e.toString()})",
+      );
+      rethrow;
+    } finally {
+      if (mounted) {
+        setState(() {
+          isUploading = false;
+        });
+      }
+    }
+  }
+
+  Future<CommonResponseModel> updateCustomerLocation() async {
+    try {
+      final result = await apiServices.fnUpdateCustomerLocation(
+        prmAccId: widget.deliveryItem.crId, //todo: check if this is the correct field
+        prmLatitude: '',
+        prmLongitude: '',
+      );
+      if (!mounted) return result;
+      if (result.message == "Success") {
+        Util.customSuccessSnackBar(context, "Location updated successfully!");
+        Navigator.pop(context);
+        return result;
+      } else {
+        throw Exception("update location failed: ${result.message}");
+      }
+    } catch (e) {
+      Util.customErrorSnackBar(
+        context,
+        "Failed to updated location.\n(${e.toString()})",
+      );
+      rethrow;
     }
   }
 
@@ -137,7 +242,9 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
                     ),
                     elevation: 5,
                   ),
-                  onPressed: _uploadPhoto,
+                  onPressed: () {
+                    uploadDeliveryPhoto();
+                  },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: const [

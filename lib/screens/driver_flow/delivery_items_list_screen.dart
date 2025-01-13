@@ -33,7 +33,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
       String todayDate = DateTime.now().toString().split(' ')[0];
-
+      //todo: use correct prmUId
       final items = await apiServices.fnGetVehicleTransportList(
         prmDate: todayDate,
         prmCmpId: prmCmpId,
@@ -98,8 +98,9 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
                                 Navigator.push(
                                   context,
                                   CupertinoPageRoute(
-                                    builder: (context) =>
-                                        const DeliveryUploadScreen(),
+                                    builder: (context) => DeliveryUploadScreen(
+                                      deliveryItem: item,
+                                    ),
                                   ),
                                 );
                               },
