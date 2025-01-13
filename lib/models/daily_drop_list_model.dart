@@ -4,11 +4,11 @@
 
 import 'dart:convert';
 
-List<GetVehicleTransportListModel> getVehicleTransportListModelFromJson(String str) => List<GetVehicleTransportListModel>.from(json.decode(str).map((x) => GetVehicleTransportListModel.fromJson(x)));
+List<DailyDropListModel> getVehicleTransportListModelFromJson(String str) => List<DailyDropListModel>.from(json.decode(str).map((x) => DailyDropListModel.fromJson(x)));
 
-String getVehicleTransportListModelToJson(List<GetVehicleTransportListModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String getVehicleTransportListModelToJson(List<DailyDropListModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class GetVehicleTransportListModel {
+class DailyDropListModel {
   String autoId;
   String tokenNo;
   String refNo;
@@ -53,7 +53,7 @@ class GetVehicleTransportListModel {
   String isDelivery;
   String deliveryDateTime;
 
-  GetVehicleTransportListModel({
+  DailyDropListModel({
     required this.autoId,
     required this.tokenNo,
     required this.refNo,
@@ -99,7 +99,7 @@ class GetVehicleTransportListModel {
     required this.deliveryDateTime,
   });
 
-  factory GetVehicleTransportListModel.fromJson(Map<String, dynamic> json) => GetVehicleTransportListModel(
+  factory DailyDropListModel.fromJson(Map<String, dynamic> json) => DailyDropListModel(
     autoId: json["AutoId"],
     tokenNo: json["TokenNo"],
     refNo: json["RefNo"],

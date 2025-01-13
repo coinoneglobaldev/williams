@@ -1,8 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../../../custom_widgets/custom_logout_button.dart';
-import '../map/route_map_screen.dart';
 
 class DriverHomeAppbar extends StatelessWidget {
   final String name;

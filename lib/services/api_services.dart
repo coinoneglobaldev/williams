@@ -14,7 +14,7 @@ import '../models/sales_order_item_list_model.dart';
 import '../models/sales_order_list_model.dart';
 import '../models/supplier_list_model.dart';
 import '../models/uom_list_model.dart';
-import '../models/vehicle_transport_list_model.dart';
+import '../models/daily_drop_list_model.dart';
 
 class ApiServices {
   Future<LoginModel> getUserLogIn({
@@ -550,7 +550,7 @@ class ApiServices {
     }
   }
 
-  Future<List<GetVehicleTransportListModel>> fnGetVehicleTransportList({
+  Future<List<DailyDropListModel>> fnGetVehicleTransportList({
     required String prmDate,
     required String prmCmpId,
     required String prmBrId,
@@ -577,7 +577,7 @@ class ApiServices {
         print(responseList);
       }
       return responseList
-          .map((json) => GetVehicleTransportListModel.fromJson(json))
+          .map((json) => DailyDropListModel.fromJson(json))
           .toList();
     } catch (error) {
       if (kDebugMode) {

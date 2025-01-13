@@ -7,9 +7,15 @@ import 'package:image_picker/image_picker.dart';
 import '../../constants.dart';
 import '../../custom_widgets/custom_scaffold_driver.dart';
 import '../../custom_widgets/util_class.dart';
+import '../../models/daily_drop_list_model.dart';
 
 class DeliveryUploadScreen extends StatefulWidget {
-  const DeliveryUploadScreen({super.key});
+  // final DailyDropListModel deliveryItem;
+
+  const DeliveryUploadScreen({
+    super.key,
+    // required this.deliveryItem,
+  });
 
   @override
   State<DeliveryUploadScreen> createState() => _DeliveryUploadScreenState();
