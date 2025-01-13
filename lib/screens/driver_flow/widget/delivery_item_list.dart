@@ -24,7 +24,7 @@ class DeliveryItemList extends StatelessWidget {
 
   void _launchGoogleMaps() async {
     final Uri googleMapsUrl = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
+        'https://www.google.com/maps/search/?api=1&query=40 Richford Rd');
     if (await canLaunchUrl(googleMapsUrl)) {
       await launchUrl(googleMapsUrl);
     } else {

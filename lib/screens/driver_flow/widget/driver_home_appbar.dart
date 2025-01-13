@@ -15,6 +15,7 @@ class DriverHomeAppbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,22 +46,22 @@ class DriverHomeAppbar extends StatelessWidget {
             ),
           ],
         ),
-        const Spacer(),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              CupertinoPageRoute(
-                builder: (context) => const RouteMapScreen(),
-              ),
-            );
-          },
-          child: const Image(
-            image: AssetImage('assets/icons/appbar_map.png'),
-            height: 30,
-          ),
-        ),
-        SizedBox(width: 10),
+        // const Spacer(),
+        // GestureDetector(
+        //   onTap: () {
+        //     Navigator.push(
+        //       context,
+        //       CupertinoPageRoute(
+        //         builder: (context) => const RouteMapScreen(),
+        //       ),
+        //     );
+        //   },
+        //   child: const Image(
+        //     image: AssetImage('assets/icons/appbar_map.png'),
+        //     height: 30,
+        //   ),
+        // ),
+        // SizedBox(width: 10),
         IconButton(
           icon: Icon(Icons.logout),
           color: Colors.black,
