@@ -37,3 +37,6 @@ String getPackingTypeListDataUrl = '$webAppGeneralUrl/FnGetPackingTypeList';
 String getSalesOrderItemListUrl = '$transactionUrl/FnGetSalesOrderItemList';
 
 //used in driver
+String fnUpdateCustomerLocationUrl = '$transactionUrl/FnUpdateCustomerLocation';
+String fnGetVehicleTransportListUrl = '$transactionUrl/FnGetVehicleTransportList';
+String fnSaveDeliveryDetailsUrl = '$transactionUrl/FnSaveDeliveryDetails';

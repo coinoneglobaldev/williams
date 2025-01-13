@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/screens/driver_flow/widget/delivery_item_list.dart';
 import 'package:williams/screens/driver_flow/widget/driver_home_appbar.dart';
-
+import 'package:williams/services/api_services.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
+import '../../models/daily_drop_list_model.dart';
 import 'delivery_upload_screen.dart';
 
 class DeliveryItemsListScreen extends StatefulWidget {
@@ -16,96 +18,49 @@ class DeliveryItemsListScreen extends StatefulWidget {
 }
 
 class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
-  String? postalCode;
-  bool isLoading = true;
-  late List<Map<String, String>> deliveryItems;
+  bool isLoading = false;
+  late List<DailyDropListModel> deliveryItems;
+  ApiServices apiServices = ApiServices();
 
-  Future<void> getCoordinates(int index, Map<String, String> item) async {
-    try {
-      List<Location> locations = await locationFromAddress(item['address']!);
-
-      if (locations.isNotEmpty) {
-        final location = locations.first;
-
-        setState(() {
-          deliveryItems[index] = {
-            ...item,
-            'latitude': location.latitude.toString(),
-            'longitude': location.longitude.toString(),
-          };
-        });
-
-        print(
-            'Coordinates for ${item['id']}: ${location.latitude}, ${location.longitude}');
-      }
-    } catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          content: Text('Geocoding failed: $e'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
-  Future<void> initializeDeliveryItems() async {
-    // Initialize the delivery items
-    deliveryItems = [
-      {
-        'id': '1',
-        'name': 'Samuel',
-        'itemCount': '4',
-        'address': '40 RichFord Road E15 3PQ',
-        'orderId': 'PO-123',
-        'latitude': '',
-        'longitude': '',
-      },
-      {
-        'id': '2',
-        'name': 'Jackson',
-        'itemCount': '3',
-        'address': '114 Oval Road CR0 6BL',
-        'orderId': 'PO-124',
-        'latitude': '',
-        'longitude': '',
-      },
-      {
-        'id': '3',
-        'name': 'Emmanuel',
-        'itemCount': '7',
-        'address': '114 Oval Road CR0 6BL',
-        'orderId': 'PO-125',
-        'latitude': '',
-        'longitude': '',
-      },
-    ];
-
-    // Fetch coordinates for items with empty coordinates
-    for (int i = 0; i < deliveryItems.length; i++) {
-      if ((deliveryItems[i]['latitude'] == '' ||
-              deliveryItems[i]['latitude'] == '0.0') &&
-          (deliveryItems[i]['longitude'] == '' ||
-              deliveryItems[i]['longitude'] == '0.0')) {
-        await getCoordinates(i, deliveryItems[i]);
-      }
-    }
-
+  Future<List<DailyDropListModel>> fetchDeliveryItems() async {
     setState(() {
-      isLoading = false;
+      isLoading = true;
     });
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+      String todayDate = DateTime.now().toString().split(' ')[0];
+
+      final items = await apiServices.fnGetVehicleTransportList(
+        prmDate: todayDate,
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+        prmUId: '24',
+      );
+      setState(() {
+        deliveryItems = items;
+        isLoading = false;
+      });
+      return items;
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      if (kDebugMode) {
+        print('Error fetching delivery items: $e');
+      }
+      rethrow;
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    initializeDeliveryItems();
+    fetchDeliveryItems();
   }
 
   @override
@@ -126,10 +81,9 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
         },
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
             child: Column(
               children: [
-                const SizedBox(height: 10),
                 const DriverHomeAppbar(name: 'Ramesh U P'),
                 const SizedBox(height: 10),
                 Expanded(
@@ -150,12 +104,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
                                 );
                               },
                               child: DeliveryItemList(
-                                name: item['name']!,
-                                itemCount: item['itemCount']!,
-                                address: item['address']!,
-                                orderId: item['orderId']!,
-                                latitude: item['latitude']!,
-                                longitude: item['longitude']!,
+                                selectedItem: item,
                               ),
                             );
                           },

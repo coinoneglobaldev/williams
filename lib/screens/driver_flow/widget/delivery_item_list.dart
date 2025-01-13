@@ -1,36 +1,49 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:williams/models/daily_drop_list_model.dart';
 
 import '../../../custom_widgets/util_class.dart';
 
-class DeliveryItemList extends StatelessWidget {
-  final String name;
-  final String itemCount;
-  final String address;
-  final String orderId;
-  final String latitude;
-  final String longitude;
+class DeliveryItemList extends StatefulWidget {
+  final DailyDropListModel selectedItem;
 
   const DeliveryItemList({
-    required this.name,
-    required this.itemCount,
-    required this.address,
-    required this.orderId,
-    required this.latitude,
-    required this.longitude,
+    required this.selectedItem,
     super.key,
   });
 
-  void _launchGoogleMaps() async {
+  @override
+  State<DeliveryItemList> createState() => _DeliveryItemListState();
+}
+
+class _DeliveryItemListState extends State<DeliveryItemList> {
+
+  Future<void> _launchGoogleMaps() async {
+    final item = widget.selectedItem;
+    if ([item.latitude, item.longitude, item.address].every((x) => x.isEmpty)) {
+      _handleError('Address or location not available');
+      return;
+    }
+    final String query = item.latitude.isNotEmpty && item.longitude.isNotEmpty
+        ? '${item.latitude},${item.longitude}'
+        : item.address;
     final Uri googleMapsUrl = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
-    if (await canLaunchUrl(googleMapsUrl)) {
-      await launchUrl(googleMapsUrl);
-    } else {
-      if (kDebugMode) {
-        print('Could not launch Google Maps');
+        'https://www.google.com/maps/search/?api=1&query=$query'
+    );
+    try {
+      if (!await canLaunchUrl(googleMapsUrl)) {
+        throw Exception('Could not launch Google Maps');
       }
+      await launchUrl(googleMapsUrl);
+    } catch (e) {
+      _handleError('Could not launch Google Maps');
+    }
+  }
+  void _handleError(String message) {
+    if (kDebugMode) {
+      print(message);
+      Util.customErrorSnackBar(context, message);
     }
   }
 
@@ -44,13 +57,50 @@ class DeliveryItemList extends StatelessWidget {
         color: Colors.green,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Util.titleAndSubtitleWidget(title: 'Name:', subTitle: name),
-              const Spacer(),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 2,
+                child: Text(
+                  widget.selectedItem.accountCr.isEmpty
+                      ? 'Sorry, Account not available'
+                      : widget.selectedItem.accountCr,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 2,
+                child: Text(
+                  widget.selectedItem.address.isEmpty
+                      ? 'Sorry, Address not available'
+                      : widget.selectedItem.address,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Text(
+                widget.selectedItem.refNo.isEmpty
+                    ? 'Sorry, Item count not available'
+                    : widget.selectedItem.refNo,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          Column(
+            children: [
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -58,28 +108,20 @@ class DeliveryItemList extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(orderId),
+                  child: Text(widget.selectedItem.id),
+                ),
+              ),
+              GestureDetector(
+                onTap: _launchGoogleMaps,
+                child: Container(
+                  color: Colors.green,
+                  child: const Image(
+                    image: AssetImage('assets/icons/map.png'),
+                    height: 60,
+                  ),
                 ),
               ),
             ],
-          ),
-          Util.titleAndSubtitleWidget(
-              title: 'Item Count:', subTitle: itemCount),
-          Util.titleAndSubtitleWidget(title: 'Address:', subTitle: address),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: GestureDetector(
-              onTap: _launchGoogleMaps,
-              child: Container(
-                color: Colors.green,
-                height: 80,
-                width: 80,
-                child: const Image(
-                  image: AssetImage('assets/icons/map.png'),
-                  height: 80,
-                ),
-              ),
-            ),
           ),
         ],
       ),
