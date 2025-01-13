@@ -14,6 +14,7 @@ import '../models/sales_order_item_list_model.dart';
 import '../models/sales_order_list_model.dart';
 import '../models/supplier_list_model.dart';
 import '../models/uom_list_model.dart';
+import '../models/vehicle_transport_list_model.dart';
 
 class ApiServices {
   Future<LoginModel> getUserLogIn({
@@ -549,16 +550,15 @@ class ApiServices {
     }
   }
 
-  //Todo: model need to change
-  Future<List<BuyingSheetListModel>> fnGetVehicleTransportList({
+  Future<List<GetVehicleTransportListModel>> fnGetVehicleTransportList({
     required String prmDate,
     required String prmCmpId,
     required String prmBrId,
     required String prmFaId,
     required String prmUId,
   }) async {
-    String uri =
-        "$fnGetVehicleTransportListUrl?PrmDate=$prmDate&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
+    String uri ="$fnGetVehicleTransportListUrl?PrmDate=$prmDate&"
+        "PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
     if (kDebugMode) {
       print(uri);
     }
@@ -577,7 +577,7 @@ class ApiServices {
         print(responseList);
       }
       return responseList
-          .map((json) => BuyingSheetListModel.fromJson(json))
+          .map((json) => GetVehicleTransportListModel.fromJson(json))
           .toList();
     } catch (error) {
       if (kDebugMode) {
