@@ -4,10 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../constants.dart';
+import '../models/PreviousOrderCountModel.dart';
 import '../models/buying_sheet_list_order_model.dart';
 import '../models/category_list_model.dart';
 import '../models/item_list_model.dart';
 import '../models/login_model.dart';
+import '../models/round_type_model.dart';
 import '../models/sales_order_item_list_model.dart';
 import '../models/sales_order_list_model.dart';
 import '../models/supplier_list_model.dart';
@@ -113,8 +115,15 @@ class ApiServices {
     }
   }
 
-  Future<List<ItemListModel>> getItemList() async {
-    String uri = getItemListUrl;
+  Future<List<ItemListModel>> getItemList(
+      {required String prmFrmDate,
+      required String prmToDate,
+      required String prmCmpId,
+      required String prmBrId,
+      required String prmFaId}) async {
+    String uri =
+        "$getItemListUrl?PrmFrmDate=$prmFrmDate&PrmToDate=$prmToDate&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
+        "PrmFaId=$prmFaId";
     if (kDebugMode) {
       print(uri);
     }
@@ -331,11 +340,13 @@ class ApiServices {
     required String prmBrId,
     required String prmFaId,
     required String prmUId,
+    required String prmAccId,
+    required String prmPrvOrderCount,
   }) async {
     String uri =
         "$getBuyingSheetListUrl?PrmFrmDate=$prmFrmDate&PrmToDate=$prmToDate&"
         "PrmItmGrpId=$prmItmGrpId&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
-        "PrmFaId=$prmFaId&PrmUId=$prmUId";
+        "PrmFaId=$prmFaId&PrmUId=$prmUId&PrmAccId=$prmAccId&PrmPrvOrderCount=$prmPrvOrderCount";
     if (kDebugMode) {
       print(uri);
     }
@@ -439,26 +450,64 @@ class ApiServices {
     }
   }
 
-  Future fnCheckSelection({
-    required String prmOrderId,
-    required String prmCmpId,
-    required String prmBrId,
-    required String prmFaId,
-    required String prmUId,
-  }) async {
-    String uri = "$checkSelectionUrl?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&"
-        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
+  Future<List<PreviousOrderCountModel>> getPreviousOrderCount() async {
+    String uri = "$getPreviousOrderCounts";
     if (kDebugMode) {
       print(uri);
     }
     try {
-      final response = await http.get(Uri.parse(uri));
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
       if (kDebugMode) {
         print("Response: ${response.body}");
       }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList
+          .map((json) => PreviousOrderCountModel.fromJson(json))
+          .toList();
     } catch (error) {
       if (kDebugMode) {
-        print('Exception in fnCheckSelection: $error');
+        print('Exception in getPreviousOrderCount: $error');
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<RoundTypeModel>> fnGetRoundList({
+    required String prmCompanyId,
+  }) async {
+    String uri = "$fnGetRoundListUrl?PrmCompanyId=$prmCompanyId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (response.body.isEmpty) {
+        throw ('No Sales Order found');
+      }
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList.map((json) => RoundTypeModel.fromJson(json)).toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnGetRoundList: $error');
       }
       rethrow;
     }

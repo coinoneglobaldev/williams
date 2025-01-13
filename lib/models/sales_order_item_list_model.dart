@@ -12,7 +12,7 @@ String salesOrderItemListModelToJson(List<SalesOrderItemListModel> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class SalesOrderItemListModel {
-  bool? isChecked;
+  bool isChecked;
   String autoId;
   String id;
   String tokenNo;
