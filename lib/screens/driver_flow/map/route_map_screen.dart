@@ -17,7 +17,7 @@ class RouteMapScreen extends StatefulWidget {
 
 class _RouteMapScreenState extends State<RouteMapScreen> {
   late GoogleMapController mapController;
-  final String googleApiKey = "AIzaSyCi5g39Fzethf0tfwn3WesaeRAHOcrGVOQ";
+  final String googleApiKey = "AIzaSyAKstAX4Lh0UBids9KuJ7rripU3Brjn900";
 
   Map<LatLng, String> placeNames = {};
 
