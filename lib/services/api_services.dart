@@ -512,4 +512,124 @@ class ApiServices {
       rethrow;
     }
   }
+
+  //Todo: model need to change
+  Future<List<BuyingSheetListModel>> fnUpdateCustomerLocation({
+    required String prmAccId,
+    required String prmLatitude,
+    required String prmLongitude,
+  }) async {
+    String uri =
+        "$fnUpdateCustomerLocationUrl?PrmAccId=$prmAccId&PrmLatitude=$prmLatitude&PrmLongitude=$prmLongitude";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList
+          .map((json) => BuyingSheetListModel.fromJson(json))
+          .toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnUpdateCustomerLocation: $error');
+      }
+      rethrow;
+    }
+  }
+
+  //Todo: model need to change
+  Future<List<BuyingSheetListModel>> fnGetVehicleTransportList({
+    required String prmDate,
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUId,
+  }) async {
+    String uri =
+        "$fnGetVehicleTransportListUrl?PrmDate=$prmDate&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList
+          .map((json) => BuyingSheetListModel.fromJson(json))
+          .toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnGetVehicleTransportList: $error');
+      }
+      rethrow;
+    }
+  }
+
+  //Todo: model need to change
+  Future<List<BuyingSheetListModel>> fnSaveDeliveryDetails({
+    required String prmAutoId,
+    required String prmId,
+    required String prmDeliveryImage,
+    required String prmDeliveryRemarks,
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUId,
+  }) async {
+    String uri =
+        "$fnSaveDeliveryDetailsUrl?PrmAutoId=$prmAutoId&PrmId=$prmId&"
+        "PrmDeliveryImage=$prmDeliveryImage&"
+        "PrmDeliveryRemarks=$prmDeliveryRemarks&PrmCmpId=$prmCmpId&"
+        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList
+          .map((json) => BuyingSheetListModel.fromJson(json))
+          .toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnSaveDeliveryDetails: $error');
+      }
+      rethrow;
+    }
+  }
+
+
 }
