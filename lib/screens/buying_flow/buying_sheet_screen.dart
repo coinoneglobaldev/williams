@@ -395,6 +395,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                             ),
                           ),
                           onPressed: () {
+                            double split = 0;
+                            double bulk = 0;
+                            double actualNeededQty = 0;
                             if (selectedItem == null ||
                                 _selectedOrderUom == null) {
                               Util.customErrorSnackBar(
@@ -414,20 +417,29 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
                               final newRateController = TextEditingController(
                                   text: _itemRateController.text);
-                              double actualNeededQty = double.parse(
-                                      selectedItem!.eStockQty) -
-                                  double.parse(
-                                      _itemOrderQtyController.text.toString());
 
-                              double split = actualNeededQty.abs() %
-                                  double.parse(_itemConValController.text);
+                              if (double.parse(_itemConValController.text) ==
+                                  1) {
+                                split =
+                                    double.parse(_itemOrderQtyController.text);
+                              } else {
+                                actualNeededQty =
+                                    double.parse(selectedItem!.eStockQty) -
+                                        double.parse(_itemOrderQtyController
+                                            .text
+                                            .toString());
 
-                              double semiBulk = actualNeededQty.abs() -
-                                  (actualNeededQty.abs() %
-                                      double.parse(_itemConValController.text));
-                              double bulk = semiBulk.abs() /
-                                  double.parse(
-                                      _itemConValController.text.toString());
+                                split = actualNeededQty.abs() %
+                                    double.parse(_itemConValController.text);
+
+                                double semiBulk = actualNeededQty.abs() -
+                                    (actualNeededQty.abs() %
+                                        double.parse(
+                                            _itemConValController.text));
+                                bulk = semiBulk.abs() /
+                                    double.parse(
+                                        _itemConValController.text.toString());
+                              }
                               setState(() {
                                 _orderQtyControllers.insert(
                                     0, newOrderQtyController);
@@ -1025,11 +1037,15 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
         List.generate(_tempList.length, (index) {
           try {
-            double split =
-                double.parse(_tempList[index].actualNeededQty.toString()) %
-                    double.parse(_tempList[index].uomConVal.toString());
-            _tempList[index].odrEQty = split.abs().ceil().toString();
-            return _tempList[index];
+            if (double.parse(_tempList[index].uomConVal.toString()) == 1) {
+              return _tempList[index];
+            } else {
+              double split =
+                  double.parse(_tempList[index].actualNeededQty.toString()) %
+                      double.parse(_tempList[index].uomConVal.toString());
+              _tempList[index].odrEQty = split.abs().ceil().toString();
+              return _tempList[index];
+            }
           } catch (e) {
             print('Error calculating split: $e');
             return _tempList[index];
@@ -1038,15 +1054,19 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
         List.generate(_tempList.length, (index) {
           try {
-            double semiBulk =
-                double.parse(_tempList[index].actualNeededQty.toString()) -
-                    (double.parse(_tempList[index].actualNeededQty.toString()) %
-                        double.parse(_tempList[index].uomConVal.toString()));
-            double bulk = semiBulk.abs() /
-                double.parse(_tempList[index].uomConVal.toString());
+            if (double.parse(_tempList[index].uomConVal.toString()) == 1) {
+              return _tempList[index].odrBQty = '0';
+            } else {
+              double semiBulk = double.parse(
+                      _tempList[index].actualNeededQty.toString()) -
+                  (double.parse(_tempList[index].actualNeededQty.toString()) %
+                      double.parse(_tempList[index].uomConVal.toString()));
+              double bulk = semiBulk.abs() /
+                  double.parse(_tempList[index].uomConVal.toString());
 
-            _tempList[index].odrBQty = bulk.abs().ceil().toString();
-            return _tempList[index];
+              _tempList[index].odrBQty = bulk.abs().ceil().toString();
+              return _tempList[index];
+            }
           } catch (e) {
             print('Error calculating bulk: $e');
             return _tempList[index];
@@ -1503,10 +1523,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       onPressed: _selectedSupplier == null
           ? null
           : () {
-              // Util.customSuccessSnackBar(
-              //   context,
-              //   'Saved Successfully!',
-              // );
               _orderNow();
             },
       style: ElevatedButton.styleFrom(
