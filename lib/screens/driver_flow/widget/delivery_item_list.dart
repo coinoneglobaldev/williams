@@ -54,7 +54,9 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
       margin: const EdgeInsets.only(bottom: 10),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.green,
+        color: widget.selectedItem.isDelivery == '1'
+            ? Colors.blue
+            : Colors.green,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

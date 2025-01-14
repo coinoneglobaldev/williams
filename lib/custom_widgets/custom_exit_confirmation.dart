@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../constants.dart';
-
 class ScreenCustomExitConfirmation extends StatefulWidget {
   const ScreenCustomExitConfirmation({super.key});
 
@@ -20,7 +18,7 @@ class _ScreenCustomExitConfirmationState
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      backgroundColor: secondaryColor,
+      backgroundColor: Colors.grey[900],
       title: const Text(
         'Exit ?',
         style: TextStyle(
