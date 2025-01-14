@@ -1,8 +1,12 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:williams/models/delivery_save_model.dart';
 import 'package:williams/services/api_services.dart';
 import '../../constants.dart';
@@ -12,12 +16,10 @@ import '../../models/daily_drop_list_model.dart';
 
 class DeliveryUploadScreen extends StatefulWidget {
   final DailyDropListModel deliveryItem;
-  final int requiredImages;
 
   const DeliveryUploadScreen({
     super.key,
     required this.deliveryItem,
-    this.requiredImages = 3,
   });
 
   @override
@@ -29,13 +31,28 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
   final ImagePicker _picker = ImagePicker();
   bool isUploading = false;
   ApiServices apiServices = ApiServices();
+  List<XFile> selectedXFiles = [];
+  List<String> uploadedImagesName = [];
 
   @override
   void initState() {
     super.initState();
+    _fnGenerateXFIles();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fnCheckLocationEmptyOrNot();
     });
+  }
+
+  void _fnGenerateXFIles() async {
+    ByteData byteData = await rootBundle.load('assets/images/warning.png');
+    Uint8List bytes = byteData.buffer.asUint8List();
+    Directory tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    File tempFile = File('$tempPath/warning.png');
+    await tempFile.writeAsBytes(bytes);
+    XFile nullImage = XFile(tempFile.path);
+    selectedXFiles = [nullImage, nullImage, nullImage];
+    uploadedImagesName = ['none.png', 'none.png', 'none.png'];
   }
 
   void _showLocationRequiredDialog(String title, String message) {
@@ -165,6 +182,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
       if (photo != null) {
         setState(() {
           _images[index] = File(photo.path);
+          selectedXFiles[index] = photo;
         });
       }
     } catch (e) {
@@ -213,10 +231,10 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
 
   bool _validateImages() {
     int imagesCount = _images.where((image) => image != null).length;
-    if (imagesCount < widget.requiredImages) {
+    if (imagesCount < 1) {
       Util.customErrorSnackBar(
         context,
-        "Please take ${widget.requiredImages} photos to continue",
+        "Please take  photos to continue",
       );
       return false;
     }
@@ -234,12 +252,13 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
 
     try {
       // Here you would need to modify your API service to handle multiple images
+      await _uploadScreenshot();
       final result = await apiServices.fnSaveDeliveryDetails(
         prmAutoId: widget.deliveryItem.autoId,
         prmId: widget.deliveryItem.id,
-        prmImage1: '', // TODO: Handle multiple images in API
-        prmImage2: '', // TODO: Handle multiple images in API
-        prmImage3: '', // TODO: Handle multiple images in API
+        prmImage1: uploadedImagesName[0],
+        prmImage2: uploadedImagesName[1],
+        prmImage3: uploadedImagesName[2],
         prmDeliveryRemarks: 'remarks',
         prmCmpId: widget.deliveryItem.companyId,
         prmBrId: widget.deliveryItem.branchId,
@@ -332,44 +351,44 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
           child: Center(
             child: _images[index] == null
                 ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.camera_alt,
-                  size: 80,
-                  color: Colors.white.withValues(alpha: 0.8),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Photo ${index + 1}',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            )
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.camera_alt,
+                        size: 80,
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Photo ${index + 1}',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  )
                 : Stack(
-              fit: StackFit.expand,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.file(
-                    _images[index]!,
-                    fit: BoxFit.cover,
+                    fit: StackFit.expand,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.file(
+                          _images[index]!,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: IconButton(
+                          icon: const Icon(Icons.refresh, color: Colors.white),
+                          onPressed: () => _takePhoto(index),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: IconButton(
-                    icon: const Icon(Icons.refresh, color: Colors.white),
-                    onPressed: () => _takePhoto(index),
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       ),
@@ -389,8 +408,8 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
               children: [
                 // Only show the required number of image containers
                 ...List.generate(
-                  widget.requiredImages,
-                      (index) => _buildImageContainer(index),
+                  3,
+                  (index) => _buildImageContainer(index),
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
@@ -405,7 +424,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
                     ),
                     elevation: 5,
                   ),
-                  onPressed: isUploading ? null : uploadDeliveryPhoto,
+                  onPressed: () => uploadDeliveryPhoto(),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -431,7 +450,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
                 const SizedBox(height: 20),
                 if (_images.every((image) => image == null))
                   Text(
-                    'Complete your delivery and capture proof of delivery\n(${widget.requiredImages} photos required)',
+                    'Complete your delivery and capture proof of delivery)',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.grey.shade600,
@@ -445,5 +464,74 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _uploadScreenshot() async {
+    try {
+      log('Uploading ${selectedXFiles.length} images...');
+      if (selectedXFiles.isEmpty) {
+        throw Exception('No images selected');
+      }
+
+      setState(() {
+        isUploading = true;
+      });
+      int i = 0;
+      for (final image in selectedXFiles) {
+        final dir = await getTemporaryDirectory();
+        final targetPath =
+            '${dir.absolute.path}/${i.toString()}.${image.path.split('.').last}';
+
+        final result = await FlutterImageCompress.compressAndGetFile(
+          image.path,
+          targetPath,
+          quality: 80,
+          format: image.path.split('.').last == 'jpg'
+              ? CompressFormat.jpeg
+              : CompressFormat.png,
+        );
+
+        if (result != null) {
+          final directory = await getApplicationDocumentsDirectory();
+          final String imageUrl =
+              '${widget.deliveryItem.id}-${result.path.split('/').last}';
+          print('-------------------------------');
+          uploadedImagesName[i] = imageUrl;
+          final File newImage = await File(result.path).copy(
+            '${directory.path}/$imageUrl',
+          );
+
+          final selectedImage = XFile(newImage.path);
+          await ApiServices().fnUploadFiles(
+            imageNameWithType: imageUrl,
+            image: selectedImage,
+            sketchNameWithType: '',
+            videoNameWithType: '',
+            sketch: null,
+            video: null,
+          );
+        } else {
+          throw Exception('Failed to compress image');
+        }
+        i++;
+      }
+
+      setState(() {
+        isUploading = false;
+      });
+
+      if (mounted) {
+        Navigator.pop(context);
+        Util.customSuccessSnackBar(context, 'Images uploaded successfully');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isUploading = false;
+        });
+        Util.customErrorSnackBar(
+            context, 'Failed to upload screenshot: ${e.toString()}');
+      }
+    }
   }
 }

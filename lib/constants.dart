@@ -41,3 +41,5 @@ String fnUpdateCustomerLocationUrl = '$transactionUrl/FnUpdateCustomerLocation';
 String fnGetVehicleTransportListUrl =
     '$transactionUrl/FnGetVehicleTransportList';
 String fnSaveDeliveryDetailsUrl = '$transactionUrl/FnSaveDeliveryDetails';
+String fileUploadUrl =
+    'https://coinoneglobal.in/teresa_api/api/Template/GeneralFileUpload';
