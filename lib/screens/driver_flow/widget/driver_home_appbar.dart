@@ -3,10 +3,12 @@ import '../../../custom_widgets/custom_logout_button.dart';
 
 class DriverHomeAppbar extends StatelessWidget {
   final String name;
+  final String dNo;
 
   const DriverHomeAppbar({
     super.key,
     required this.name,
+    required this.dNo,
   });
 
   @override
@@ -34,7 +36,7 @@ class DriverHomeAppbar extends StatelessWidget {
               ),
             ),
             Text(
-              'D.No: A123',
+              'D No: $dNo',
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w500,

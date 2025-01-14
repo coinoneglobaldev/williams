@@ -66,6 +66,8 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     print("brId:${pref.getString('brId')}");
     print("faId:${pref.getString('faId')}");
     print("userId:${pref.getString('userId')}");
+    print("accId:${pref.getString('accId')}");
+    print("userName:${pref.getString('userName')}");
   }
 
   void _navigateToBackground(String userType) {
@@ -112,16 +114,23 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     );
   }
 
-  _fnNavigateToDriverPage() {
+  _fnNavigateToDriverPage() async {
     // Set portrait orientation for driver
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String userName = prefs.getString('userName')!;
+    final String accId = prefs.getString('accId')!;
+    if(!mounted) return;
     Navigator.pushReplacement(
       context,
       CupertinoPageRoute(
-        builder: (context) => const DeliveryItemsListScreen(),
+        builder: (context) =>  DeliveryItemsListScreen(
+          name: userName,
+          dNo: accId,
+        ),
       ),
     );
   }

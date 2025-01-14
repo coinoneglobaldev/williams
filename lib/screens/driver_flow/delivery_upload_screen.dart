@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:williams/models/delivery_save_model.dart';
 import 'package:williams/services/api_services.dart';
@@ -35,6 +36,133 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
     });
   }
 
+  void _showLocationRequiredDialog(
+      String title,
+      String message,
+      ) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            backgroundColor: Colors.grey.shade900,
+            title: Text(
+              title,
+              style: TextStyle(color: Colors.white),
+            ),
+            content: Text(
+              message,
+              style: TextStyle(color: Colors.white),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _checkAndRequestLocation();
+                },
+                child: const Text(
+                  'Retry',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  'Exit App',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _checkAndRequestLocation() async {
+    try {
+      bool isLocationEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!isLocationEnabled) {
+        if (!mounted) return;
+        _showLocationRequiredDialog(
+          'Location Services Disabled',
+          'Please turn on location services from the quick tiles / settings and retry.',
+        );
+      } else {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied ||
+            permission == LocationPermission.deniedForever ||
+            permission == LocationPermission.unableToDetermine) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied ||
+              permission == LocationPermission.deniedForever ||
+              permission == LocationPermission.unableToDetermine) {
+            if (!mounted) return;
+            _showLocationRequiredDialog(
+              'Location Permission Required',
+              'This app requires location permission to function. Please grant location permission to continue.',
+            );
+          }
+        } else {
+          Position position = await Geolocator.getCurrentPosition(
+              locationSettings: const LocationSettings(
+                accuracy: LocationAccuracy.high,
+              ));
+          await updateCustomerLocation(
+            latitude: position.latitude.toString(),
+            longitude: position.longitude.toString(),
+          );
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error getting location: $e");
+      }
+      if (!mounted) return;
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return PopScope(
+            canPop: false,
+            child: AlertDialog(
+              backgroundColor: Colors.grey.shade900,
+              titleTextStyle: const TextStyle(color: Colors.white),
+              contentTextStyle: const TextStyle(color: Colors.white),
+              title: Text(
+                "Error !",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                ),
+              ),
+              content: Text(
+                e.toString(),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Ok",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+  }
+
   Future<void> _takePhoto() async {
     try {
       final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
@@ -66,7 +194,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
             TextButton(
               onPressed: () async {
                 try {
-                  await updateCustomerLocation();
+                  await _checkAndRequestLocation();
                 } catch (e) {
                   if (!context.mounted) return;
                   Util.customErrorSnackBar(
@@ -132,12 +260,15 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
     }
   }
 
-  Future<CommonResponseModel> updateCustomerLocation() async {
+  Future<CommonResponseModel> updateCustomerLocation({
+    required String latitude,
+    required String longitude,
+}) async {
     try {
       final result = await apiServices.fnUpdateCustomerLocation(
         prmAccId: widget.deliveryItem.crId, //todo: check if this is the correct field
-        prmLatitude: '',
-        prmLongitude: '',
+        prmLatitude: latitude,
+        prmLongitude: longitude,
       );
       if (!mounted) return result;
       if (result.message == "Success") {
