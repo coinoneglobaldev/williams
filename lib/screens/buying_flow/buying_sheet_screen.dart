@@ -312,6 +312,13 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           child: TextField(
                             controller: _itemConValController,
                             keyboardType: TextInputType.number,
+                            onTap: () {
+                              // Changed this line
+                              _itemConValController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset: _itemConValController.text.length,
+                              );
+                            },
                             decoration: InputDecoration(
                               labelText: 'Con Val',
                               border: OutlineInputBorder(),
@@ -1358,6 +1365,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     enabledBorder: InputBorder.none,
                   ),
                   keyboardType: TextInputType.number,
+                  onTap: () {
+                    controller.selection = TextSelection(
+                      baseOffset: 0,
+                      extentOffset: controller.text.length,
+                    );
+                  },
                   onChanged: (value) {
                     controller.text = value;
                     _buyingSheet[index].totalQty = value.isEmpty ? '0' : value;
@@ -1454,6 +1467,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               focusedBorder: InputBorder.none,
               enabledBorder: InputBorder.none,
             ),
+            onTap: () {
+              controller.selection = TextSelection(
+                baseOffset: 0,
+                extentOffset: controller.text.length,
+              );
+            },
             keyboardType: TextInputType.number,
             onChanged: (value) {
               _buyingSheet[index].rate = value;
