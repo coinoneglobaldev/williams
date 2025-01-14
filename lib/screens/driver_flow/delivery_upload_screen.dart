@@ -12,10 +12,12 @@ import '../../models/daily_drop_list_model.dart';
 
 class DeliveryUploadScreen extends StatefulWidget {
   final DailyDropListModel deliveryItem;
+  final int requiredImages;
 
   const DeliveryUploadScreen({
     super.key,
     required this.deliveryItem,
+    this.requiredImages = 3,
   });
 
   @override
@@ -23,7 +25,7 @@ class DeliveryUploadScreen extends StatefulWidget {
 }
 
 class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
-  File? _image;
+  final List<File?> _images = List.filled(3, null);
   final ImagePicker _picker = ImagePicker();
   bool isUploading = false;
   ApiServices apiServices = ApiServices();
@@ -36,10 +38,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
     });
   }
 
-  void _showLocationRequiredDialog(
-      String title,
-      String message,
-      ) {
+  void _showLocationRequiredDialog(String title, String message) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -50,11 +49,11 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
             backgroundColor: Colors.grey.shade900,
             title: Text(
               title,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
             content: Text(
               message,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
             actions: <Widget>[
               TextButton(
@@ -109,9 +108,10 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
           }
         } else {
           Position position = await Geolocator.getCurrentPosition(
-              locationSettings: const LocationSettings(
-                accuracy: LocationAccuracy.high,
-              ));
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.high,
+            ),
+          );
           await updateCustomerLocation(
             latitude: position.latitude.toString(),
             longitude: position.longitude.toString(),
@@ -133,26 +133,22 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
               backgroundColor: Colors.grey.shade900,
               titleTextStyle: const TextStyle(color: Colors.white),
               contentTextStyle: const TextStyle(color: Colors.white),
-              title: Text(
+              title: const Text(
                 "Error !",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 25,
                 ),
               ),
-              content: Text(
-                e.toString(),
-              ),
+              content: Text(e.toString()),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(
+                  child: const Text(
                     "Ok",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -163,12 +159,12 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
     }
   }
 
-  Future<void> _takePhoto() async {
+  Future<void> _takePhoto(int index) async {
     try {
       final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
       if (photo != null) {
         setState(() {
-          _image = File(photo.path);
+          _images[index] = File(photo.path);
         });
       }
     } catch (e) {
@@ -215,10 +211,21 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
     }
   }
 
+  bool _validateImages() {
+    int imagesCount = _images.where((image) => image != null).length;
+    if (imagesCount < widget.requiredImages) {
+      Util.customErrorSnackBar(
+        context,
+        "Please take ${widget.requiredImages} photos to continue",
+      );
+      return false;
+    }
+    return true;
+  }
+
   Future<CommonResponseModel> uploadDeliveryPhoto() async {
-    if (_image == null) {
-      Util.customErrorSnackBar(context, "Please take a photo first!");
-      throw Exception("No photo selected");
+    if (!_validateImages()) {
+      throw Exception("Required number of photos not taken");
     }
 
     setState(() {
@@ -226,19 +233,23 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
     });
 
     try {
+      // Here you would need to modify your API service to handle multiple images
       final result = await apiServices.fnSaveDeliveryDetails(
         prmAutoId: widget.deliveryItem.autoId,
         prmId: widget.deliveryItem.id,
-        prmDeliveryImage: '', //todo: upload image
+        prmImage1: '', // TODO: Handle multiple images in API
+        prmImage2: '', // TODO: Handle multiple images in API
+        prmImage3: '', // TODO: Handle multiple images in API
         prmDeliveryRemarks: 'remarks',
         prmCmpId: widget.deliveryItem.companyId,
         prmBrId: widget.deliveryItem.branchId,
         prmFaId: widget.deliveryItem.faId,
         prmUId: widget.deliveryItem.userId,
       );
+
       if (!mounted) return result;
       if (result.message == "Success") {
-        Util.customSuccessSnackBar(context, "Photo uploaded successfully!");
+        Util.customSuccessSnackBar(context, "Photos uploaded successfully!");
         Navigator.pop(context);
         return result;
       } else {
@@ -248,7 +259,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
       if (!mounted) rethrow;
       Util.customErrorSnackBar(
         context,
-        "Failed to upload photo.\n(${e.toString()})",
+        "Failed to upload photos.\n(${e.toString()})",
       );
       rethrow;
     } finally {
@@ -263,10 +274,10 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
   Future<CommonResponseModel> updateCustomerLocation({
     required String latitude,
     required String longitude,
-}) async {
+  }) async {
     try {
       final result = await apiServices.fnUpdateCustomerLocation(
-        prmAccId: widget.deliveryItem.crId, //todo: check if this is the correct field
+        prmAccId: widget.deliveryItem.crId,
         prmLatitude: latitude,
         prmLongitude: longitude,
       );
@@ -276,15 +287,93 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
         Navigator.pop(context);
         return result;
       } else {
-        throw Exception("update location failed: ${result.message}");
+        throw Exception("Update location failed: ${result.message}");
       }
     } catch (e) {
       Util.customErrorSnackBar(
         context,
-        "Failed to updated location.\n(${e.toString()})",
+        "Failed to update location.\n(${e.toString()})",
       );
       rethrow;
     }
+  }
+
+  Widget _buildImageContainer(int index) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      width: MediaQuery.of(context).size.width * 0.4,
+      height: MediaQuery.of(context).size.width * 0.4,
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.blue.shade200,
+            Colors.blue.shade400,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.shade100,
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () => _takePhoto(index),
+          child: Center(
+            child: _images[index] == null
+                ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.camera_alt,
+                  size: 80,
+                  color: Colors.white.withValues(alpha: 0.8),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Photo ${index + 1}',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            )
+                : Stack(
+              fit: StackFit.expand,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.file(
+                    _images[index]!,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.refresh, color: Colors.white),
+                    onPressed: () => _takePhoto(index),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -298,92 +387,40 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  height: MediaQuery.of(context).size.width * 0.7,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.blue.shade200,
-                        Colors.blue.shade400,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blue.shade100,
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
-                      onTap: _takePhoto,
-                      child: Center(
-                        child: _image == null
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.camera_alt,
-                                    size: 80,
-                                    color: Colors.white.withValues(alpha: 0.8),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    'Tap to Capture',
-                                    style: TextStyle(
-                                      color:
-                                          Colors.white.withValues(alpha: 0.8),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.file(
-                                  _image!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
+                // Only show the required number of image containers
+                ...List.generate(
+                  widget.requiredImages,
+                      (index) => _buildImageContainer(index),
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonColor,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 50, vertical: 15),
+                      horizontal: 50,
+                      vertical: 15,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
                     elevation: 5,
                   ),
-                  onPressed: () {
-                    uploadDeliveryPhoto();
-                  },
+                  onPressed: isUploading ? null : uploadDeliveryPhoto,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.cloud_upload),
-                      SizedBox(width: 10),
+                    children: [
+                      if (isUploading)
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(color: Colors.white),
+                        )
+                      else
+                        const Icon(Icons.cloud_upload),
+                      const SizedBox(width: 10),
                       Text(
-                        'Upload Photo',
-                        style: TextStyle(
+                        isUploading ? 'Uploading...' : 'Upload Photos',
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -392,16 +429,16 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                if (_image == null)
+                if (_images.every((image) => image == null))
                   Text(
-                    'Complete your delivery and capture proof of delivery',
+                    'Complete your delivery and capture proof of delivery\n(${widget.requiredImages} photos required)',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 14,
                       fontStyle: FontStyle.italic,
                     ),
-                  )
+                  ),
               ],
             ),
           ),
