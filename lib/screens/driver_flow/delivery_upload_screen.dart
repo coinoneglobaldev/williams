@@ -284,7 +284,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
       if (!mounted) return result;
       if (result.message == "Success") {
         Util.customSuccessSnackBar(context, "Location updated successfully!");
-        Navigator.pop(context);
+        Navigator.pop(context);// recheck if needed to pop
         return result;
       } else {
         throw Exception("Update location failed: ${result.message}");

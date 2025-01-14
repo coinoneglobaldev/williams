@@ -18,7 +18,6 @@ class DeliveryItemList extends StatefulWidget {
 }
 
 class _DeliveryItemListState extends State<DeliveryItemList> {
-
   Future<void> _launchGoogleMaps() async {
     final item = widget.selectedItem;
     if ([item.latitude, item.longitude, item.address].every((x) => x.isEmpty)) {
@@ -28,9 +27,8 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
     final String query = item.latitude.isNotEmpty && item.longitude.isNotEmpty
         ? '${item.latitude},${item.longitude}'
         : item.address;
-    final Uri googleMapsUrl = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=$query'
-    );
+    final Uri googleMapsUrl =
+        Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
     try {
       if (!await canLaunchUrl(googleMapsUrl)) {
         throw Exception('Could not launch Google Maps');
@@ -40,6 +38,7 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
       _handleError('Could not launch Google Maps');
     }
   }
+
   void _handleError(String message) {
     if (kDebugMode) {
       print(message);
@@ -54,9 +53,8 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
       margin: const EdgeInsets.only(bottom: 10),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: widget.selectedItem.isDelivery == '1'
-            ? Colors.blue
-            : Colors.green,
+        color:
+            widget.selectedItem.isDelivery == '1' ? Colors.blue : Colors.green,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -71,10 +69,11 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                   widget.selectedItem.accountCr.isEmpty
                       ? 'Sorry, Account not available'
                       : widget.selectedItem.accountCr,
-                  style: const TextStyle(
+                  style: const TextStyle(letterSpacing: 2,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
+
                   ),
                 ),
               ),
@@ -85,17 +84,17 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                       ? 'Sorry, Address not available'
                       : widget.selectedItem.address,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     color: Colors.white,
                   ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               Text(
-                widget.selectedItem.refNo.isEmpty
-                    ? 'Sorry, Item count not available'
-                    : widget.selectedItem.refNo,
+                '€ ${double.parse(widget.selectedItem.grandTotal).toStringAsFixed(2)}',
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   color: Colors.white,
                 ),
               ),
@@ -113,6 +112,7 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                   child: Text(widget.selectedItem.id),
                 ),
               ),
+              SizedBox(height: 10),
               GestureDetector(
                 onTap: _launchGoogleMaps,
                 child: Container(
