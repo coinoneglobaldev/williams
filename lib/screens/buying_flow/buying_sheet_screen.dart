@@ -1249,7 +1249,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return DataRow(
       color: WidgetStateProperty.resolveWith<Color>(
         (Set<WidgetState> states) {
-          return index.isEven ? Colors.amber.shade50 : Colors.amber.shade100;
+          return _selectedOrderTableUom[index].id == '19'
+              ? Colors.yellow
+              : Colors.green.shade200;
         },
       ),
       cells: [
