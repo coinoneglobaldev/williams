@@ -7,6 +7,7 @@ import '../constants.dart';
 import '../models/PreviousOrderCountModel.dart';
 import '../models/buying_sheet_list_order_model.dart';
 import '../models/category_list_model.dart';
+import '../models/delivery_save_model.dart';
 import '../models/item_list_model.dart';
 import '../models/login_model.dart';
 import '../models/round_type_model.dart';
@@ -122,8 +123,8 @@ class ApiServices {
       required String prmCmpId,
       required String prmBrId,
       required String prmFaId}) async {
-    String uri =
-        "$getItemListUrl?PrmFrmDate=$prmFrmDate&PrmToDate=$prmToDate&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
+    String uri = "$getItemListUrl?PrmFrmDate=$prmFrmDate&PrmToDate=$prmToDate&"
+        "PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
         "PrmFaId=$prmFaId";
     if (kDebugMode) {
       print(uri);
@@ -309,7 +310,8 @@ class ApiServices {
     required String prmUId,
   }) async {
     String uri =
-        "$releaseOrderAllOrderUrl?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
+        "$releaseOrderAllOrderUrl?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&"
+        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
     if (kDebugMode) {
       print(uri);
     }
@@ -347,7 +349,8 @@ class ApiServices {
     String uri =
         "$getBuyingSheetListUrl?PrmFrmDate=$prmFrmDate&PrmToDate=$prmToDate&"
         "PrmItmGrpId=$prmItmGrpId&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
-        "PrmFaId=$prmFaId&PrmUId=$prmUId&PrmAccId=$prmAccId&PrmPrvOrderCount=$prmPrvOrderCount";
+        "PrmFaId=$prmFaId&PrmUId=$prmUId&PrmAccId=$prmAccId&"
+        "PrmPrvOrderCount=$prmPrvOrderCount";
     if (kDebugMode) {
       print(uri);
     }
@@ -431,10 +434,12 @@ class ApiServices {
     required String prmRate,
   }) async {
     String uri =
-        "$savePoListUrl?PrmTokenNo=$prmTokenNo&PrmDate=$prmDatePrmToCnt&PrmCurntCnt=$prmCurntCnt&"
-        "PrmToCnt=$PrmToCnt&PrmAccId=$prmAccId&PrmItemId=$prmItemId&PrmUomId=$prmUomId&PrmTaxId=$prmTaxId&"
-        "PrmPackId=$prmPackId&PrmNoPacks=$prmNoPacks&PrmConVal=$prmConVal&PrmCmpId=$prmCmpId&"
-        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId&PrmRate=$prmRate";
+        "$savePoListUrl?PrmTokenNo=$prmTokenNo&PrmDate=$prmDatePrmToCnt&"
+        "PrmCurntCnt=$prmCurntCnt&PrmToCnt=$PrmToCnt&PrmAccId=$prmAccId&"
+        "PrmItemId=$prmItemId&PrmUomId=$prmUomId&PrmTaxId=$prmTaxId&"
+        "PrmPackId=$prmPackId&PrmNoPacks=$prmNoPacks&PrmConVal=$prmConVal&"
+        "PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId&"
+        "PrmRate=$prmRate";
     if (kDebugMode) {
       print(uri);
     }
@@ -452,7 +457,7 @@ class ApiServices {
   }
 
   Future<List<PreviousOrderCountModel>> getPreviousOrderCount() async {
-    String uri = "$getPreviousOrderCounts";
+    String uri = getPreviousOrderCounts;
     if (kDebugMode) {
       print(uri);
     }
@@ -514,42 +519,6 @@ class ApiServices {
     }
   }
 
-  //Todo: model need to change
-  Future<List<BuyingSheetListModel>> fnUpdateCustomerLocation({
-    required String prmAccId,
-    required String prmLatitude,
-    required String prmLongitude,
-  }) async {
-    String uri =
-        "$fnUpdateCustomerLocationUrl?PrmAccId=$prmAccId&PrmLatitude=$prmLatitude&PrmLongitude=$prmLongitude";
-    if (kDebugMode) {
-      print(uri);
-    }
-    try {
-      final response = await http.get(Uri.parse(uri)).timeout(
-          const Duration(
-            seconds: 15,
-          ), onTimeout: () {
-        throw 'timeout';
-      });
-      if (kDebugMode) {
-        print("Response: ${response.body}");
-      }
-      final List<dynamic> responseList = json.decode(response.body);
-      if (kDebugMode) {
-        print(responseList);
-      }
-      return responseList
-          .map((json) => BuyingSheetListModel.fromJson(json))
-          .toList();
-    } catch (error) {
-      if (kDebugMode) {
-        print('Exception in fnUpdateCustomerLocation: $error');
-      }
-      rethrow;
-    }
-  }
-
   Future<List<DailyDropListModel>> fnGetVehicleTransportList({
     required String prmDate,
     required String prmCmpId,
@@ -557,7 +526,7 @@ class ApiServices {
     required String prmFaId,
     required String prmUId,
   }) async {
-    String uri ="$fnGetVehicleTransportListUrl?PrmDate=$prmDate&"
+    String uri = "$fnGetVehicleTransportListUrl?PrmDate=$prmDate&"
         "PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
     if (kDebugMode) {
       print(uri);
@@ -587,8 +556,7 @@ class ApiServices {
     }
   }
 
-  //Todo: model need to change
-  Future<List<BuyingSheetListModel>> fnSaveDeliveryDetails({
+  Future<CommonResponseModel> fnSaveDeliveryDetails({
     required String prmAutoId,
     required String prmId,
     required String prmDeliveryImage,
@@ -598,8 +566,7 @@ class ApiServices {
     required String prmFaId,
     required String prmUId,
   }) async {
-    String uri =
-        "$fnSaveDeliveryDetailsUrl?PrmAutoId=$prmAutoId&PrmId=$prmId&"
+    String uri = "$fnSaveDeliveryDetailsUrl?PrmAutoId=$prmAutoId&PrmId=$prmId&"
         "PrmDeliveryImage=$prmDeliveryImage&"
         "PrmDeliveryRemarks=$prmDeliveryRemarks&PrmCmpId=$prmCmpId&"
         "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
@@ -616,13 +583,8 @@ class ApiServices {
       if (kDebugMode) {
         print("Response: ${response.body}");
       }
-      final List<dynamic> responseList = json.decode(response.body);
-      if (kDebugMode) {
-        print(responseList);
-      }
-      return responseList
-          .map((json) => BuyingSheetListModel.fromJson(json))
-          .toList();
+      final Map<String, dynamic> responseJson = json.decode(response.body);
+      return CommonResponseModel.fromJson(responseJson);
     } catch (error) {
       if (kDebugMode) {
         print('Exception in fnSaveDeliveryDetails: $error');
@@ -631,5 +593,33 @@ class ApiServices {
     }
   }
 
-
+  Future<CommonResponseModel> fnUpdateCustomerLocation({
+    required String prmAccId,
+    required String prmLatitude,
+    required String prmLongitude,
+  }) async {
+    String uri = "$fnUpdateCustomerLocationUrl?PrmAccId=$prmAccId&"
+        "PrmLatitude=$prmLatitude&PrmLongitude=$prmLongitude";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final Map<String, dynamic> responseJson = json.decode(response.body);
+      return CommonResponseModel.fromJson(responseJson);
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnSaveDeliveryDetails: $error');
+      }
+      rethrow;
+    }
+  }
 }

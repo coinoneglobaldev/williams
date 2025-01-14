@@ -10,17 +10,44 @@ import '../../models/daily_drop_list_model.dart';
 import 'delivery_upload_screen.dart';
 
 class DeliveryItemsListScreen extends StatefulWidget {
-  const DeliveryItemsListScreen({super.key});
+  final String name;
+  final String dNo;
+  const DeliveryItemsListScreen({
+    super.key,
+    required this.name,
+    required this.dNo,
+  });
 
   @override
   State<DeliveryItemsListScreen> createState() =>
       _DeliveryItemsListScreenState();
 }
 
-class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
+class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
+    with SingleTickerProviderStateMixin {
   bool isLoading = false;
-  late List<DailyDropListModel> deliveryItems;
+  late List<DailyDropListModel> deliveryItems = [];
   ApiServices apiServices = ApiServices();
+  late TabController _tabController;
+
+  List<DailyDropListModel> get pendingDeliveries =>
+      deliveryItems.where((item) => item.isDelivery == '0').toList();
+
+  List<DailyDropListModel> get finishedDeliveries =>
+      deliveryItems.where((item) => item.isDelivery == '1').toList();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    fetchDeliveryItems();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   Future<List<DailyDropListModel>> fetchDeliveryItems() async {
     setState(() {
@@ -39,7 +66,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
         prmCmpId: prmCmpId,
         prmBrId: prmBrId,
         prmFaId: prmFaId,
-        prmUId: '24',
+        prmUId: '24', // todo: prmUId, // '24',
       );
       setState(() {
         deliveryItems = items;
@@ -57,10 +84,54 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchDeliveryItems();
+  Widget _buildDeliveryList(List<DailyDropListModel> items) {
+    if (items.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.inbox_outlined,
+              size: 48,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No deliveries available',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () => fetchDeliveryItems(),
+      child: ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder: (context) => DeliveryUploadScreen(
+                    deliveryItem: item,
+                  ),
+                ),
+              ).then((_) => fetchDeliveryItems());
+            },
+            child: DeliveryItemList(
+              selectedItem: item,
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -84,30 +155,79 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
             child: Column(
               children: [
-                const DriverHomeAppbar(name: 'Ramesh U P'),
+                DriverHomeAppbar(name: widget.name, dNo: widget.dNo),
                 const SizedBox(height: 10),
+                // Tab Bar
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: TabBar(
+                    indicator: BoxDecoration(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(15),
+                      ),
+                      color: _tabController.index == 0
+                          ? Colors.green
+                          : Colors.blue,
+                      shape: BoxShape.rectangle,
+                    ),
+                    labelColor: Colors.white,
+                    labelStyle: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    unselectedLabelColor: Colors.grey,
+                    splashFactory: NoSplash.splashFactory,
+                    dividerHeight: 0,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    controller: _tabController,
+                    onTap: (index) {
+                      setState(() {
+                        _tabController.index = index;
+                      });
+                    },
+                    tabs: [
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.pending_actions),
+                            SizedBox(width: 8),
+                            Text(
+                              'Pending (${pendingDeliveries.length})',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.check_circle_outline),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Finished (${finishedDeliveries.length})',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
                 Expanded(
                   child: isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : ListView.builder(
-                          itemCount: deliveryItems.length,
-                          itemBuilder: (context, index) {
-                            final item = deliveryItems[index];
-                            return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                    builder: (context) =>
-                                        const DeliveryUploadScreen(),
-                                  ),
-                                );
-                              },
-                              child: DeliveryItemList(
-                                selectedItem: item,
-                              ),
-                            );
-                          },
+                      : TabBarView(
+                          controller: _tabController,
+                          children: [
+                            _buildDeliveryList(pendingDeliveries),
+                            _buildDeliveryList(finishedDeliveries),
+                          ],
                         ),
                 ),
               ],
