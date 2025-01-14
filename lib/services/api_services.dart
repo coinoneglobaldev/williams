@@ -559,7 +559,9 @@ class ApiServices {
   Future<CommonResponseModel> fnSaveDeliveryDetails({
     required String prmAutoId,
     required String prmId,
-    required String prmDeliveryImage,
+    required String prmImage1,
+    required String prmImage2,
+    required String prmImage3,
     required String prmDeliveryRemarks,
     required String prmCmpId,
     required String prmBrId,
@@ -567,7 +569,7 @@ class ApiServices {
     required String prmUId,
   }) async {
     String uri = "$fnSaveDeliveryDetailsUrl?PrmAutoId=$prmAutoId&PrmId=$prmId&"
-        "PrmDeliveryImage=$prmDeliveryImage&"
+        "PrmImage1=$prmImage1&PrmImage2=$prmImage2&PrmImage3=$prmImage3&"
         "PrmDeliveryRemarks=$prmDeliveryRemarks&PrmCmpId=$prmCmpId&"
         "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
     if (kDebugMode) {
