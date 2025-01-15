@@ -419,7 +419,7 @@ class ApiServices {
     }
   }
 
-  Future fnSavePoList({
+  Future<String> fnSavePoList({
     required String prmTokenNo,
     required String prmDatePrmToCnt,
     required String prmCurntCnt,
@@ -436,6 +436,7 @@ class ApiServices {
     required String prmFaId,
     required String prmUId,
     required String prmRate,
+    required String prmBillNo,
   }) async {
     String uri =
         "$savePoListUrl?PrmTokenNo=$prmTokenNo&PrmDate=$prmDatePrmToCnt&"
@@ -443,7 +444,7 @@ class ApiServices {
         "PrmItemId=$prmItemId&PrmUomId=$prmUomId&PrmTaxId=$prmTaxId&"
         "PrmPackId=$prmPackId&PrmNoPacks=$prmNoPacks&PrmConVal=$prmConVal&"
         "PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId&"
-        "PrmRate=$prmRate";
+        "PrmRate=$prmRate&PrmBillNo=$prmBillNo";
     if (kDebugMode) {
       print(uri);
     }
@@ -452,6 +453,10 @@ class ApiServices {
       if (kDebugMode) {
         print("Response: ${response.body}");
       }
+
+      final Map<String, dynamic> responseMap = json.decode(response.body);
+
+      return responseMap['ErrorCode'].toString();
     } catch (error) {
       if (kDebugMode) {
         print('Exception in fnSavePackingItem: $error');

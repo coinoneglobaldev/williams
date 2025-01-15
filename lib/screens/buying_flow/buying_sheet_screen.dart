@@ -42,6 +42,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   final TextEditingController _itemOrderQtyController = TextEditingController();
   final TextEditingController _itemRateController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _billNoController = TextEditingController();
   bool _selectAll = false;
   late List<CategoryListModel> _categories = [];
   late List<SupplierListModel> _suppliers = [];
@@ -544,32 +545,55 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const SizedBox(height: 10),
-                      Text(
-                        'Total Items: ${_buyingSheet.length}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          'Total Items: ${_buyingSheet.length}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      Text(
-                        "Date: ${selectedDateRange != null ? _formatDate(selectedDateRange!.start) + ' - ' + _formatDate(selectedDateRange!.end) : _formatDate(DateTime.now()).toString() + ' - ' + _formatDate(DateTime.now().add(Duration(days: 1))).toString()}",
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        flex: 4,
+                        child: Text(
+                          "Date: ${selectedDateRange != null ? _formatDate(selectedDateRange!.start) + ' - ' + _formatDate(selectedDateRange!.end) : _formatDate(DateTime.now()).toString() + ' - ' + _formatDate(DateTime.now().add(Duration(days: 1))).toString()}",
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      Text(
-                        'Total Amount : £ $_totalAmount',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          'Total Amount : £ $_totalAmount',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      SizedBox(
-                        height: 50,
-                        child: _buyingSheet.isEmpty
-                            ? SizedBox()
-                            : _buildSaveButton(),
+                      Expanded(
+                        flex: 1,
+                        child: TextField(
+                          controller: _billNoController,
+                          decoration: InputDecoration(
+                            labelText: 'Bill No.',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        flex: 3,
+                        child: SizedBox(
+                          height: 50,
+                          child: _buyingSheet.isEmpty
+                              ? SizedBox()
+                              : _buildSaveButton(),
+                        ),
                       ),
                     ],
                   ),
@@ -1602,7 +1626,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         return;
       }
       for (int i = 0; i < selectedItems.length; i++) {
-        await ApiServices().fnSavePoList(
+        final response = await ApiServices().fnSavePoList(
           prmTokenNo: tokenNo,
           prmDatePrmToCnt: _formatDate(DateTime.now()),
           prmCurntCnt: (i + 1).toString(),
@@ -1619,7 +1643,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           prmFaId: prmFaId,
           prmUId: prmUId,
           prmRate: _rateControllers[i].text,
+          prmBillNo: _billNoController.text,
         );
+
+        if (response == '1') {
+          throw ('Order is not placed');
+        }
       }
       final items = await getItemList();
       _items = items;
@@ -1627,6 +1656,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
       setState(() {
         _buyingSheet.clear();
+        _billNoController.clear();
         _selectedCategory = null;
         _selectedSupplier = null;
         _selectedPreviousOrder = null;
@@ -1670,6 +1700,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     _itemConValController.dispose();
     _itemOrderQtyController.dispose();
     _itemRateController.dispose();
+    _billNoController.dispose();
     super.dispose();
   }
 }
