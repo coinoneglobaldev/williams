@@ -66,14 +66,14 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
               SizedBox(
                 width: MediaQuery.of(context).size.width / 2,
                 child: Text(
-                  widget.selectedItem.accountCr.isEmpty
+                  widget.selectedItem.accountDr.isEmpty
                       ? 'Sorry, Account not available'
-                      : widget.selectedItem.accountCr,
-                  style: const TextStyle(letterSpacing: 2,
+                      : widget.selectedItem.accountDr,
+                  style: const TextStyle(
+                    letterSpacing: 2,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
-
                   ),
                 ),
               ),
@@ -92,7 +92,14 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                 ),
               ),
               Text(
-                '€ ${double.parse(widget.selectedItem.grandTotal).toStringAsFixed(2)}',
+                'Item count: ${widget.selectedItem.itmCnt}',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                'Amount: € ${double.parse(widget.selectedItem.grandTotal).toStringAsFixed(2)}',
                 style: const TextStyle(
                   fontSize: 16,
                   color: Colors.white,
@@ -109,7 +116,7 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(widget.selectedItem.id),
+                  child: Text(widget.selectedItem.drCode),
                 ),
               ),
               SizedBox(height: 10),

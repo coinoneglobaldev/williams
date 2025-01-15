@@ -63,6 +63,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   void initState() {
     super.initState();
     _loadCategories();
+
+    selectedDateRange = DateTimeRange(
+      start: DateTime.now(),
+      end: DateTime.now().add(Duration(days: 1)),
+    );
   }
 
   void calculateTotalAmount({

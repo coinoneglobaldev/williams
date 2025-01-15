@@ -318,12 +318,8 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
   }
 
   Widget _buildImageContainer(int index) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      width: MediaQuery.of(context).size.width * 0.4,
-      height: MediaQuery.of(context).size.width * 0.4,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+    return Container(
+
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -337,59 +333,56 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
         boxShadow: [
           BoxShadow(
             color: Colors.blue.shade100,
-            spreadRadius: 2,
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            spreadRadius: 5,
+            blurRadius: 15,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () => _takePhoto(index),
-          child: Center(
-            child: _images[index] == null
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.camera_alt,
-                        size: 80,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () => _takePhoto(index),
+        child: Center(
+          child: _images[index] == null
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.camera_alt,
+                      size: 80,
+                      color: Colors.white.withValues(alpha: 0.8),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Photo ${index + 1}',
+                      style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.8),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Photo ${index + 1}',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    ),
+                  ],
+                )
+              : Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.file(
+                        _images[index]!,
+                        fit: BoxFit.cover,
                       ),
-                    ],
-                  )
-                : Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image.file(
-                          _images[index]!,
-                          fit: BoxFit.cover,
-                        ),
+                    ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: IconButton(
+                        icon: const Icon(Icons.refresh, color: Colors.white),
+                        onPressed: () => _takePhoto(index),
                       ),
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: IconButton(
-                          icon: const Icon(Icons.refresh, color: Colors.white),
-                          onPressed: () => _takePhoto(index),
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );
@@ -399,69 +392,74 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
   Widget build(BuildContext context) {
     return CustomScaffoldDriver(
       title: 'Delivery Upload',
-      bodyWidget: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+      bodyWidget: Column(
+        children: [
+          Expanded(
+            child: GridView(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 1,
+              ),
               children: [
                 // Only show the required number of image containers
                 ...List.generate(
                   3,
                   (index) => _buildImageContainer(index),
                 ),
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonColor,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 50,
-                      vertical: 15,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    elevation: 5,
-                  ),
-                  onPressed: () => uploadDeliveryPhoto(),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (isUploading)
-                        const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(color: Colors.white),
-                        )
-                      else
-                        const Icon(Icons.cloud_upload),
-                      const SizedBox(width: 10),
-                      Text(
-                        isUploading ? 'Uploading...' : 'Upload Photos',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                if (_images.every((image) => image == null))
-                  Text(
-                    'Complete your delivery and capture proof of delivery)',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 14,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
+
               ],
             ),
           ),
-        ),
+          const SizedBox(height: 30),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: buttonColor,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 50,
+                vertical: 15,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              elevation: 5,
+            ),
+            onPressed: () => uploadDeliveryPhoto(),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isUploading)
+                  const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(color: Colors.white),
+                  )
+                else
+                  const Icon(Icons.cloud_upload),
+                const SizedBox(width: 10),
+                Text(
+                  isUploading ? 'Uploading...' : 'Complete Delivery',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          if (_images.every((image) => image == null))
+            Text(
+              'Complete your delivery and capture proof of delivery)',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 14,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -494,8 +492,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
         if (result != null) {
           final directory = await getApplicationDocumentsDirectory();
           final String imageUrl =
-              '${widget.deliveryItem.id}-${result.path.split('/').last}';
-          print('-------------------------------');
+              '${widget.deliveryItem.drCode}-${result.path.split('/').last}';
           uploadedImagesName[i] = imageUrl;
           final File newImage = await File(result.path).copy(
             '${directory.path}/$imageUrl',
