@@ -89,28 +89,32 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
 
   Widget _buildDeliveryList(List<DailyDropListModel> items) {
     if (items.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      return RefreshIndicator(
+        onRefresh: () => fetchDeliveryItems(),
+        child: ListView(
           children: [
-            Icon(
-              Icons.inbox_outlined,
-              size: 48,
-              color: Colors.grey[400],
+            const SizedBox(height: 100),
+            Center(
+              child: Icon(
+                Icons.inbox_outlined,
+                size: 48,
+                color: Colors.grey[400],
+              ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              'No deliveries available',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 16,
+            const SizedBox(height: 15),
+            Center(
+              child: Text(
+                'No deliveries available',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 16,
+                ),
               ),
             ),
           ],
         ),
       );
     }
-
     return RefreshIndicator(
       onRefresh: () => fetchDeliveryItems(),
       child: ListView.builder(
@@ -164,7 +168,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   child: TabBar(
                     indicator: BoxDecoration(
@@ -226,6 +230,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
                   child: isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : TabBarView(
+                          physics: NeverScrollableScrollPhysics(),
                           controller: _tabController,
                           children: [
                             _buildDeliveryList(pendingDeliveries),

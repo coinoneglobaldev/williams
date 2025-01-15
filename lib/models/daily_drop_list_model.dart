@@ -1,12 +1,12 @@
 // To parse this JSON data, do
 //
-//     final getVehicleTransportListModel = getVehicleTransportListModelFromJson(jsonString);
+//     final dailyDropListModel = dailyDropListModelFromJson(jsonString);
 
 import 'dart:convert';
 
-List<DailyDropListModel> getVehicleTransportListModelFromJson(String str) => List<DailyDropListModel>.from(json.decode(str).map((x) => DailyDropListModel.fromJson(x)));
+List<DailyDropListModel> dailyDropListModelFromJson(String str) => List<DailyDropListModel>.from(json.decode(str).map((x) => DailyDropListModel.fromJson(x)));
 
-String getVehicleTransportListModelToJson(List<DailyDropListModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String dailyDropListModelToJson(List<DailyDropListModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class DailyDropListModel {
   String autoId;
@@ -35,9 +35,12 @@ class DailyDropListModel {
   String regNo;
   String driverId;
   String driverName;
+  String itmCnt;
   String roundId;
   String roundName;
   String imageUrl;
+  String imageUrl2;
+  String imageUrl3;
   String id;
   String tType;
   String remarks;
@@ -80,9 +83,12 @@ class DailyDropListModel {
     required this.regNo,
     required this.driverId,
     required this.driverName,
+    required this.itmCnt,
     required this.roundId,
     required this.roundName,
     required this.imageUrl,
+    required this.imageUrl2,
+    required this.imageUrl3,
     required this.id,
     required this.tType,
     required this.remarks,
@@ -126,9 +132,12 @@ class DailyDropListModel {
     regNo: json["RegNo"],
     driverId: json["DriverId"],
     driverName: json["DriverName"],
+    itmCnt: json["ItmCnt"],
     roundId: json["RoundId"],
     roundName: json["RoundName"],
     imageUrl: json["ImageUrl"],
+    imageUrl2: json["ImageUrl2"],
+    imageUrl3: json["ImageUrl3"],
     id: json["Id"],
     tType: json["TType"],
     remarks: json["Remarks"],
@@ -172,9 +181,12 @@ class DailyDropListModel {
     "RegNo": regNo,
     "DriverId": driverId,
     "DriverName": driverName,
+    "ItmCnt": itmCnt,
     "RoundId": roundId,
     "RoundName": roundName,
     "ImageUrl": imageUrl,
+    "ImageUrl2": imageUrl2,
+    "ImageUrl3": imageUrl3,
     "Id": id,
     "TType": tType,
     "Remarks": remarks,

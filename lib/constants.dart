@@ -14,6 +14,9 @@ String webAppLogUrl = '$baseUrl/WebAppLog.asmx';
 String webAppGeneralUrl = '$baseUrl/WebAppGeneral.asmx';
 String transactionUrl = '$baseUrl/WebAppTRansaction.asmx';
 
+String fileUploadUrl =
+    'https://sysware-lasovrana.co.uk/file/api/Template/GeneralFileUpload';
+
 String loginUrl = '$webAppLogUrl/FnGetUserLogIn';
 
 // used in buying
@@ -41,5 +44,5 @@ String fnUpdateCustomerLocationUrl = '$transactionUrl/FnUpdateCustomerLocation';
 String fnGetVehicleTransportListUrl =
     '$transactionUrl/FnGetVehicleTransportList';
 String fnSaveDeliveryDetailsUrl = '$transactionUrl/FnSaveDeliveryDetails';
-String fileUploadUrl =
-    'https://coinoneglobal.in/teresa_api/api/Template/GeneralFileUpload';
+
+
