@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../constants.dart';
 import '../models/PreviousOrderCountModel.dart';
@@ -415,7 +419,7 @@ class ApiServices {
     }
   }
 
-  Future fnSavePoList({
+  Future<String> fnSavePoList({
     required String prmTokenNo,
     required String prmDatePrmToCnt,
     required String prmCurntCnt,
@@ -432,6 +436,7 @@ class ApiServices {
     required String prmFaId,
     required String prmUId,
     required String prmRate,
+    required String prmBillNo,
   }) async {
     String uri =
         "$savePoListUrl?PrmTokenNo=$prmTokenNo&PrmDate=$prmDatePrmToCnt&"
@@ -439,7 +444,7 @@ class ApiServices {
         "PrmItemId=$prmItemId&PrmUomId=$prmUomId&PrmTaxId=$prmTaxId&"
         "PrmPackId=$prmPackId&PrmNoPacks=$prmNoPacks&PrmConVal=$prmConVal&"
         "PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId&"
-        "PrmRate=$prmRate";
+        "PrmRate=$prmRate&PrmBillNo=$prmBillNo";
     if (kDebugMode) {
       print(uri);
     }
@@ -448,6 +453,10 @@ class ApiServices {
       if (kDebugMode) {
         print("Response: ${response.body}");
       }
+
+      final Map<String, dynamic> responseMap = json.decode(response.body);
+
+      return responseMap['ErrorCode'].toString();
     } catch (error) {
       if (kDebugMode) {
         print('Exception in fnSavePackingItem: $error');
@@ -622,6 +631,86 @@ class ApiServices {
         print('Exception in fnSaveDeliveryDetails: $error');
       }
       rethrow;
+    }
+  }
+
+  Future fnUploadFiles({
+    XFile? image,
+    XFile? sketch,
+    XFile? video,
+    required String imageNameWithType,
+    required String sketchNameWithType,
+    required String videoNameWithType,
+  }) async {
+    try {
+      ByteData byteData = await rootBundle.load('assets/images/warning.png');
+      Uint8List bytes = byteData.buffer.asUint8List();
+      Directory tempDir = await getTemporaryDirectory();
+      String tempPath = tempDir.path;
+      File tempFile = File('$tempPath/warning.png');
+      await tempFile.writeAsBytes(bytes);
+      XFile nullImage = XFile(tempFile.path);
+      http.MultipartRequest request =
+          http.MultipartRequest('POST', Uri.parse(fileUploadUrl));
+      request.fields.addAll({
+        'ImageName': image != null ? imageNameWithType : 'none.png',
+        'SketchName': sketch != null ? sketchNameWithType : 'none.png',
+        'VideoName': video != null ? videoNameWithType : 'none.png',
+      });
+      if (kDebugMode) {
+        print(
+          'ImageName: $imageNameWithType SketchName: $sketchNameWithType VideoName: $videoNameWithType',
+        );
+      }
+      if (kDebugMode) {
+        image != null
+            ? print('image path: ${image.path}')
+            : print('image path is null');
+      }
+      if (kDebugMode) {
+        sketch != null
+            ? print('sketch path: ${sketch.path}')
+            : print('sketch path is null');
+      }
+      if (kDebugMode) {
+        video != null
+            ? print('video path: ${video.path}')
+            : print('video path is null');
+      }
+      image != null
+          ? request.files
+              .add(await http.MultipartFile.fromPath('Image', image.path))
+          : request.files
+              .add(await http.MultipartFile.fromPath('Image', nullImage.path));
+      sketch != null
+          ? request.files
+              .add(await http.MultipartFile.fromPath('Sketch', sketch.path))
+          : request.files
+              .add(await http.MultipartFile.fromPath('Sketch', nullImage.path));
+      video != null
+          ? request.files
+              .add(await http.MultipartFile.fromPath('Video', video.path))
+          : request.files
+              .add(await http.MultipartFile.fromPath('Video', nullImage.path));
+      http.StreamedResponse response = await request.send();
+      if (response.statusCode == 201) {
+        if (kDebugMode) {
+          print('request: $request');
+          print('files uploaded successfully');
+          print(await response.stream.bytesToString());
+        }
+      } else {
+        if (kDebugMode) {
+          print('Failed to upload files');
+          print(response.reasonPhrase);
+          throw 'Failed to upload files';
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('fnUploadFiles called and failed $e');
+      }
+      throw e.toString();
     }
   }
 }

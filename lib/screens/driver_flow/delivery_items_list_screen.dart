@@ -67,7 +67,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
         prmCmpId: prmCmpId,
         prmBrId: prmBrId,
         prmFaId: prmFaId,
-        prmUId: '24', // todo: prmUId, // '24',
+        prmUId: prmUId,
       );
       setState(() {
         deliveryItems = items;
@@ -78,7 +78,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
       setState(() {
         isLoading = false;
       });
-      if(!mounted) return [];
+      if (!mounted) return [];
       Util.customErrorSnackBar(context, "Failed to fetch delivery items");
       if (kDebugMode) {
         print('Error fetching delivery items: $e');
