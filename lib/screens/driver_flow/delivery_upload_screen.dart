@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:williams/models/delivery_save_model.dart';
 import 'package:williams/services/api_services.dart';
+
 import '../../constants.dart';
 import '../../custom_widgets/custom_scaffold_driver.dart';
 import '../../custom_widgets/util_class.dart';
@@ -37,13 +39,13 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
   @override
   void initState() {
     super.initState();
-    _fnGenerateXFIles();
+    _fnGenerateXFiles();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fnCheckLocationEmptyOrNot();
     });
   }
 
-  void _fnGenerateXFIles() async {
+  void _fnGenerateXFiles() async {
     ByteData byteData = await rootBundle.load('assets/images/warning.png');
     Uint8List bytes = byteData.buffer.asUint8List();
     Directory tempDir = await getTemporaryDirectory();
@@ -213,7 +215,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
                   if (!context.mounted) return;
                   Util.customErrorSnackBar(
                     context,
-                    "Failed to update location.\n(${e.toString()})",
+                    "Failed to update location.",
                   );
                 }
               },
@@ -303,7 +305,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
       if (!mounted) return result;
       if (result.message == "Success") {
         Util.customSuccessSnackBar(context, "Location updated successfully!");
-        Navigator.pop(context);// recheck if needed to pop
+        Navigator.pop(context); // recheck if needed to pop
         return result;
       } else {
         throw Exception("Update location failed: ${result.message}");
@@ -319,7 +321,6 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
 
   Widget _buildImageContainer(int index) {
     return Container(
-
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -408,7 +409,6 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
                   3,
                   (index) => _buildImageContainer(index),
                 ),
-
               ],
             ),
           ),
@@ -518,7 +518,6 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
       });
 
       if (mounted) {
-
         Util.customSuccessSnackBar(context, 'Images uploaded successfully');
       }
     } catch (e) {
