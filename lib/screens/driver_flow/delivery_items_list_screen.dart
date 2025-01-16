@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/screens/driver_flow/widget/delivery_item_list.dart';
 import 'package:williams/screens/driver_flow/widget/driver_home_appbar.dart';
@@ -52,6 +53,15 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
     super.dispose();
   }
 
+  String _formatDate(DateTime dte) {
+    try {
+      DateFormat date = DateFormat('dd/MMM/yyyy');
+      return date.format(dte);
+    } catch (e) {
+      return '';
+    }
+  }
+
   Future<List<DailyDropListModel>> fetchDeliveryItems() async {
     setState(() {
       isLoading = true;
@@ -62,7 +72,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
       String prmBrId = prefs.getString('brId')!;
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
-      String todayDate = DateTime.now().toString().split(' ')[0];
+      String todayDate = _formatDate(DateTime.now());
 
       final items = await apiServices.fnGetVehicleTransportList(
         prmDate: todayDate,
