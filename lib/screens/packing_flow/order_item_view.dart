@@ -736,7 +736,7 @@ class _OrderItemViewState extends State<OrderItemView> {
       String prmBrId = prefs.getString('brId')!;
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
-      ApiServices()
+      await ApiServices()
           .fnSavePackingItem(
         prmBrId: prmBrId,
         prmCmpId: prmCmpId,
@@ -748,11 +748,32 @@ class _OrderItemViewState extends State<OrderItemView> {
         prmQty: _qtyControllers.text,
         prmIsRlz: prmIsRlz,
       )
-          .whenComplete(() {
-        _fnGetOrderList().whenComplete(() {
-          _fnClearTextFields();
-          Navigator.pop(context);
-        });
+          .then((value) async {
+        if (value.errorCode == 0) {
+          await ApiServices()
+              .selectAllSavePackingItem(
+            prmOrderId: widget.selectedSalesOrderList.id,
+            prmCmpId: prmCmpId,
+            prmBrId: prmBrId,
+            prmFaId: prmFaId,
+            prmUId: prmUId,
+            isSelectAll: "0",
+          )
+              .then((value) {
+            if (value.errorCode == 0) {
+              _fnGetOrderList().whenComplete(() {
+                _fnClearTextFields();
+                Navigator.pop(context);
+              });
+            } else {
+              throw Exception(value.message);
+            }
+            return value;
+          });
+        } else {
+          throw Exception(value.message);
+        }
+        return value;
       });
     } catch (e) {
       debugPrint(e.toString());
@@ -777,14 +798,14 @@ class _OrderItemViewState extends State<OrderItemView> {
       String prmBrId = prefs.getString('brId')!;
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
-      CommonResponseModel response =
-          await ApiServices().selectAllSavePackingItem(
-        prmOrderId: widget.selectedSalesOrderList.id,
-        prmCmpId: prmCmpId,
-        prmBrId: prmBrId,
-        prmFaId: prmFaId,
-        prmUId: prmUId,
-      );
+      CommonResponseModel response = await ApiServices()
+          .selectAllSavePackingItem(
+              prmOrderId: widget.selectedSalesOrderList.id,
+              prmCmpId: prmCmpId,
+              prmBrId: prmBrId,
+              prmFaId: prmFaId,
+              prmUId: prmUId,
+              isSelectAll: "1");
       if (response.errorCode == 0) {
         _fnGetOrderList().whenComplete(() {
           _fnClearTextFields();
