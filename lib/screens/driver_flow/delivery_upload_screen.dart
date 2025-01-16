@@ -518,7 +518,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
       });
 
       if (mounted) {
-        Navigator.pop(context);
+
         Util.customSuccessSnackBar(context, 'Images uploaded successfully');
       }
     } catch (e) {
