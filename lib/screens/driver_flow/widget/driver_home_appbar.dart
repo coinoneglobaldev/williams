@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../custom_widgets/custom_logout_button.dart';
 
 class DriverHomeAppbar extends StatelessWidget {

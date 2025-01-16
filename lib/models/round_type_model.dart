@@ -4,9 +4,12 @@
 
 import 'dart:convert';
 
-List<RoundTypeModel> roundTypeModelFromJson(String str) => List<RoundTypeModel>.from(json.decode(str).map((x) => RoundTypeModel.fromJson(x)));
+List<RoundTypeModel> roundTypeModelFromJson(String str) =>
+    List<RoundTypeModel>.from(
+        json.decode(str).map((x) => RoundTypeModel.fromJson(x)));
 
-String roundTypeModelToJson(List<RoundTypeModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String roundTypeModelToJson(List<RoundTypeModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class RoundTypeModel {
   String round;
@@ -16,10 +19,10 @@ class RoundTypeModel {
   });
 
   factory RoundTypeModel.fromJson(Map<String, dynamic> json) => RoundTypeModel(
-    round: json["Round"],
-  );
+        round: json["Round"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "Round": round,
-  };
+        "Round": round,
+      };
 }

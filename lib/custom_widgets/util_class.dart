@@ -31,31 +31,31 @@ class Util {
     );
   }
 
-  // static Widget titleAndSubtitleWidget({
-  //   required String title,
-  //   required String subTitle,
-  // }) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       const SizedBox(height: 5),
-  //       Text(
-  //         title,
-  //         style: const TextStyle(
-  //           fontSize: 12,
-  //           fontWeight: FontWeight.w500,
-  //           color: Colors.white,
-  //         ),
-  //       ),
-  //       Text(
-  //         subTitle,
-  //         style: const TextStyle(
-  //           fontSize: 16,
-  //           fontWeight: FontWeight.w500,
-  //           color: Colors.white,
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
+// static Widget titleAndSubtitleWidget({
+//   required String title,
+//   required String subTitle,
+// }) {
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     children: [
+//       const SizedBox(height: 5),
+//       Text(
+//         title,
+//         style: const TextStyle(
+//           fontSize: 12,
+//           fontWeight: FontWeight.w500,
+//           color: Colors.white,
+//         ),
+//       ),
+//       Text(
+//         subTitle,
+//         style: const TextStyle(
+//           fontSize: 16,
+//           fontWeight: FontWeight.w500,
+//           color: Colors.white,
+//         ),
+//       ),
+//     ],
+//   );
+// }
 }

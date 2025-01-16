@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -476,8 +474,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     itmCnt: '0',
                                     isSelected: true,
                                     totalQty: _itemOrderQtyController.text,
-                                    eStockQty: selectedItem!.eStockQty
-                                        .toString(), //TODO: Add eStockQty in BuyingSheetListModel
+                                    eStockQty:
+                                        selectedItem!.eStockQty.toString(),
                                     actualNeededQty: actualNeededQty.toString(),
                                   ),
                                 );
@@ -1423,64 +1421,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  DataCell _buildEditTextConValDataCell(
-      TextEditingController controller, int index) {
-    return DataCell(
-      Center(
-        child: SizedBox(
-          width: 70,
-          child: TextField(
-            controller: controller,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.black),
-            decoration: InputDecoration(
-              hintText: 'Enter value',
-              hintStyle: TextStyle(color: Colors.grey.shade500),
-              border: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              enabledBorder: InputBorder.none,
-            ),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              try {
-                double actualNeededQty =
-                    double.parse(_buyingSheet[index].eStockQty) -
-                        double.parse(_orderQtyControllers[index].text);
-
-                double split = actualNeededQty.abs() % double.parse(value);
-
-                double semiBulk = actualNeededQty.abs() -
-                    (actualNeededQty.abs() % double.parse(value));
-                double bulk = semiBulk.abs() / double.parse(value.toString());
-                log('Actual Needed Qty: ${actualNeededQty.abs()} Split: $split SemiBulk: $semiBulk Bulk: $bulk');
-                controller.text = value;
-                _buyingSheet[index].uomConVal = value;
-                _buyingSheet[index].odrBQty = bulk.toString();
-                _buyingSheet[index].odrEQty = split.toString();
-                _orderQtyControllers = List.generate(
-                  _buyingSheet.length,
-                  (index) {
-                    double result = calculateRoundedValue(
-                        bulk.toString(), split.toString(), value);
-                    _buyingSheet[index].uomConVal = value;
-                    _buyingSheet[index].totalQty = result.toString();
-                    calculateTotalAmount(
-                      buyingSheet: _buyingSheet,
-                    );
-                    return TextEditingController(text: result.toString());
-                  },
-                );
-                setState(() {});
-              } catch (e) {
-                print('Error calculating bulk: $e');
-              }
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
   DataCell _buildEditTextRateDataCell(
       TextEditingController controller, int index) {
     return DataCell(
@@ -1690,6 +1630,64 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
     setState(() {});
   }
+
+  // DataCell _buildEditTextConValDataCell(
+  //     TextEditingController controller, int index) {
+  //   return DataCell(
+  //     Center(
+  //       child: SizedBox(
+  //         width: 70,
+  //         child: TextField(
+  //           controller: controller,
+  //           textAlign: TextAlign.center,
+  //           style: const TextStyle(color: Colors.black),
+  //           decoration: InputDecoration(
+  //             hintText: 'Enter value',
+  //             hintStyle: TextStyle(color: Colors.grey.shade500),
+  //             border: InputBorder.none,
+  //             focusedBorder: InputBorder.none,
+  //             enabledBorder: InputBorder.none,
+  //           ),
+  //           keyboardType: TextInputType.number,
+  //           onChanged: (value) {
+  //             try {
+  //               double actualNeededQty =
+  //                   double.parse(_buyingSheet[index].eStockQty) -
+  //                       double.parse(_orderQtyControllers[index].text);
+  //
+  //               double split = actualNeededQty.abs() % double.parse(value);
+  //
+  //               double semiBulk = actualNeededQty.abs() -
+  //                   (actualNeededQty.abs() % double.parse(value));
+  //               double bulk = semiBulk.abs() / double.parse(value.toString());
+  //               log('Actual Needed Qty: ${actualNeededQty.abs()} Split: $split SemiBulk: $semiBulk Bulk: $bulk');
+  //               controller.text = value;
+  //               _buyingSheet[index].uomConVal = value;
+  //               _buyingSheet[index].odrBQty = bulk.toString();
+  //               _buyingSheet[index].odrEQty = split.toString();
+  //               _orderQtyControllers = List.generate(
+  //                 _buyingSheet.length,
+  //                 (index) {
+  //                   double result = calculateRoundedValue(
+  //                       bulk.toString(), split.toString(), value);
+  //                   _buyingSheet[index].uomConVal = value;
+  //                   _buyingSheet[index].totalQty = result.toString();
+  //                   calculateTotalAmount(
+  //                     buyingSheet: _buyingSheet,
+  //                   );
+  //                   return TextEditingController(text: result.toString());
+  //                 },
+  //               );
+  //               setState(() {});
+  //             } catch (e) {
+  //               print('Error calculating bulk: $e');
+  //             }
+  //           },
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {
