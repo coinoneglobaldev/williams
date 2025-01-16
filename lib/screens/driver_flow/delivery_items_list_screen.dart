@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/screens/driver_flow/widget/delivery_item_list.dart';
 import 'package:williams/screens/driver_flow/widget/driver_home_appbar.dart';
 import 'package:williams/services/api_services.dart';
+
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/util_class.dart';
 import '../../models/daily_drop_list_model.dart';
@@ -123,14 +124,19 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
           final item = items[index];
           return InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (context) => DeliveryUploadScreen(
-                    deliveryItem: item,
+              if (item.isDelivery == '0') {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => DeliveryUploadScreen(
+                      deliveryItem: item,
+                    ),
                   ),
-                ),
-              ).then((_) => fetchDeliveryItems());
+                ).then((_) => fetchDeliveryItems());
+              } else {
+                Util.customSuccessSnackBar(
+                    context, "Delivery already uploaded");
+              }
             },
             child: DeliveryItemList(
               selectedItem: item,
