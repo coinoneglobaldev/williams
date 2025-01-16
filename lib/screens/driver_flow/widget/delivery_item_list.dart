@@ -107,31 +107,38 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
               ),
             ],
           ),
-          Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(widget.selectedItem.drCode),
-                ),
-              ),
-              SizedBox(height: 10),
-              GestureDetector(
-                onTap: _launchGoogleMaps,
-                child: Container(
-                  color: Colors.green,
-                  child: const Image(
-                    image: AssetImage('assets/icons/map.png'),
-                    height: 60,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      widget.selectedItem.drCode,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+                SizedBox(height: 10),
+                GestureDetector(
+                  onTap: _launchGoogleMaps,
+                  child: Container(
+                    color: Colors.green,
+                    child: const Image(
+                      image: AssetImage('assets/icons/map.png'),
+                      height: 60,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
