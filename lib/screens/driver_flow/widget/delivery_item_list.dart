@@ -119,7 +119,7 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      widget.selectedItem.drCode,
+                      widget.selectedItem.refNo,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                     ),

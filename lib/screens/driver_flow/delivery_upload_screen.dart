@@ -492,7 +492,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
         if (result != null) {
           final directory = await getApplicationDocumentsDirectory();
           final String imageUrl =
-              '${widget.deliveryItem.drCode}-${result.path.split('/').last}';
+              '${widget.deliveryItem.refNo}-${result.path.split('/').last}';
           uploadedImagesName[i] = imageUrl;
           final File newImage = await File(result.path).copy(
             '${directory.path}/$imageUrl',
