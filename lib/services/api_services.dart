@@ -268,7 +268,7 @@ class ApiServices {
     }
   }
 
-  Future fnSavePackingItem({
+  Future<CommonResponseModel> fnSavePackingItem({
     required String prmAutoID,
     required String orderId,
     required String prmShort,
@@ -295,8 +295,11 @@ class ApiServices {
       if (kDebugMode) {
         print("Response: ${response.body}");
       }
-      // final List<dynamic> responseList = json.decode(response.body);
-      // return responseList.map((json) => UomListModel.fromJson(json)).toList();
+      Map<String, dynamic> mapData = json.decode(response.body);
+      if (kDebugMode) {
+        print("mapData: $mapData");
+      }
+      return CommonResponseModel.fromJson(mapData);
     } catch (error) {
       if (kDebugMode) {
         print('Exception in fnSavePackingItem: $error');
@@ -312,10 +315,11 @@ class ApiServices {
     required String prmBrId,
     required String prmFaId,
     required String prmUId,
+    required String isSelectAll,
   }) async {
     String uri =
         "$releaseOrderAllOrderUrl?PrmOrderId=$prmOrderId&PrmCmpId=$prmCmpId&"
-        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId";
+        "PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId&PrmIsSelectAll=$isSelectAll";
     if (kDebugMode) {
       print(uri);
     }
@@ -611,9 +615,10 @@ class ApiServices {
     required String prmAccId,
     required String prmLatitude,
     required String prmLongitude,
+    required String prmAutoId,
   }) async {
     String uri = "$fnUpdateCustomerLocationUrl?PrmAccId=$prmAccId&"
-        "PrmLatitude=$prmLatitude&PrmLongitude=$prmLongitude";
+        "PrmLatitude=$prmLatitude&PrmLongitude=$prmLongitude&PrmAutoId=$prmAutoId";
     if (kDebugMode) {
       print(uri);
     }

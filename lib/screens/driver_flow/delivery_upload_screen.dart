@@ -301,6 +301,7 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
         prmAccId: widget.deliveryItem.crId,
         prmLatitude: latitude,
         prmLongitude: longitude,
+        prmAutoId: widget.deliveryItem.autoId,
       );
       if (!mounted) return result;
       if (result.message == "Success") {
