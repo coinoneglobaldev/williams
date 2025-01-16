@@ -8,6 +8,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:williams/common/custom_overlay_loading.dart';
 import 'package:williams/models/delivery_save_model.dart';
 import 'package:williams/services/api_services.dart';
 
@@ -131,10 +132,20 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
               accuracy: LocationAccuracy.high,
             ),
           );
+          showDialog(
+            barrierColor: Colors.black.withValues(alpha: 0.8),
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) {
+              return const CustomOverlayLoading();
+            },
+          );
           await updateCustomerLocation(
             latitude: position.latitude.toString(),
             longitude: position.longitude.toString(),
-          );
+          ).whenComplete(() {
+            Navigator.pop(context);
+          });
         }
       }
     } catch (e) {
