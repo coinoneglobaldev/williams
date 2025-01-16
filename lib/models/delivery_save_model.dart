@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-CommonResponseModel deliverySaveModelFromJson(String str) => CommonResponseModel.fromJson(json.decode(str));
+CommonResponseModel deliverySaveModelFromJson(String str) =>
+    CommonResponseModel.fromJson(json.decode(str));
 
-String deliverySaveModelToJson(CommonResponseModel data) => json.encode(data.toJson());
+String deliverySaveModelToJson(CommonResponseModel data) =>
+    json.encode(data.toJson());
 
 class CommonResponseModel {
   int errorCode;
@@ -19,15 +21,16 @@ class CommonResponseModel {
     required this.message,
   });
 
-  factory CommonResponseModel.fromJson(Map<String, dynamic> json) => CommonResponseModel(
-    errorCode: json["ErrorCode"],
-    data: json["Data"],
-    message: json["Message"],
-  );
+  factory CommonResponseModel.fromJson(Map<String, dynamic> json) =>
+      CommonResponseModel(
+        errorCode: json["ErrorCode"],
+        data: json["Data"],
+        message: json["Message"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "ErrorCode": errorCode,
-    "Data": data,
-    "Message": message,
-  };
+        "ErrorCode": errorCode,
+        "Data": data,
+        "Message": message,
+      };
 }

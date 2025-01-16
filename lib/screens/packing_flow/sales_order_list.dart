@@ -451,7 +451,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
           CupertinoPageRoute(
             builder: (context) => OrderItemView(
               packTypeList: packingType,
-              orderListItems: orderListItems,
+              passedOnOrderListItems: orderListItems,
               selectedSalesOrderList: orderList
                   .where((element) => element.id == prmOrderId)
                   .toList()[0],

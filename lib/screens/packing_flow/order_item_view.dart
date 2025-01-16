@@ -4,6 +4,7 @@ import 'package:williams/custom_widgets/custom_scaffold.dart';
 import 'package:williams/custom_widgets/util_class.dart';
 
 import '../../common/custom_overlay_loading.dart';
+import '../../models/delivery_save_model.dart';
 import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
 import '../../models/uom_list_model.dart';
@@ -11,13 +12,13 @@ import '../../services/api_services.dart';
 
 class OrderItemView extends StatefulWidget {
   final SalesOrderListModel selectedSalesOrderList;
-  List<SalesOrderItemListModel> orderListItems;
+  final List<SalesOrderItemListModel> passedOnOrderListItems;
   final List<UomAndPackListModel> packTypeList;
 
-  OrderItemView({
+  const OrderItemView({
     super.key,
     required this.packTypeList,
-    required this.orderListItems,
+    required this.passedOnOrderListItems,
     required this.selectedSalesOrderList,
   });
 
@@ -31,70 +32,30 @@ class _OrderItemViewState extends State<OrderItemView> {
   final TextEditingController _qtyControllers = TextEditingController();
   final TextEditingController _itemDetailsController = TextEditingController();
   final TextEditingController _shortController = TextEditingController();
-  bool isAllSelected = false;
   int selectedRowIndex = 0;
+  late List<SalesOrderItemListModel> orderListItems;
   late SalesOrderItemListModel selectedOrderItem;
   List<UomAndPackListModel> selectedPackList = [];
-
-  _fnGetOrderList() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String prmCmpId = prefs.getString('cmpId')!;
-      String prmBrId = prefs.getString('brId')!;
-      String prmFaId = prefs.getString('faId')!;
-      String prmUId = prefs.getString('userId')!;
-      widget.orderListItems = await ApiServices()
-          .getSalesOrderItemList(
-        prmOrderId: widget.selectedSalesOrderList.id,
-        prmCmpId: prmCmpId,
-        prmBrId: prmBrId,
-        prmFaId: prmFaId,
-        prmUId: prmUId,
-      )
-          .whenComplete(() {
-        setState(() {});
-      });
-    } catch (e) {
-      if (!mounted) return;
-      Navigator.pop(context);
-      Util.customErrorSnackBar(context, 'Unable to fetch data');
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    _fnSetSelectedItem(selectedRowItem: widget.orderListItems[0]);
+    orderListItems = widget.passedOnOrderListItems;
+    _fnSetSelectedItem(selectedRowItem: orderListItems[0]);
     selectedPackList = List<UomAndPackListModel>.filled(
-        widget.orderListItems.length, widget.packTypeList[0]);
-    for (int i = 0; i < widget.orderListItems.length; i++) {
+        orderListItems.length, widget.packTypeList[0]);
+    for (int i = 0; i < orderListItems.length; i++) {
       try {
         selectedPackList[i] = widget.packTypeList.where((element) {
-          return element.id == widget.orderListItems[i].packId;
+          return element.id == orderListItems[i].packId;
         }).first;
       } catch (e) {
         selectedPackList[i] = widget.packTypeList[0];
       }
     }
-    notesControllers = widget.orderListItems
+    notesControllers = orderListItems
         .map((item) => TextEditingController(text: item.remarks))
         .toList();
-  }
-
-  void _selectAll() {
-    setState(() {
-      isAllSelected = !isAllSelected;
-      int i = 0;
-      for (var item in widget.orderListItems) {
-        item.isChecked = isAllSelected;
-        _selectAllItemSave(
-            autoId: item.autoId,
-            short: i,
-            prmIsRlz: item.isRelease == 'False' ? '1' : '0');
-        i++;
-      }
-      _selectAllSavePackingItem();
-    });
   }
 
   void _fnSwitchToQtyMode() {
@@ -107,147 +68,6 @@ class _OrderItemViewState extends State<OrderItemView> {
     setState(() {
       isShortMode = true;
     });
-  }
-
-  @override
-  void dispose() {
-    for (var controller in notesControllers) {
-      controller.dispose();
-    }
-    _qtyControllers.dispose();
-    _shortController.dispose();
-    _itemDetailsController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _fnSave({
-    required String prmIsRlz,
-    required String autoId,
-    required bool clearShort,
-    required String quantity,
-    required String shorts,
-  }) async {
-    try {
-      showDialog(
-        barrierColor: Colors.black.withValues(alpha: 0.8),
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomOverlayLoading();
-        },
-      );
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String prmCmpId = prefs.getString('cmpId')!;
-      String prmBrId = prefs.getString('brId')!;
-      String prmFaId = prefs.getString('faId')!;
-      String prmUId = prefs.getString('userId')!;
-      ApiServices()
-          .fnSavePackingItem(
-        prmBrId: prmBrId,
-        prmCmpId: prmCmpId,
-        prmFaId: prmFaId,
-        prmUID: prmUId,
-        prmAutoID: autoId,
-        orderId: widget.selectedSalesOrderList.id,
-        prmShort: clearShort ? '' : shorts,
-        prmQty: _qtyControllers.text,
-        prmIsRlz: prmIsRlz,
-      )
-          .whenComplete(() {
-        _fnGetOrderList().whenComplete(() {
-          _fnClearTextFields();
-          Navigator.pop(context);
-        });
-      });
-    } catch (e) {
-      debugPrint(e.toString());
-      if (!mounted) return;
-      Navigator.pop(context);
-      Util.customErrorSnackBar(context, 'Unable to save data');
-    }
-  }
-
-  Future<void> _selectAllItemSave(
-      {required String autoId,
-      required int short,
-      required String prmIsRlz}) async {
-    try {
-      showDialog(
-        barrierColor: Colors.black.withValues(alpha: 0.8),
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomOverlayLoading();
-        },
-      );
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String prmCmpId = prefs.getString('cmpId')!;
-      String prmBrId = prefs.getString('brId')!;
-      String prmFaId = prefs.getString('faId')!;
-      String prmUId = prefs.getString('userId')!;
-
-      ApiServices()
-          .fnSavePackingItem(
-              prmBrId: prmBrId,
-              prmCmpId: prmCmpId,
-              prmFaId: prmFaId,
-              prmUID: prmUId,
-              prmAutoID: autoId,
-              orderId: widget.selectedSalesOrderList.id,
-              prmShort: _shortController.text,
-              prmQty: _qtyControllers.text,
-              prmIsRlz: prmIsRlz)
-          .whenComplete(() {
-        _fnGetOrderList().whenComplete(() {
-          _fnClearTextFields();
-          Navigator.pop(context);
-        });
-      });
-    } catch (e) {
-      debugPrint(e.toString());
-
-      if (!mounted) return;
-      Navigator.pop(context);
-      Util.customErrorSnackBar(context, 'Unable to save data');
-    }
-  }
-
-  Future<void> _selectAllSavePackingItem() async {
-    try {
-      showDialog(
-        barrierColor: Colors.black.withValues(alpha: 0.8),
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return const CustomOverlayLoading();
-        },
-      );
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String prmCmpId = prefs.getString('cmpId')!;
-      String prmBrId = prefs.getString('brId')!;
-      String prmFaId = prefs.getString('faId')!;
-      String prmUId = prefs.getString('userId')!;
-      ApiServices()
-          .selectAllSavePackingItem(
-        prmOrderId: widget.selectedSalesOrderList.id,
-        prmCmpId: prmCmpId,
-        prmBrId: prmBrId,
-        prmFaId: prmFaId,
-        prmUId: prmUId,
-      )
-          .whenComplete(() {
-        _fnGetOrderList().whenComplete(() {
-          _fnClearTextFields();
-          Navigator.pop(context);
-        });
-      });
-    } catch (e) {
-      debugPrint(e.toString());
-      if (!mounted) return;
-      Navigator.pop(context);
-
-      Util.customErrorSnackBar(context, 'Unable to save data');
-    }
   }
 
   Widget _buildOrderItemTable({
@@ -292,9 +112,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                 backgroundColor: Colors.green,
                 minimumSize: const Size(130, 35),
               ),
-              onPressed: _selectAll,
+              onPressed: _selectAllSavePackingItem,
               child: Text(
-                isAllSelected ? "Unselect All" : "Select All",
+                orderListItems.any((element) => element.isRelease == "False")
+                    ? "Select All"
+                    : "Unselect All",
               ),
             ),
             SizedBox(width: 150),
@@ -573,10 +395,9 @@ class _OrderItemViewState extends State<OrderItemView> {
                               Center(
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        rowItem.isRelease == 'False'
-                                            ? Colors.orange
-                                            : Colors.green,
+                                    backgroundColor: rowItem.isRelease == 'True'
+                                        ? Colors.green
+                                        : Colors.orange,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5),
                                     ),
@@ -599,7 +420,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       prmIsRlz: rowItem.isRelease == 'False'
                                           ? '1'
                                           : '0',
-                                      clearShort: false,
+                                      clearShort: true,
                                       autoId: rowItem.autoId,
                                       quantity: rowItem.qty,
                                       shorts: rowItem.short,
@@ -672,8 +493,11 @@ class _OrderItemViewState extends State<OrderItemView> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
-              flex: 10,
-              child: _buildOrderItemTable(data: widget.orderListItems)),
+            flex: 10,
+            child: _buildOrderItemTable(
+              data: orderListItems,
+            ),
+          ),
           Expanded(
             flex: 4,
             child: Container(
@@ -891,6 +715,117 @@ class _OrderItemViewState extends State<OrderItemView> {
     );
   }
 
+  Future<void> _fnSave({
+    required String prmIsRlz,
+    required String autoId,
+    required bool clearShort,
+    required String quantity,
+    required String shorts,
+  }) async {
+    try {
+      showDialog(
+        barrierColor: Colors.black.withValues(alpha: 0.8),
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomOverlayLoading();
+        },
+      );
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+      ApiServices()
+          .fnSavePackingItem(
+        prmBrId: prmBrId,
+        prmCmpId: prmCmpId,
+        prmFaId: prmFaId,
+        prmUID: prmUId,
+        prmAutoID: autoId,
+        orderId: widget.selectedSalesOrderList.id,
+        prmShort: clearShort ? '' : shorts,
+        prmQty: _qtyControllers.text,
+        prmIsRlz: prmIsRlz,
+      )
+          .whenComplete(() {
+        _fnGetOrderList().whenComplete(() {
+          _fnClearTextFields();
+          Navigator.pop(context);
+        });
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+      if (!mounted) return;
+      Navigator.pop(context);
+      Util.customErrorSnackBar(context, 'Unable to save data');
+    }
+  }
+
+  Future<void> _selectAllSavePackingItem() async {
+    try {
+      showDialog(
+        barrierColor: Colors.black.withValues(alpha: 0.8),
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return const CustomOverlayLoading();
+        },
+      );
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+      CommonResponseModel response =
+          await ApiServices().selectAllSavePackingItem(
+        prmOrderId: widget.selectedSalesOrderList.id,
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+        prmUId: prmUId,
+      );
+      if (response.errorCode == 0) {
+        _fnGetOrderList().whenComplete(() {
+          _fnClearTextFields();
+          Navigator.pop(context);
+        });
+      } else {
+        throw Exception(response.message);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      if (!mounted) return;
+      Navigator.pop(context);
+      Util.customErrorSnackBar(context, 'Unable to save data');
+    }
+  }
+
+  _fnGetOrderList() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String prmCmpId = prefs.getString('cmpId')!;
+      String prmBrId = prefs.getString('brId')!;
+      String prmFaId = prefs.getString('faId')!;
+      String prmUId = prefs.getString('userId')!;
+      orderListItems = await ApiServices()
+          .getSalesOrderItemList(
+        prmOrderId: widget.selectedSalesOrderList.id,
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+        prmUId: prmUId,
+      )
+          .whenComplete(() {
+        setState(() {});
+      });
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      Util.customErrorSnackBar(context, 'Unable to fetch data');
+    }
+  }
+
   Widget _itemTextFields({
     required String title,
     required Color fillColor,
@@ -997,5 +932,16 @@ class _OrderItemViewState extends State<OrderItemView> {
       _shortController.clear();
       _itemDetailsController.clear();
     });
+  }
+
+  @override
+  void dispose() {
+    for (var controller in notesControllers) {
+      controller.dispose();
+    }
+    _qtyControllers.dispose();
+    _shortController.dispose();
+    _itemDetailsController.dispose();
+    super.dispose();
   }
 }
