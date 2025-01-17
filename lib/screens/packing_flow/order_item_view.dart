@@ -125,10 +125,11 @@ class _OrderItemViewState extends State<OrderItemView> {
               ),
               onPressed: () {
                 _selectAllSavePackingItem(
-                    isSelectAll: orderListItems
-                            .any((element) => element.isRelease == "False")
-                        ? "1"
-                        : "0");
+                  isSelectAll: orderListItems
+                          .any((element) => element.isRelease == "False")
+                      ? "1"
+                      : "-1",
+                );
               },
               child: Text(
                 orderListItems.any((element) => element.isRelease == "False")
