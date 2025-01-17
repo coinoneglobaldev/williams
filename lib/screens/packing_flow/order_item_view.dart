@@ -123,11 +123,18 @@ class _OrderItemViewState extends State<OrderItemView> {
                 backgroundColor: Colors.green,
                 minimumSize: const Size(130, 35),
               ),
-              onPressed: _selectAllSavePackingItem,
+              onPressed: () {
+                _selectAllSavePackingItem(
+                  isSelectAll: orderListItems
+                          .any((element) => element.isRelease == "False")
+                      ? "1"
+                      : "0",
+                );
+              },
               child: Text(
                 orderListItems.any((element) => element.isRelease == "False")
                     ? "Select All"
-                    : "Unselect All",
+                    : "Deselect All",
               ),
             ),
             SizedBox(width: 150),
@@ -807,7 +814,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     }
   }
 
-  Future<void> _selectAllSavePackingItem() async {
+  Future<void> _selectAllSavePackingItem({required String isSelectAll}) async {
     try {
       showDialog(
         barrierColor: Colors.black.withValues(alpha: 0.8),
@@ -822,14 +829,15 @@ class _OrderItemViewState extends State<OrderItemView> {
       String prmBrId = prefs.getString('brId')!;
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
-      CommonResponseModel response = await ApiServices()
-          .selectAllSavePackingItem(
-              prmOrderId: widget.selectedSalesOrderList.id,
-              prmCmpId: prmCmpId,
-              prmBrId: prmBrId,
-              prmFaId: prmFaId,
-              prmUId: prmUId,
-              isSelectAll: "1");
+      CommonResponseModel response =
+          await ApiServices().selectAllSavePackingItem(
+        prmOrderId: widget.selectedSalesOrderList.id,
+        prmCmpId: prmCmpId,
+        prmBrId: prmBrId,
+        prmFaId: prmFaId,
+        prmUId: prmUId,
+        isSelectAll: isSelectAll,
+      );
       if (response.errorCode == 0) {
         _fnGetOrderList().whenComplete(() {
           _fnClearTextFields();
