@@ -27,8 +27,8 @@ class OrderItemView extends StatefulWidget {
 }
 
 class _OrderItemViewState extends State<OrderItemView> {
-  FocusNode _orderQtyFocus = FocusNode();
-  FocusNode _shortFocus = FocusNode();
+  final FocusNode _orderQtyFocus = FocusNode();
+  final FocusNode _shortFocus = FocusNode();
   bool isShortMode = false;
   late List<TextEditingController> notesControllers;
   final TextEditingController _qtyControllers = TextEditingController();
