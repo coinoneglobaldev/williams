@@ -90,7 +90,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       bodyWidget: PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, dynamic result) {
