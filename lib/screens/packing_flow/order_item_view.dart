@@ -27,6 +27,8 @@ class OrderItemView extends StatefulWidget {
 }
 
 class _OrderItemViewState extends State<OrderItemView> {
+  final FocusNode _orderQtyFocus = FocusNode();
+  final FocusNode _shortFocus = FocusNode();
   bool isShortMode = false;
   late List<TextEditingController> notesControllers;
   final TextEditingController _qtyControllers = TextEditingController();
@@ -67,6 +69,15 @@ class _OrderItemViewState extends State<OrderItemView> {
   void _fnSwitchToShortMode() {
     setState(() {
       isShortMode = true;
+    });
+  }
+
+  void textSelection(TextEditingController controller) {
+    setState(() {
+      controller.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: controller.text.length,
+      );
     });
   }
 
@@ -191,11 +202,13 @@ class _OrderItemViewState extends State<OrderItemView> {
                           cells: [
                             DataCell(
                               onTap: () {
+                                _orderQtyFocus.requestFocus();
                                 selectedRowIndex = index;
                                 _fnSwitchToQtyMode();
                                 _fnSetSelectedItem(
                                   selectedRowItem: rowItem,
                                 );
+                                textSelection(_qtyControllers);
                               },
                               Center(
                                 child: Container(
@@ -434,6 +447,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 setState(() {
                                   selectedRowIndex = index;
                                 });
+                                _shortFocus.requestFocus();
                               },
                               Center(
                                 child: ElevatedButton(
@@ -465,6 +479,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       _fnSetSelectedItem(
                                         selectedRowItem: rowItem,
                                       );
+                                      textSelection(_shortController);
                                     });
                                   },
                                 ),
@@ -628,9 +643,10 @@ class _OrderItemViewState extends State<OrderItemView> {
                     children: [
                       Expanded(
                         child: _itemTextFields(
-                            title: 'Item Details',
-                            controller: _itemDetailsController,
-                            fillColor: Colors.white),
+                          title: 'Item Details',
+                          controller: _itemDetailsController,
+                          fillColor: Colors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -640,7 +656,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                         child: _itemTextFields(
                             title: 'Quantity',
                             controller: _qtyControllers,
-                            onTab: _fnSwitchToQtyMode,
+                            focusNode: _orderQtyFocus,
+                            onTab: () {
+                              _fnSwitchToQtyMode();
+                              textSelection(_qtyControllers);
+                            },
                             fillColor: Colors.white),
                       ),
                       SizedBox(width: 5),
@@ -655,7 +675,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                                   selectedOrderItem.short == '0'
                               ? Colors.grey
                               : Colors.red,
-                          onTab: _fnSwitchToShortMode,
+                          focusNode: _shortFocus,
+                          onTab: () {
+                            _fnSwitchToShortMode();
+                            textSelection(_shortController);
+                          },
                         ),
                       ),
                     ],
@@ -853,6 +877,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     required TextEditingController controller,
     Color color = Colors.black,
     GestureTapCallback? onTab,
+    FocusNode? focusNode,
   }) {
     return Column(
       children: [
@@ -861,6 +886,7 @@ class _OrderItemViewState extends State<OrderItemView> {
           enableIMEPersonalizedLearning: true,
           controller: controller,
           onTap: onTab,
+          focusNode: focusNode,
           style: TextStyle(color: color, fontSize: 20),
           decoration: InputDecoration(
             fillColor: fillColor,
@@ -910,7 +936,12 @@ class _OrderItemViewState extends State<OrderItemView> {
               controller.text = currentText + value;
             }
           } else {
-            controller.text = controller.text + value;
+            if (controller.selection.baseOffset ==
+                controller.selection.extentOffset) {
+              controller.text = controller.text + value;
+            } else {
+              controller.text = value;
+            }
           }
         });
       },
