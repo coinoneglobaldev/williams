@@ -195,7 +195,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Sales Orders',
+                            'Orders',
                             style: TextStyle(
                               fontSize: 35.0,
                               fontWeight: FontWeight.bold,
@@ -264,6 +264,17 @@ class _SalesOrderListState extends State<SalesOrderList> {
                             ),
                           ),
                           const SizedBox(width: 10),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.refresh_rounded,
+                              color: Colors.black,
+                              size: 40,
+                            ),
+                            onPressed: () {
+                              setState(() {});
+                            },
+                          ),
+                          const SizedBox(width: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,6 +309,7 @@ class _SalesOrderListState extends State<SalesOrderList> {
                                   ),
                                 ],
                               ),
+                              const SizedBox(width: 10),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -311,10 +323,12 @@ class _SalesOrderListState extends State<SalesOrderList> {
                               ),
                             ],
                           ),
+                          const SizedBox(width: 10),
                           IconButton(
                             icon: const Icon(
                               Icons.logout,
                               color: Colors.black,
+                              size: 30,
                             ),
                             onPressed: () {
                               showDialog(

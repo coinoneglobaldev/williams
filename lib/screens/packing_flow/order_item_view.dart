@@ -123,14 +123,16 @@ class _OrderItemViewState extends State<OrderItemView> {
                 backgroundColor: Colors.green,
                 minimumSize: const Size(130, 35),
               ),
-              onPressed: () {
-                _selectAllSavePackingItem(
-                  isSelectAll: orderListItems
-                          .any((element) => element.isRelease == "False")
-                      ? "1"
-                      : "-1",
-                );
-              },
+              onPressed: orderListItems.any((element) => element.short != "")
+                  ? null
+                  : () {
+                      _selectAllSavePackingItem(
+                        isSelectAll: orderListItems
+                                .any((element) => element.isRelease == "False")
+                            ? "1"
+                            : "-1",
+                      );
+                    },
               child: Text(
                 orderListItems.any((element) => element.isRelease == "False")
                     ? "Select All"
@@ -719,7 +721,8 @@ class _OrderItemViewState extends State<OrderItemView> {
                             onPressed: () {
                               _fnSave(
                                   prmIsRlz:
-                                      selectedOrderItem.isRelease == 'False'
+                                      selectedOrderItem.isRelease == 'False' &&
+                                              _shortController.text == ''
                                           ? '1'
                                           : '0',
                                   clearShort: false,
