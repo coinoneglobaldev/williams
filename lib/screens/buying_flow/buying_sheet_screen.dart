@@ -58,6 +58,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   double _totalAmount = 0.0;
 
   int selectedRowIndex = 0;
+  bool isQtyCtrlSelected = false;
 
   @override
   void initState() {
@@ -537,6 +538,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   const SizedBox(height: 10),
                   Expanded(
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           flex: 5,
@@ -565,19 +567,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '1',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '2',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '3',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                   ],
@@ -591,19 +590,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '4',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '5',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '6',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                   ],
@@ -617,19 +613,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '7',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '8',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '9',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                   ],
@@ -643,19 +636,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '.',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '0',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: 'C',
-                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                   ],
@@ -1508,7 +1498,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       onTap: () {
         setState(() {
           selectedRowIndex = index;
+          isQtyCtrlSelected = true;
         });
+        controller.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: controller.text.length,
+        );
       },
       Center(
         child: SizedBox(
@@ -1526,6 +1521,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   controller: controller,
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.black),
+                  readOnly: true,
                   decoration: InputDecoration(
                     hintText: 'Enter value',
                     hintStyle: TextStyle(color: Colors.grey.shade500),
@@ -1535,6 +1531,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   ),
                   keyboardType: TextInputType.number,
                   onTap: () {
+                    setState(() {
+                      selectedRowIndex = index;
+                      isQtyCtrlSelected = true;
+                    });
                     controller.selection = TextSelection(
                       baseOffset: 0,
                       extentOffset: controller.text.length,
@@ -1565,6 +1565,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   DataCell _buildEditTextRateDataCell(
       TextEditingController controller, int index) {
     return DataCell(
+      onTap: () {
+        controller.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: controller.text.length,
+        );
+        setState(() {
+          selectedRowIndex = index;
+          isQtyCtrlSelected = false;
+        });
+      },
       Center(
         child: SizedBox(
           width: 70,
@@ -1572,6 +1582,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             controller: controller,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.black),
+            readOnly: true,
             decoration: InputDecoration(
               hintText: 'Enter value',
               hintStyle: TextStyle(color: Colors.grey.shade500),
@@ -1580,6 +1591,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               enabledBorder: InputBorder.none,
             ),
             onTap: () {
+              setState(() {
+                selectedRowIndex = index;
+                isQtyCtrlSelected = false;
+              });
               controller.selection = TextSelection(
                 baseOffset: 0,
                 extentOffset: controller.text.length,
@@ -1602,6 +1617,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   void _incrementValue(TextEditingController controller, int index) {
     try {
+      selectedRowIndex = index;
+      isQtyCtrlSelected = true;
       double currentValue =
           double.parse(controller.text.isEmpty ? '0' : controller.text);
       controller.text = (currentValue + 1).toString();
@@ -1617,6 +1634,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   void _decrementValue(TextEditingController controller, int index) {
     try {
+      selectedRowIndex = index;
+      isQtyCtrlSelected = true;
+
       double currentValue = double.parse(controller.text);
       if (currentValue > 0) {
         _buyingSheet[index].totalQty = (currentValue - 1).toString();
@@ -1774,29 +1794,30 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   GestureDetector _calculatorContainer({
     required String value,
-    required int intex,
   }) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          final List<TextEditingController> controller = _orderQtyControllers;
+          final List<TextEditingController> controller =
+              isQtyCtrlSelected ? _orderQtyControllers : _rateControllers;
           if (value == 'C') {
-            final currentText = controller[intex].text;
+            final currentText = controller[selectedRowIndex].text;
             if (currentText.isNotEmpty) {
-              controller[intex].text =
+              controller[selectedRowIndex].text =
                   currentText.substring(0, currentText.length - 1);
             }
           } else if (value == '.') {
-            final currentText = controller[intex].text;
+            final currentText = controller[selectedRowIndex].text;
             if (!currentText.contains('.')) {
-              controller[intex].text = currentText + value;
+              controller[selectedRowIndex].text = currentText + value;
             }
           } else {
-            if (controller[intex].selection.baseOffset ==
-                controller[intex].selection.extentOffset) {
-              controller[intex].text = controller[intex].text + value;
+            if (controller[selectedRowIndex].selection.baseOffset ==
+                controller[selectedRowIndex].selection.extentOffset) {
+              controller[selectedRowIndex].text =
+                  controller[selectedRowIndex].text + value;
             } else {
-              controller[intex].text = value;
+              controller[selectedRowIndex].text = value;
             }
           }
         });
