@@ -927,6 +927,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         prmSupplier: _selectedSupplier?.id ?? '',
                         prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
                       );
+                      setState(() {
+                        _selectAll = false;
+                      });
                     }
                   : null,
               // onPressed: _handleSearch,
@@ -1693,6 +1696,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           ? null
           : () {
               _orderNow();
+              setState(() {
+                _selectAll = false;
+              });
             },
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
