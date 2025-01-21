@@ -57,6 +57,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   double _totalAmount = 0.0;
 
+  int selectedRowIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -563,16 +565,19 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '1',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '2',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '3',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                   ],
@@ -586,16 +591,19 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '4',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '5',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '6',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                   ],
@@ -609,16 +617,19 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '7',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '8',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '9',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                   ],
@@ -632,16 +643,19 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '.',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: '0',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                     Expanded(
                                       child: _calculatorContainer(
                                         value: 'C',
+                                        intex: selectedRowIndex,
                                       ),
                                     ),
                                   ],
@@ -1491,6 +1505,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   DataCell _buildEditableDataCell(TextEditingController controller, int index) {
     return DataCell(
+      onTap: () {
+        setState(() {
+          selectedRowIndex = index;
+        });
+      },
       Center(
         child: SizedBox(
           width: 150,
@@ -1755,28 +1774,29 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   GestureDetector _calculatorContainer({
     required String value,
+    required int intex,
   }) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          final TextEditingController controller = TextEditingController();
+          final List<TextEditingController> controller = _orderQtyControllers;
           if (value == 'C') {
-            final currentText = controller.text;
+            final currentText = controller[intex].text;
             if (currentText.isNotEmpty) {
-              controller.text =
+              controller[intex].text =
                   currentText.substring(0, currentText.length - 1);
             }
           } else if (value == '.') {
-            final currentText = controller.text;
+            final currentText = controller[intex].text;
             if (!currentText.contains('.')) {
-              controller.text = currentText + value;
+              controller[intex].text = currentText + value;
             }
           } else {
-            if (controller.selection.baseOffset ==
-                controller.selection.extentOffset) {
-              controller.text = controller.text + value;
+            if (controller[intex].selection.baseOffset ==
+                controller[intex].selection.extentOffset) {
+              controller[intex].text = controller[intex].text + value;
             } else {
-              controller.text = value;
+              controller[intex].text = value;
             }
           }
         });
