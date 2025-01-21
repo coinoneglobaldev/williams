@@ -57,6 +57,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   double _totalAmount = 0.0;
 
+  int selectedRowIndex = 0;
+  bool isQtyCtrlSelected = false;
+  bool isBillNoSelected = false;
+
   @override
   void initState() {
     super.initState();
@@ -535,6 +539,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   const SizedBox(height: 10),
                   Expanded(
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           flex: 5,
@@ -696,6 +701,17 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         flex: 1,
                         child: TextField(
                           controller: _billNoController,
+                          readOnly: true,
+                          onTap: () {
+                            _billNoController.selection = TextSelection(
+                              baseOffset: 0,
+                              extentOffset: _billNoController.text.length,
+                            );
+                            setState(() {
+                              isBillNoSelected = true;
+                              isQtyCtrlSelected = false;
+                            });
+                          },
                           decoration: InputDecoration(
                             labelText: 'Bill No.',
                             border: OutlineInputBorder(),
@@ -1491,6 +1507,17 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   DataCell _buildEditableDataCell(TextEditingController controller, int index) {
     return DataCell(
+      onTap: () {
+        setState(() {
+          selectedRowIndex = index;
+          isQtyCtrlSelected = true;
+          isBillNoSelected = false;
+        });
+        controller.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: controller.text.length,
+        );
+      },
       Center(
         child: SizedBox(
           width: 150,
@@ -1507,6 +1534,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   controller: controller,
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.black),
+                  readOnly: true,
                   decoration: InputDecoration(
                     hintText: 'Enter value',
                     hintStyle: TextStyle(color: Colors.grey.shade500),
@@ -1516,6 +1544,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   ),
                   keyboardType: TextInputType.number,
                   onTap: () {
+                    setState(() {
+                      selectedRowIndex = index;
+                      isQtyCtrlSelected = true;
+                      isBillNoSelected = false;
+                    });
                     controller.selection = TextSelection(
                       baseOffset: 0,
                       extentOffset: controller.text.length,
@@ -1546,6 +1579,17 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   DataCell _buildEditTextRateDataCell(
       TextEditingController controller, int index) {
     return DataCell(
+      onTap: () {
+        controller.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: controller.text.length,
+        );
+        setState(() {
+          selectedRowIndex = index;
+          isQtyCtrlSelected = false;
+          isBillNoSelected = false;
+        });
+      },
       Center(
         child: SizedBox(
           width: 70,
@@ -1553,6 +1597,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             controller: controller,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.black),
+            readOnly: true,
             decoration: InputDecoration(
               hintText: 'Enter value',
               hintStyle: TextStyle(color: Colors.grey.shade500),
@@ -1561,6 +1606,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               enabledBorder: InputBorder.none,
             ),
             onTap: () {
+              setState(() {
+                selectedRowIndex = index;
+                isQtyCtrlSelected = false;
+                isBillNoSelected = false;
+              });
               controller.selection = TextSelection(
                 baseOffset: 0,
                 extentOffset: controller.text.length,
@@ -1583,6 +1633,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   void _incrementValue(TextEditingController controller, int index) {
     try {
+      selectedRowIndex = index;
+      isQtyCtrlSelected = true;
+      isBillNoSelected = false;
       double currentValue =
           double.parse(controller.text.isEmpty ? '0' : controller.text);
       controller.text = (currentValue + 1).toString();
@@ -1598,6 +1651,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   void _decrementValue(TextEditingController controller, int index) {
     try {
+      selectedRowIndex = index;
+      isQtyCtrlSelected = true;
+      isBillNoSelected = false;
+
       double currentValue = double.parse(controller.text);
       if (currentValue > 0) {
         _buyingSheet[index].totalQty = (currentValue - 1).toString();
@@ -1759,24 +1816,69 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          final TextEditingController controller = TextEditingController();
+          TextEditingController activeController;
+          if (isBillNoSelected) {
+            activeController = _billNoController;
+          } else {
+            final controllers =
+                isQtyCtrlSelected ? _orderQtyControllers : _rateControllers;
+            activeController = controllers[selectedRowIndex];
+          }
+
+          final currentText = activeController.text;
+          final selection = activeController.selection;
+
           if (value == 'C') {
-            final currentText = controller.text;
             if (currentText.isNotEmpty) {
-              controller.text =
-                  currentText.substring(0, currentText.length - 1);
+              if (selection.baseOffset == selection.extentOffset) {
+                final newText =
+                    currentText.substring(0, currentText.length - 1);
+                activeController.text = newText;
+                activeController.selection =
+                    TextSelection.collapsed(offset: newText.length);
+              } else {
+                final beforeSelection =
+                    currentText.substring(0, selection.baseOffset);
+                final afterSelection =
+                    currentText.substring(selection.extentOffset);
+                activeController.text = beforeSelection + afterSelection;
+                activeController.selection =
+                    TextSelection.collapsed(offset: selection.baseOffset);
+              }
             }
           } else if (value == '.') {
-            final currentText = controller.text;
             if (!currentText.contains('.')) {
-              controller.text = currentText + value;
+              if (selection.baseOffset == selection.extentOffset) {
+                final newText = currentText + value;
+                activeController.text = newText;
+                activeController.selection =
+                    TextSelection.collapsed(offset: newText.length);
+              } else {
+                final beforeSelection =
+                    currentText.substring(0, selection.baseOffset);
+                final afterSelection =
+                    currentText.substring(selection.extentOffset);
+                final newText = beforeSelection + value + afterSelection;
+                activeController.text = newText;
+                activeController.selection =
+                    TextSelection.collapsed(offset: selection.baseOffset + 1);
+              }
             }
           } else {
-            if (controller.selection.baseOffset ==
-                controller.selection.extentOffset) {
-              controller.text = controller.text + value;
+            if (selection.baseOffset == selection.extentOffset) {
+              final newText = currentText + value;
+              activeController.text = newText;
+              activeController.selection =
+                  TextSelection.collapsed(offset: newText.length);
             } else {
-              controller.text = value;
+              final beforeSelection =
+                  currentText.substring(0, selection.baseOffset);
+              final afterSelection =
+                  currentText.substring(selection.extentOffset);
+              final newText = beforeSelection + value + afterSelection;
+              activeController.text = newText;
+              activeController.selection =
+                  TextSelection.collapsed(offset: selection.baseOffset + 1);
             }
           }
         });
@@ -1801,7 +1903,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       ),
     );
   }
-
   // DataCell _buildEditTextConValDataCell(
   //     TextEditingController controller, int index) {
   //   return DataCell(
