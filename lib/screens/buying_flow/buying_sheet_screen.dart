@@ -90,7 +90,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenCustomScaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       bodyWidget: PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -534,9 +534,128 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   ),
                   const SizedBox(height: 10),
                   Expanded(
-                    child: _buyingSheet.isEmpty
-                        ? SizedBox()
-                        : _buyingSheetTable(data: _buyingSheet),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: _buyingSheet.isEmpty
+                              ? SizedBox()
+                              : _buyingSheetTable(data: _buyingSheet),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // SizedBox(
+                              //   height:
+                              //       MediaQuery.of(context).size.height * 0.25,
+                              // ),
+                              Expanded(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '1',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '2',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '3',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '4',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '5',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '6',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '7',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '8',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '9',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '.',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: '0',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _calculatorContainer(
+                                        value: 'C',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.25,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Row(
@@ -1283,10 +1402,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       ),
       cells: [
         _buildDataCell(item.itemCode),
-        _buildNameCell(item.itemName),
+        _buildDataCell(item.itemName),
         _buildDataCell(item.uomConVal),
         _buildDataCell(item.odrBQty),
-        _buildDataCell(item.odrEQty), // For Short Split
+        _buildDataCell(item.odrEQty),
         _buildBulkSplitDropdownCell(item, index),
         _buildEditableDataCell(_orderQtyControllers[index], index),
         _buildEditTextRateDataCell(_rateControllers[index], index),
@@ -1346,6 +1465,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         child: ButtonTheme(
           alignedDropdown: true,
           child: DropdownButton<UomAndPackListModel>(
+            isDense: true,
             isExpanded: true,
             underline: Container(),
             items: _oum
@@ -1373,15 +1493,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return DataCell(
       Center(
         child: SizedBox(
-          width: 180,
+          width: 150,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
+                  visualDensity: VisualDensity.compact,
                   onPressed: () => _decrementValue(controller, index),
                   icon: const Icon(Icons.remove)),
               SizedBox(
-                width: 80,
+                width: 60,
                 child: TextField(
                   controller: controller,
                   textAlign: TextAlign.center,
@@ -1412,6 +1533,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 ),
               ),
               IconButton(
+                  visualDensity: VisualDensity.compact,
                   onPressed: () => _incrementValue(controller, index),
                   icon: const Icon(Icons.add)),
             ],
@@ -1629,6 +1751,55 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       buyingSheet: _buyingSheet,
     );
     setState(() {});
+  }
+
+  GestureDetector _calculatorContainer({
+    required String value,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          final TextEditingController controller = TextEditingController();
+          if (value == 'C') {
+            final currentText = controller.text;
+            if (currentText.isNotEmpty) {
+              controller.text =
+                  currentText.substring(0, currentText.length - 1);
+            }
+          } else if (value == '.') {
+            final currentText = controller.text;
+            if (!currentText.contains('.')) {
+              controller.text = currentText + value;
+            }
+          } else {
+            if (controller.selection.baseOffset ==
+                controller.selection.extentOffset) {
+              controller.text = controller.text + value;
+            } else {
+              controller.text = value;
+            }
+          }
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: Colors.blue.shade900,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Text(
+            value,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   // DataCell _buildEditTextConValDataCell(

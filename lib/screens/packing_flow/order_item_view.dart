@@ -403,7 +403,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                                         prmIsRlz: rowItem.isRelease == 'False'
                                             ? '1'
                                             : '0',
-                                        clearShort: true,
                                         autoId: rowItem.autoId,
                                         quantity: rowItem.qty,
                                         shorts: rowItem.short,
@@ -442,7 +441,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       prmIsRlz: rowItem.isRelease == 'False'
                                           ? '1'
                                           : '0',
-                                      clearShort: true,
                                       autoId: rowItem.autoId,
                                       quantity: rowItem.qty,
                                       shorts: rowItem.short,
@@ -461,9 +459,15 @@ class _OrderItemViewState extends State<OrderItemView> {
                               Center(
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: rowItem.short == ''
+                                    backgroundColor: (rowItem.short == '' &&
+                                                rowItem.isRelease == 'False') ||
+                                            (rowItem.short == '' &&
+                                                rowItem.isRelease == 'True')
                                         ? Colors.grey
-                                        : Colors.red,
+                                        : (rowItem.short != '' &&
+                                                rowItem.isRelease == 'False')
+                                            ? Colors.red
+                                            : Colors.green,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5),
                                     ),
@@ -725,7 +729,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                                               _shortController.text == ''
                                           ? '1'
                                           : '0',
-                                  clearShort: false,
                                   autoId: selectedOrderItem.autoId,
                                   quantity: _qtyControllers.text,
                                   shorts: _shortController.text);
@@ -752,7 +755,6 @@ class _OrderItemViewState extends State<OrderItemView> {
   Future<void> _fnSave({
     required String prmIsRlz,
     required String autoId,
-    required bool clearShort,
     required String quantity,
     required String shorts,
   }) async {
@@ -778,7 +780,7 @@ class _OrderItemViewState extends State<OrderItemView> {
         prmUID: prmUId,
         prmAutoID: autoId,
         orderId: widget.selectedSalesOrderList.id,
-        prmShort: clearShort ? '' : shorts,
+        prmShort: shorts == '' || shorts == '0' ? '' : shorts,
         prmQty: _qtyControllers.text,
         prmIsRlz: prmIsRlz,
       )
