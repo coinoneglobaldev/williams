@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -1346,7 +1347,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         border: Border.all(color: Colors.black),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.5),
+            color: Colors.grey.withOpacity(0.5),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -1355,28 +1356,196 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15.0),
-        child: SingleChildScrollView(
-          child: DataTable(
-            dataRowMinHeight: 60,
-            dataRowMaxHeight: 60,
-            horizontalMargin: 10,
-            columnSpacing: 10,
-            headingRowColor: WidgetStateProperty.all(
-              Colors.grey.shade400.withValues(alpha: 0.5),
-            ),
-            border: TableBorder.symmetric(
-              inside: const BorderSide(
-                color: Colors.black,
-                width: 1.0,
-              ),
-            ),
-            columns: _getTableColumns(),
-            rows: data.asMap().entries.map((entry) {
-              final index = entry.key;
-              final item = entry.value;
-              return _buildDataRow(item, index);
-            }).toList(),
+        child: DataTable2(
+          dataRowHeight: 60,
+          horizontalMargin: 10,
+          columnSpacing: 10,
+          minWidth: 800,
+          headingRowColor: WidgetStateProperty.all(
+            Colors.grey.shade400.withValues(alpha: 0.5),
           ),
+          border: TableBorder.symmetric(
+            inside: const BorderSide(
+              color: Colors.black,
+              width: 1.0,
+            ),
+          ),
+          columns: [
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Code',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Name',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 220,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Con Val',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Short \nBulk',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Short \nBulk',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Order \nUOM',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 140,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Order Qty',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 150,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Rate',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 90,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Select',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+            ),
+          ],
+          rows: data.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
+            return DataRow(
+              color: MaterialStateProperty.resolveWith<Color>(
+                (Set<MaterialState> states) {
+                  return _selectedOrderTableUom[index].id == '19'
+                      ? Colors.yellow
+                      : Colors.green.shade200;
+                },
+              ),
+              cells: [
+                _buildDataCell(item.itemCode),
+                DataCell(
+                  // Special cell for Name column
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      item.itemName,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  ),
+                ),
+                _buildDataCell(item.uomConVal),
+                _buildDataCell(item.odrBQty),
+                _buildDataCell(item.odrEQty),
+                _buildBulkSplitDropdownCell(item, index),
+                _buildEditableDataCell(_orderQtyControllers[index], index),
+                _buildEditTextRateDataCell(_rateControllers[index], index),
+                _buildCheckboxDataCell(item),
+              ],
+            );
+          }).toList(),
         ),
       ),
     );
