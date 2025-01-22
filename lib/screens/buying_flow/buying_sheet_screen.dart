@@ -1404,7 +1404,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             const DataColumn2(
               label: Center(
                 child: Text(
-                  'Con Val',
+                  'Con \nVal',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
