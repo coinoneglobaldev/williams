@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -1560,7 +1562,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   onChanged: (value) {
                     controller.text = value;
                     _buyingSheet[index].totalQty = value.isEmpty ? '0' : value;
-
+                    log('Order UOM: $value');
+                    log('Order Qty: ${_buyingSheet[index].totalQty}');
+                    print(_buyingSheet[index].totalQty);
+                    print(value);
                     calculateTotalAmount(
                       buyingSheet: _buyingSheet,
                     );
@@ -1626,6 +1631,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               calculateTotalAmount(
                 buyingSheet: _buyingSheet,
               );
+
               setState(() {});
             },
           ),
@@ -1751,6 +1757,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         return;
       }
       for (int i = 0; i < selectedItems.length; i++) {
+        log('Ordering item: ${selectedItems[i].itemName}');
+        log('Ordering item: ${selectedItems[i].totalQty}');
+        log('Ordering item: ${selectedItems[i].rate}');
         final response = await ApiServices().fnSavePoList(
           prmTokenNo: tokenNo,
           prmDatePrmToCnt: _formatDate(DateTime.now()),
@@ -1761,13 +1770,13 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           prmUomId: selectedItems[i].boxUomId,
           prmTaxId: '',
           prmPackId: _selectedOrderTableUom[i].id,
-          prmNoPacks: _orderQtyControllers[i].text,
+          prmNoPacks: selectedItems[i].totalQty,
           prmConVal: selectedItems[i].uomConVal,
           prmCmpId: prmCmpId,
           prmBrId: prmBrId,
           prmFaId: prmFaId,
           prmUId: prmUId,
-          prmRate: _rateControllers[i].text,
+          prmRate: selectedItems[i].rate,
           prmBillNo: _billNoController.text,
         );
 
@@ -1887,6 +1896,21 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   TextSelection.collapsed(offset: selection.baseOffset + 1);
             }
           }
+          if (isQtyCtrlSelected) {
+            setState(() {
+              _buyingSheet[selectedRowIndex].totalQty = activeController.text;
+              calculateTotalAmount(
+                buyingSheet: _buyingSheet,
+              );
+            });
+          } else {
+            setState(() {
+              _buyingSheet[selectedRowIndex].rate = activeController.text;
+              calculateTotalAmount(
+                buyingSheet: _buyingSheet,
+              );
+            });
+          }
         });
       },
       child: Container(
@@ -1909,6 +1933,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       ),
     );
   }
+
   // DataCell _buildEditTextConValDataCell(
   //     TextEditingController controller, int index) {
   //   return DataCell(
