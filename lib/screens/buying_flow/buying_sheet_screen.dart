@@ -1896,14 +1896,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   TextSelection.collapsed(offset: selection.baseOffset + 1);
             }
           }
-          if (isQtyCtrlSelected) {
+          if (isQtyCtrlSelected && !isBillNoSelected) {
             setState(() {
               _buyingSheet[selectedRowIndex].totalQty = activeController.text;
               calculateTotalAmount(
                 buyingSheet: _buyingSheet,
               );
             });
-          } else {
+          } else if (!isQtyCtrlSelected && !isBillNoSelected) {
             setState(() {
               _buyingSheet[selectedRowIndex].rate = activeController.text;
               calculateTotalAmount(
