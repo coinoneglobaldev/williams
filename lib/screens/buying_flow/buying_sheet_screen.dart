@@ -692,7 +692,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          'Total Amount : £ $_totalAmount',
+                          'Total Amount : £ ${_totalAmount.toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
