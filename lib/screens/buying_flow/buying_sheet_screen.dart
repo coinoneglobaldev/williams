@@ -1676,11 +1676,13 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 .toList(),
             value: _selectedOrderTableUom[index],
             hint: const Text('Order UOM'),
-            onChanged: (UomAndPackListModel? value) {
-              setState(() {
-                _selectedOrderTableUom[index] = value!;
-              });
-            },
+            onChanged: double.parse(item.uomConVal) == 1
+                ? null
+                : (UomAndPackListModel? value) {
+                    setState(() {
+                      _selectedOrderTableUom[index] = value!;
+                    });
+                  },
           ),
         ),
       ),
