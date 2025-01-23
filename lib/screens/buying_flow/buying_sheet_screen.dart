@@ -318,47 +318,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           ),
                         ),
                         SizedBox(width: 8),
-                        Expanded(
-                          flex: 1,
-                          child: TextField(
-                            controller: _itemConValController,
-                            keyboardType: TextInputType.number,
-                            onTap: () {
-                              // Changed this line
-                              _itemConValController.selection = TextSelection(
-                                baseOffset: 0,
-                                extentOffset: _itemConValController.text.length,
-                              );
-                            },
-                            decoration: InputDecoration(
-                              labelText: 'Con Val',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          flex: 1,
-                          child: TextField(
-                            keyboardType: TextInputType.number,
-                            controller: _itemOrderQtyController,
-                            onSubmitted: (value) {
-                              // Select all text in the TextField
-                              _itemRateController.selection = TextSelection(
-                                baseOffset: 0,
-                                extentOffset: _itemRateController.text.length,
-                              );
-                              // Reqest focus on the TextField
-                              _rateFocus.requestFocus();
-                            },
-                            focusNode: _orderQtyFocus,
-                            decoration: InputDecoration(
-                              labelText: 'Order Qty',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8),
                         Flexible(
                           flex: 1,
                           child: ButtonTheme(
@@ -387,6 +346,47 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   _selectedOrderUom = value!;
                                 });
                               },
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            controller: _itemOrderQtyController,
+                            onSubmitted: (value) {
+                              // Select all text in the TextField
+                              _itemRateController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset: _itemRateController.text.length,
+                              );
+                              // Reqest focus on the TextField
+                              _rateFocus.requestFocus();
+                            },
+                            focusNode: _orderQtyFocus,
+                            decoration: InputDecoration(
+                              labelText: 'Order Qty',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            controller: _itemConValController,
+                            keyboardType: TextInputType.number,
+                            onTap: () {
+                              // Changed this line
+                              _itemConValController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset: _itemConValController.text.length,
+                              );
+                            },
+                            decoration: InputDecoration(
+                              labelText: 'Con Val',
+                              border: OutlineInputBorder(),
                             ),
                           ),
                         ),
@@ -1347,7 +1347,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         border: Border.all(color: Colors.black),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withValues(alpha: 0.5),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -1404,51 +1404,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             const DataColumn2(
               label: Center(
                 child: Text(
-                  'Con \nVal',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              size: ColumnSize.L,
-              fixedWidth: 60,
-            ),
-            const DataColumn2(
-              label: Center(
-                child: Text(
-                  'Short \nBulk',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              size: ColumnSize.L,
-              fixedWidth: 60,
-            ),
-            const DataColumn2(
-              label: Center(
-                child: Text(
-                  'Short \nBulk',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              size: ColumnSize.L,
-              fixedWidth: 60,
-            ),
-            const DataColumn2(
-              label: Center(
-                child: Text(
                   'Order \nUOM',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -1460,6 +1415,51 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               ),
               size: ColumnSize.L,
               fixedWidth: 140,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Short \nBulk',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Short \nBulk',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Con \nVal',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
             ),
             const DataColumn2(
               label: Center(
@@ -1510,8 +1510,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             final index = entry.key;
             final item = entry.value;
             return DataRow(
-              color: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
+              color: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) {
                   return _selectedOrderTableUom[index].id == '19'
                       ? Colors.yellow
                       : Colors.green.shade200;
@@ -1536,10 +1536,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     ),
                   ),
                 ),
-                _buildDataCell(item.uomConVal),
+                _buildBulkSplitDropdownCell(item, index),
                 _buildDataCell(item.odrBQty),
                 _buildDataCell(item.odrEQty),
-                _buildBulkSplitDropdownCell(item, index),
+                _buildDataCell(item.uomConVal),
                 _buildEditableDataCell(_orderQtyControllers[index], index),
                 _buildEditTextRateDataCell(_rateControllers[index], index),
                 _buildCheckboxDataCell(item),
@@ -1551,88 +1551,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  List<DataColumn> _getTableColumns() {
-    return [
-      'Code',
-      'Name',
-      'Con Val',
-      'Short \nBulk',
-      'Short \nSplit',
-      'Order \nUOM',
-      'Order Qty',
-      'Rate',
-      'Select'
-    ].map(_buildDataColumn).toList();
-  }
-
-  DataColumn _buildDataColumn(String label) {
-    return DataColumn(
-      label: Center(
-        child: Text(
-          label,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-
-  DataRow _buildDataRow(BuyingSheetListModel item, int index) {
-    return DataRow(
-      color: WidgetStateProperty.resolveWith<Color>(
-        (Set<WidgetState> states) {
-          return _selectedOrderTableUom[index].id == '19'
-              ? Colors.yellow
-              : Colors.green.shade200;
-        },
-      ),
-      cells: [
-        _buildDataCell(item.itemCode),
-        _buildDataCell(item.itemName),
-        _buildDataCell(item.uomConVal),
-        _buildDataCell(item.odrBQty),
-        _buildDataCell(item.odrEQty),
-        _buildBulkSplitDropdownCell(item, index),
-        _buildEditableDataCell(_orderQtyControllers[index], index),
-        _buildEditTextRateDataCell(_rateControllers[index], index),
-        _buildCheckboxDataCell(item),
-      ],
-    );
-  }
-
   DataCell _buildDataCell(
     String? text,
   ) {
     return DataCell(
       SizedBox(
         height: 20,
-        child: Center(
-          child: Text(
-            text ?? '',
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-          ),
-        ),
-      ),
-    );
-  }
-
-  DataCell _buildNameCell(
-    String? text,
-  ) {
-    return DataCell(
-      SizedBox(
-        height: 20,
-        width: MediaQuery.of(context).size.width * 0.3,
         child: Center(
           child: Text(
             text ?? '',
