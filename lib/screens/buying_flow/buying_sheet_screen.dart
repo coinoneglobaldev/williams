@@ -1875,7 +1875,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   Widget _buildSaveButton() {
     return ElevatedButton(
-      onPressed: _selectedSupplier == null
+      onPressed: _selectedSupplier == null ||
+              _selectedSupplier!.name == 'All Suppliers' ||
+              _selectedCount == 0
           ? null
           : () {
               _orderNow();
