@@ -1434,7 +1434,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             const DataColumn2(
               label: Center(
                 child: Text(
-                  'Short \nBulk',
+                  'Short \nSplit',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
