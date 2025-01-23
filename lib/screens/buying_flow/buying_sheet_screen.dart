@@ -1212,7 +1212,15 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
         List.generate(_tempList.length, (index) {
           try {
-            if (double.parse(_tempList[index].uomConVal.toString()) == 1) {
+            if (double.parse(_tempList[index].odrEQty) > 1 &&
+                double.parse(_tempList[index].uomConVal.toString()) == 1) {
+              final double odrEQty = double.parse(_tempList[index].eStockQty) -
+                  double.parse(_tempList[index].odrEQty);
+              _tempList[index].odrEQty = odrEQty.abs().ceil().toString();
+              log('odrEQty: $odrEQty');
+              return _tempList[index];
+            } else if (double.parse(_tempList[index].uomConVal.toString()) ==
+                1) {
               return _tempList[index];
             } else {
               double split =
