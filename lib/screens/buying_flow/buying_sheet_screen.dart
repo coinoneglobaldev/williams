@@ -1347,7 +1347,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         border: Border.all(color: Colors.black),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withValues(alpha: 0.5),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -1434,7 +1434,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             const DataColumn2(
               label: Center(
                 child: Text(
-                  'Short \nBulk',
+                  'Short \nSplit',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -1510,8 +1510,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             final index = entry.key;
             final item = entry.value;
             return DataRow(
-              color: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
+              color: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) {
                   return _selectedOrderTableUom[index].id == '19'
                       ? Colors.yellow
                       : Colors.green.shade200;
