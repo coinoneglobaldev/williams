@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
@@ -173,18 +175,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                     horizontalMargin: 5,
                     dataRowMaxHeight: 80,
                     dataRowMinHeight: 80,
-                    dataRowColor: WidgetStateProperty.resolveWith<Color>(
-                      (Set<WidgetState> states) {
-                        final int index = states.contains(WidgetState.selected)
-                            ? states.contains(WidgetState.selected)
-                                ? data.indexOf(data[selectedRowIndex])
-                                : -1
-                            : -1;
-                        return index == selectedRowIndex
-                            ? Colors.blue.withValues(alpha: 0.6)
-                            : Colors.purple.shade100.withValues(alpha: 0.75);
-                      },
-                    ),
                     headingRowColor:
                         WidgetStateProperty.all(Colors.grey.shade400),
                     columns: columns
@@ -207,6 +197,21 @@ class _OrderItemViewState extends State<OrderItemView> {
                         final index = entry.key;
                         SalesOrderItemListModel rowItem = entry.value;
                         return DataRow(
+                          color: WidgetStateProperty.resolveWith<Color>(
+                            (Set<WidgetState> states) {
+                              final int index1 =
+                                  states.contains(WidgetState.selected)
+                                      ? states.contains(WidgetState.selected)
+                                          ? data.indexOf(data[selectedRowIndex])
+                                          : -1
+                                      : -1;
+                              return index1 == selectedRowIndex
+                                  ? Colors.blue.withValues(alpha: 0.6)
+                                  : selectedPackList[index].id == '19'
+                                      ? Colors.yellow
+                                      : Colors.green.shade200;
+                            },
+                          ),
                           selected: rowItem == selectedOrderItem,
                           cells: [
                             DataCell(
