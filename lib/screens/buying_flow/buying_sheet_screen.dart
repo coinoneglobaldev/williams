@@ -331,7 +331,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               );
                             },
                             decoration: InputDecoration(
-                              labelText: 'Con Val',
+                              labelText: 'Unit/Box',
                               border: OutlineInputBorder(),
                             ),
                           ),
@@ -407,7 +407,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: buttonColor,
-                            minimumSize: const Size(150, 50),
+                            minimumSize: Size(
+                                MediaQuery.of(context).size.width * 0.166, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
@@ -510,34 +511,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           child: Text('Add'),
                         ),
                         SizedBox(width: 8),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            minimumSize: const Size(120, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _selectAll = !_selectAll;
-                              for (var item in _buyingSheet) {
-                                item.isSelected = _selectAll;
-                              }
-                              _selectedCount = _buyingSheet
-                                  .where((item) => item.isSelected)
-                                  .length;
-
-                              if (_selectAll) {
-                                calculateTotalAmount(
-                                  buyingSheet: _buyingSheet,
-                                );
-                              }
-                            });
-                          },
-                          child:
-                              Text(_selectAll ? 'Deselect All' : 'Select All'),
-                        ),
                       ],
                     ),
                   ),
@@ -1409,12 +1382,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 ),
               ),
               size: ColumnSize.L,
-              fixedWidth: 220,
+              fixedWidth: 200,
             ),
             const DataColumn2(
               label: Center(
                 child: Text(
-                  'Con \nVal',
+                  'Unit \n/Box',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -1501,16 +1474,40 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               size: ColumnSize.L,
               fixedWidth: 90,
             ),
-            const DataColumn2(
+            DataColumn2(
               label: Center(
-                child: Text(
-                  'Select',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 16,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    minimumSize: const Size(120, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                   ),
-                  textAlign: TextAlign.center,
+                  onPressed: () {
+                    setState(() {
+                      _selectAll = !_selectAll;
+                      for (var item in _buyingSheet) {
+                        item.isSelected = _selectAll;
+                      }
+                      _selectedCount =
+                          _buyingSheet.where((item) => item.isSelected).length;
+
+                      if (_selectAll) {
+                        calculateTotalAmount(
+                          buyingSheet: _buyingSheet,
+                        );
+                      }
+                    });
+                  },
+                  child: Text(
+                    _selectAll ? 'Deselect All' : 'Select All',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
               size: ColumnSize.L,

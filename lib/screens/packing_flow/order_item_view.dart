@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
@@ -42,7 +44,28 @@ class _OrderItemViewState extends State<OrderItemView> {
   @override
   void initState() {
     super.initState();
-    orderListItems = widget.passedOnOrderListItems;
+    orderListItems = [];
+    List<SalesOrderItemListModel> _orderTempListItems =
+        widget.passedOnOrderListItems;
+
+    List<int> _filteredItemGroupId = _orderTempListItems
+        .map((e) => int.parse(e.itemGroupId))
+        .toSet()
+        .toList();
+    _filteredItemGroupId.sort((a, b) => a.compareTo(b));
+
+    List<String> _filteredItemGroupIdString =
+        _filteredItemGroupId.map((e) => e.toString()).toSet().toList();
+
+    for (int i = 0; i < _filteredItemGroupIdString.length; i++) {
+      for (int j = 0; j < _orderTempListItems.length; j++) {
+        if (_filteredItemGroupIdString[i] ==
+            _orderTempListItems[j].itemGroupId) {
+          orderListItems.add(_orderTempListItems[j]);
+        }
+      }
+    }
+
     _fnSetSelectedItem(selectedRowItem: orderListItems[0]);
     selectedPackList = List<UomAndPackListModel>.filled(
         orderListItems.length, widget.packTypeList[0]);
@@ -88,6 +111,7 @@ class _OrderItemViewState extends State<OrderItemView> {
       'Qty',
       'Pack',
       'Code',
+      'Con \nVal',
       'Description',
       'Notes',
       'Check',
@@ -98,7 +122,7 @@ class _OrderItemViewState extends State<OrderItemView> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
               width: 500,
@@ -139,7 +163,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                     : "Deselect All",
               ),
             ),
-            SizedBox(width: 150),
           ],
         ),
         Expanded(
@@ -173,18 +196,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                     horizontalMargin: 5,
                     dataRowMaxHeight: 80,
                     dataRowMinHeight: 80,
-                    dataRowColor: WidgetStateProperty.resolveWith<Color>(
-                      (Set<WidgetState> states) {
-                        final int index = states.contains(WidgetState.selected)
-                            ? states.contains(WidgetState.selected)
-                                ? data.indexOf(data[selectedRowIndex])
-                                : -1
-                            : -1;
-                        return index == selectedRowIndex
-                            ? Colors.blue.withValues(alpha: 0.6)
-                            : Colors.purple.shade100.withValues(alpha: 0.75);
-                      },
-                    ),
                     headingRowColor:
                         WidgetStateProperty.all(Colors.grey.shade400),
                     columns: columns
@@ -207,6 +218,21 @@ class _OrderItemViewState extends State<OrderItemView> {
                         final index = entry.key;
                         SalesOrderItemListModel rowItem = entry.value;
                         return DataRow(
+                          color: WidgetStateProperty.resolveWith<Color>(
+                            (Set<WidgetState> states) {
+                              final int index1 =
+                                  states.contains(WidgetState.selected)
+                                      ? states.contains(WidgetState.selected)
+                                          ? data.indexOf(data[selectedRowIndex])
+                                          : -1
+                                      : -1;
+                              return index1 == selectedRowIndex
+                                  ? Colors.blue.withValues(alpha: 0.6)
+                                  : selectedPackList[index].id == '19'
+                                      ? Colors.yellow
+                                      : Colors.green.shade200;
+                            },
+                          ),
                           selected: rowItem == selectedOrderItem,
                           cells: [
                             DataCell(
@@ -266,7 +292,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                                         )
                                         .toList(),
                                     value: selectedPackList[index],
-                                    hint: const Text('Select Category'),
                                     onChanged: (value) {
                                       setState(() {
                                         selectedPackList[index] = value!;
@@ -309,9 +334,31 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 );
                               },
                               Center(
+                                child: Text(
+                                  rowItem.conVal,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 2,
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              onTap: () {
+                                setState(() {
+                                  selectedRowIndex = index;
+                                });
+                                _fnSwitchToQtyMode();
+                                _fnSetSelectedItem(
+                                  selectedRowItem: rowItem,
+                                );
+                              },
+                              Center(
                                 child: Container(
                                   padding: const EdgeInsets.all(5),
-                                  width: 140,
+                                  width: 80,
                                   height: 70,
                                   decoration: BoxDecoration(
                                     color: Colors.yellow,
@@ -329,8 +376,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       rowItem.itemName,
                                       style: const TextStyle(
                                         color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
                                       ),
                                       maxLines: 2,
                                     ),
