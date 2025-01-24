@@ -480,7 +480,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     uomConVal: _itemConValController.text,
                                     itmCnt: '0',
                                     isSelected: true,
-                                    totalQty: _itemOrderQtyController.text,
+                                    totalQty: double.parse(
+                                      _itemOrderQtyController.text,
+                                    ).abs().ceil().toString(),
                                     eStockQty:
                                         selectedItem!.eStockQty.toString(),
                                     actualNeededQty: actualNeededQty.toString(),
