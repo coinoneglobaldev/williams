@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -479,7 +480,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     uomConVal: _itemConValController.text,
                                     itmCnt: '0',
                                     isSelected: true,
-                                    totalQty: _itemOrderQtyController.text,
+                                    totalQty: double.parse(
+                                      _itemOrderQtyController.text,
+                                    ).abs().ceil().toString(),
                                     eStockQty:
                                         selectedItem!.eStockQty.toString(),
                                     actualNeededQty: actualNeededQty.toString(),
@@ -692,7 +695,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          'Total Amount : £ $_totalAmount',
+                          'Total Amount : £ ${_totalAmount.toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -1211,7 +1214,15 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
         List.generate(_tempList.length, (index) {
           try {
-            if (double.parse(_tempList[index].uomConVal.toString()) == 1) {
+            if (double.parse(_tempList[index].odrEQty) > 1 &&
+                double.parse(_tempList[index].uomConVal.toString()) == 1) {
+              final double odrEQty = double.parse(_tempList[index].eStockQty) -
+                  double.parse(_tempList[index].odrEQty);
+              _tempList[index].odrEQty = odrEQty.abs().ceil().toString();
+              log('odrEQty: $odrEQty');
+              return _tempList[index];
+            } else if (double.parse(_tempList[index].uomConVal.toString()) ==
+                1) {
               return _tempList[index];
             } else {
               double split =
@@ -1355,28 +1366,196 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15.0),
-        child: SingleChildScrollView(
-          child: DataTable(
-            dataRowMinHeight: 60,
-            dataRowMaxHeight: 60,
-            horizontalMargin: 10,
-            columnSpacing: 10,
-            headingRowColor: WidgetStateProperty.all(
-              Colors.grey.shade400.withValues(alpha: 0.5),
-            ),
-            border: TableBorder.symmetric(
-              inside: const BorderSide(
-                color: Colors.black,
-                width: 1.0,
-              ),
-            ),
-            columns: _getTableColumns(),
-            rows: data.asMap().entries.map((entry) {
-              final index = entry.key;
-              final item = entry.value;
-              return _buildDataRow(item, index);
-            }).toList(),
+        child: DataTable2(
+          dataRowHeight: 60,
+          horizontalMargin: 10,
+          columnSpacing: 10,
+          minWidth: 800,
+          headingRowColor: WidgetStateProperty.all(
+            Colors.grey.shade400.withValues(alpha: 0.5),
           ),
+          border: TableBorder.symmetric(
+            inside: const BorderSide(
+              color: Colors.black,
+              width: 1.0,
+            ),
+          ),
+          columns: [
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Code',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Name',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 220,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Con \nVal',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Short \nBulk',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Short \nSplit',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Order \nUOM',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 140,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Order Qty',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 150,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Rate',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 90,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Select',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+            ),
+          ],
+          rows: data.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
+            return DataRow(
+              color: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) {
+                  return _selectedOrderTableUom[index].id == '19'
+                      ? Colors.yellow
+                      : Colors.green.shade200;
+                },
+              ),
+              cells: [
+                _buildDataCell(item.itemCode),
+                DataCell(
+                  // Special cell for Name column
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      item.itemName,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  ),
+                ),
+                _buildDataCell(item.uomConVal),
+                _buildDataCell(item.odrBQty),
+                _buildDataCell(item.odrEQty),
+                _buildBulkSplitDropdownCell(item, index),
+                _buildEditableDataCell(_orderQtyControllers[index], index),
+                _buildEditTextRateDataCell(_rateControllers[index], index),
+                _buildCheckboxDataCell(item),
+              ],
+            );
+          }).toList(),
         ),
       ),
     );
@@ -1499,11 +1678,13 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 .toList(),
             value: _selectedOrderTableUom[index],
             hint: const Text('Order UOM'),
-            onChanged: (UomAndPackListModel? value) {
-              setState(() {
-                _selectedOrderTableUom[index] = value!;
-              });
-            },
+            onChanged: double.parse(item.uomConVal) == 1
+                ? null
+                : (UomAndPackListModel? value) {
+                    setState(() {
+                      _selectedOrderTableUom[index] = value!;
+                    });
+                  },
           ),
         ),
       ),
@@ -1698,7 +1879,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   Widget _buildSaveButton() {
     return ElevatedButton(
-      onPressed: _selectedSupplier == null
+      onPressed: _selectedSupplier == null ||
+              _selectedSupplier!.name == 'All Suppliers' ||
+              _selectedCount == 0
           ? null
           : () {
               _orderNow();
@@ -1896,14 +2079,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   TextSelection.collapsed(offset: selection.baseOffset + 1);
             }
           }
-          if (isQtyCtrlSelected) {
+          if (isQtyCtrlSelected && !isBillNoSelected) {
             setState(() {
               _buyingSheet[selectedRowIndex].totalQty = activeController.text;
               calculateTotalAmount(
                 buyingSheet: _buyingSheet,
               );
             });
-          } else {
+          } else if (!isQtyCtrlSelected && !isBillNoSelected) {
             setState(() {
               _buyingSheet[selectedRowIndex].rate = activeController.text;
               calculateTotalAmount(
