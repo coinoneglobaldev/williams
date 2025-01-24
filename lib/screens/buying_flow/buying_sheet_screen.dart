@@ -1504,7 +1504,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     _selectAll ? 'Deselect All' : 'Select All',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 12,
                     ),
                     textAlign: TextAlign.center,
                   ),
