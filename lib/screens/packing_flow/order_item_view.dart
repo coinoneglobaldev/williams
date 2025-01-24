@@ -292,7 +292,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                                         )
                                         .toList(),
                                     value: selectedPackList[index],
-                                    hint: const Text('Select Category'),
                                     onChanged: (value) {
                                       setState(() {
                                         selectedPackList[index] = value!;
@@ -377,8 +376,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       rowItem.itemName,
                                       style: const TextStyle(
                                         color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
                                       ),
                                       maxLines: 2,
                                     ),
