@@ -88,6 +88,7 @@ class _OrderItemViewState extends State<OrderItemView> {
       'Qty',
       'Pack',
       'Code',
+      'Con \nVal',
       'Description',
       'Notes',
       'Check',
@@ -98,7 +99,7 @@ class _OrderItemViewState extends State<OrderItemView> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
               width: 500,
@@ -139,7 +140,6 @@ class _OrderItemViewState extends State<OrderItemView> {
                     : "Deselect All",
               ),
             ),
-            SizedBox(width: 150),
           ],
         ),
         Expanded(
@@ -309,9 +309,31 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 );
                               },
                               Center(
+                                child: Text(
+                                  rowItem.conVal,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 2,
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              onTap: () {
+                                setState(() {
+                                  selectedRowIndex = index;
+                                });
+                                _fnSwitchToQtyMode();
+                                _fnSetSelectedItem(
+                                  selectedRowItem: rowItem,
+                                );
+                              },
+                              Center(
                                 child: Container(
                                   padding: const EdgeInsets.all(5),
-                                  width: 140,
+                                  width: 80,
                                   height: 70,
                                   decoration: BoxDecoration(
                                     color: Colors.yellow,

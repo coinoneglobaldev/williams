@@ -331,7 +331,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               );
                             },
                             decoration: InputDecoration(
-                              labelText: 'Con Val',
+                              labelText: 'Unit/Box',
                               border: OutlineInputBorder(),
                             ),
                           ),
@@ -1414,7 +1414,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             const DataColumn2(
               label: Center(
                 child: Text(
-                  'Con \nVal',
+                  'Unit \n/Box',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
