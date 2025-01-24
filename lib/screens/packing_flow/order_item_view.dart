@@ -44,7 +44,28 @@ class _OrderItemViewState extends State<OrderItemView> {
   @override
   void initState() {
     super.initState();
-    orderListItems = widget.passedOnOrderListItems;
+    orderListItems = [];
+    List<SalesOrderItemListModel> _orderTempListItems =
+        widget.passedOnOrderListItems;
+
+    List<int> _filteredItemGroupId = _orderTempListItems
+        .map((e) => int.parse(e.itemGroupId))
+        .toSet()
+        .toList();
+    _filteredItemGroupId.sort((a, b) => a.compareTo(b));
+
+    List<String> _filteredItemGroupIdString =
+        _filteredItemGroupId.map((e) => e.toString()).toSet().toList();
+
+    for (int i = 0; i < _filteredItemGroupIdString.length; i++) {
+      for (int j = 0; j < _orderTempListItems.length; j++) {
+        if (_filteredItemGroupIdString[i] ==
+            _orderTempListItems[j].itemGroupId) {
+          orderListItems.add(_orderTempListItems[j]);
+        }
+      }
+    }
+
     _fnSetSelectedItem(selectedRowItem: orderListItems[0]);
     selectedPackList = List<UomAndPackListModel>.filled(
         orderListItems.length, widget.packTypeList[0]);
