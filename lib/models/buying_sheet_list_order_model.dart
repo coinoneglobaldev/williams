@@ -27,6 +27,7 @@ class BuyingSheetListModel {
   String itmCnt;
   String eStockQty;
   String actualNeededQty;
+  String umoId;
 
   BuyingSheetListModel({
     this.isSelected = false,
@@ -44,6 +45,7 @@ class BuyingSheetListModel {
     required this.itmCnt,
     required this.eStockQty,
     this.actualNeededQty = '0',
+    this.umoId = '0',
   });
 
   factory BuyingSheetListModel.fromJson(Map<String, dynamic> json) =>

@@ -487,6 +487,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     eStockQty:
                                         selectedItem!.eStockQty.toString(),
                                     actualNeededQty: actualNeededQty.toString(),
+                                    umoId: _selectedOrderUom!.id,
                                   ),
                                 );
                                 _selectedCount = _buyingSheet
@@ -1250,17 +1251,21 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           (index) {
             if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
                 double.parse(_buyingSheet[index].odrEQty) > 0) {
+              _buyingSheet[index].umoId = '19';
               return _selectedOrderTableUom[index] =
                   _oum.where((e) => e.id == '19').first;
             } else if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
                 double.parse(_buyingSheet[index].odrEQty) == 0) {
+              _buyingSheet[index].umoId = '19';
               return _selectedOrderTableUom[index] =
                   _oum.where((e) => e.id == '19').first;
             } else if (double.parse(_buyingSheet[index].odrEQty) > 0 &&
                 double.parse(_buyingSheet[index].odrBQty) == 0) {
+              _buyingSheet[index].umoId = '21';
               return _selectedOrderTableUom[index] =
                   _oum.where((e) => e.id == '21').first;
             } else {
+              _buyingSheet[index].umoId = '19';
               return _selectedOrderTableUom[index] = _oum.first;
             }
           },
@@ -1680,7 +1685,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 : (UomAndPackListModel? value) {
                     setState(() {
                       _selectedOrderTableUom[index] = value!;
+                      _buyingSheet[index].umoId = value.id;
                     });
+                    log('Order UOM: ${_selectedOrderTableUom[index].name}');
                   },
           ),
         ),
@@ -1949,7 +1956,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           prmItemId: selectedItems[i].itemId,
           prmUomId: selectedItems[i].boxUomId,
           prmTaxId: '',
-          prmPackId: _selectedOrderTableUom[i].id,
+          prmPackId: selectedItems[i].umoId,
           prmNoPacks: selectedItems[i].totalQty,
           prmConVal: selectedItems[i].uomConVal,
           prmCmpId: prmCmpId,
