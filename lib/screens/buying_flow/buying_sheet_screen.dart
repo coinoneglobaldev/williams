@@ -646,7 +646,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: buttonColor,
+                                  backgroundColor: Colors.orange.shade900,
                                   minimumSize: const Size(300, 50),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),

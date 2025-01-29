@@ -123,7 +123,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                     child: Row(
                       children: [
                         const Text(
-                          'purchase order',
+                          'Purchase Order',
                           style: TextStyle(
                             fontSize: 35.0,
                             fontWeight: FontWeight.bold,
@@ -638,7 +638,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                   Navigator.pop(context);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: buttonColor,
+                                  backgroundColor: Colors.orange.shade900,
                                   minimumSize: Size(
                                       MediaQuery.of(context).size.width * 0.166,
                                       50),
@@ -646,7 +646,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                 ),
-                                child: const Text('Back'),
+                                child: const Text('Buying Sheet'),
                               ),
                               SizedBox(
                                 height:
