@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:data_table_2/data_table_2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,16 +19,15 @@ import '../../models/item_list_model.dart';
 import '../../models/supplier_list_model.dart';
 import '../../models/uom_list_model.dart';
 import '../../services/api_services.dart';
-import 'purchase_order.dart';
 
-class BuyingSheetScreen extends StatefulWidget {
-  const BuyingSheetScreen({super.key});
+class PurchaseOrder extends StatefulWidget {
+  const PurchaseOrder({super.key});
 
   @override
-  State<BuyingSheetScreen> createState() => _BuyingSheetScreenState();
+  State<PurchaseOrder> createState() => _PurchaseOrderState();
 }
 
-class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
+class _PurchaseOrderState extends State<PurchaseOrder> {
   FocusNode _orderQtyFocus = FocusNode();
   FocusNode _rateFocus = FocusNode();
   DateTimeRange? selectedDateRange;
@@ -125,7 +123,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     child: Row(
                       children: [
                         const Text(
-                          'Buying Sheet',
+                          'purchase order',
                           style: TextStyle(
                             fontSize: 35.0,
                             fontWeight: FontWeight.bold,
@@ -637,22 +635,18 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               const SizedBox(height: 10),
                               ElevatedButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
-                                      builder: (context) =>
-                                          const PurchaseOrder(),
-                                    ),
-                                  );
+                                  Navigator.pop(context);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: buttonColor,
-                                  minimumSize: const Size(300, 50),
+                                  minimumSize: Size(
+                                      MediaQuery.of(context).size.width * 0.166,
+                                      50),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
                                 ),
-                                child: const Text('Purchase Order'),
+                                child: const Text('Back'),
                               ),
                               SizedBox(
                                 height:
@@ -742,198 +736,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return Expanded(
       child: Row(
         children: [
-          Flexible(
-            flex: 3,
-            child: ButtonTheme(
-              alignedDropdown: true,
-              child: DropdownButtonFormField<CategoryListModel>(
-                isExpanded: true,
-                decoration: InputDecoration(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                items: _categories
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e.name),
-                      ),
-                    )
-                    .toList(),
-                value: _selectedCategory,
-                hint: const Text('Category'),
-                onChanged: (CategoryListModel? value) {
-                  setState(() {
-                    _selectedCategory = value!;
-                  });
-                  try {
-                    getBuyingSheetList(
-                      prmFrmDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.start)
-                          : _formatDate(DateTime.now()).toString(),
-                      prmToDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.end)
-                          : _formatDate(DateTime.now().add(Duration(days: 1)))
-                              .toString(),
-                      prmCategory: _selectedCategory!.id,
-                      prmSupplier: _selectedSupplier?.id ?? '',
-                      prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
-                    ).whenComplete(() {
-                      _selectAll = false;
-                      _selectedCount = 0;
-                      _totalAmount = 0.0;
-                      setState(() {});
-                    });
-                  } catch (e) {
-                    Util.customErrorSnackBar(context, e.toString());
-                  }
-                },
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Flexible(
-            flex: 3,
-            child: ButtonTheme(
-              alignedDropdown: true,
-              child: DropdownButtonFormField<SupplierListModel>(
-                isExpanded: true,
-                decoration: InputDecoration(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                items: _suppliers
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e.name),
-                      ),
-                    )
-                    .toList(),
-                value: _selectedSupplier,
-                hint: const Text('Supplier'),
-                onChanged: (SupplierListModel? value) {
-                  setState(() {
-                    _selectedSupplier = value;
-                  });
-                  try {
-                    getBuyingSheetList(
-                      prmFrmDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.start)
-                          : _formatDate(DateTime.now()).toString(),
-                      prmToDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.end)
-                          : _formatDate(DateTime.now().add(Duration(days: 1)))
-                              .toString(),
-                      prmCategory: _selectedCategory?.id ?? '',
-                      prmSupplier: _selectedSupplier?.id ?? '',
-                      prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
-                    ).whenComplete(() {
-                      _selectAll = false;
-                      _selectedCount = 0;
-                      _totalAmount = 0.0;
-                      setState(() {});
-                    });
-                  } catch (e) {
-                    Util.customErrorSnackBar(context, e.toString());
-                  }
-                },
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Flexible(
-            flex: 3,
-            child: ButtonTheme(
-              alignedDropdown: true,
-              child: DropdownButtonFormField<PreviousOrderCountModel>(
-                isExpanded: true,
-                decoration: InputDecoration(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                items: _previousOrders
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e.name),
-                      ),
-                    )
-                    .toList(),
-                value: _selectedPreviousOrder,
-                hint: const Text('Previous Order'),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedPreviousOrder = value;
-                  });
-                  try {
-                    getBuyingSheetList(
-                      prmFrmDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.start)
-                          : _formatDate(DateTime.now()).toString(),
-                      prmToDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.end)
-                          : _formatDate(DateTime.now().add(Duration(days: 1)))
-                              .toString(),
-                      prmCategory: _selectedCategory?.id ?? '',
-                      prmSupplier: _selectedSupplier?.id ?? '',
-                      prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
-                    ).whenComplete(() {
-                      _selectAll = false;
-                      _selectedCount = 0;
-                      _totalAmount = 0.0;
-                      setState(() {});
-                    });
-                  } catch (e) {
-                    Util.customErrorSnackBar(context, e.toString());
-                  }
-                },
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
           Expanded(
+            flex: 3,
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonColor,
-                minimumSize: const Size(50, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              onPressed: _showDateRangePicker,
-              child:
-                  const Icon(Icons.date_range, color: Colors.white, size: 30),
-            ),
-          ),
-          Spacer(),
-          SizedBox(
-            height: 50,
-            child: ElevatedButton(
-              onPressed: selectedDateRange != null
-                  ? () async {
-                      await getBuyingSheetList(
-                        prmFrmDate:
-                            _formatDate(selectedDateRange!.start).toString(),
-                        prmToDate: _formatDate(selectedDateRange!.end),
-                        prmCategory: _selectedCategory?.id ?? '',
-                        prmSupplier: _selectedSupplier?.id ?? '',
-                        prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
-                      );
-                      setState(() {
-                        _selectAll = false;
-                      });
-                    }
-                  : null,
+              onPressed: () async {},
               // onPressed: _handleSearch,
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
@@ -944,9 +750,40 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Search'),
+              child: const Text('Previous'),
             ),
           ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 4,
+            child: TextField(
+              controller: _itemNameController,
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Reference No.',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 3,
+            child: ElevatedButton(
+              onPressed: () async {},
+              // onPressed: _handleSearch,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: buttonColor,
+                maximumSize: const Size(100, 50),
+                minimumSize: const Size(100, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Previous'),
+            ),
+          ),
+          const SizedBox(width: 10),
         ],
       ),
     );
@@ -1906,16 +1743,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   Widget _buildSaveButton() {
     return ElevatedButton(
-      onPressed: _selectedSupplier == null ||
-              _selectedSupplier!.name == 'All Suppliers' ||
-              _selectedCount == 0
-          ? null
-          : () {
-              _orderNow();
-              setState(() {
-                _selectAll = false;
-              });
-            },
+      onPressed: () {},
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
         minimumSize: const Size(300, 50),
@@ -1923,7 +1751,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      child: Text('Order Now (${_selectedCount})'),
+      child: Text('Update (${_selectedCount})'),
     );
   }
 
