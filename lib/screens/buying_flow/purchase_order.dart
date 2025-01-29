@@ -780,7 +780,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Previous'),
+              child: const Text('Next'),
             ),
           ),
           const SizedBox(width: 10),
