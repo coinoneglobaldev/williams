@@ -635,7 +635,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               ),
 
                               const SizedBox(height: 10),
-                              ElevatedButton(
+                              ElevatedButton.icon(
                                 onPressed: () {
                                   Navigator.push(
                                     context,
@@ -652,7 +652,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                child: const Text('Purchase Order'),
+                                icon: const Icon(
+                                  Icons.login,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                label: const Text(
+                                  'Purchase Order',
+                                ),
                               ),
                               SizedBox(
                                 height:

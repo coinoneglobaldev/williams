@@ -633,7 +633,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                               ),
 
                               const SizedBox(height: 10),
-                              ElevatedButton(
+                              ElevatedButton.icon(
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
@@ -646,7 +646,13 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                 ),
-                                child: const Text('Buying Sheet'),
+                                iconAlignment: IconAlignment.end,
+                                icon: const Icon(
+                                  Icons.logout_rounded,
+                                  color: Colors.white,
+                                  size: 35,
+                                ),
+                                label: const Text('Buying Sheet'),
                               ),
                               SizedBox(
                                 height:
@@ -1385,8 +1391,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
               color: WidgetStateProperty.resolveWith<Color>(
                 (Set<WidgetState> states) {
                   return _selectedOrderTableUom[index].id == '19'
-                      ? Colors.yellow
-                      : Colors.green.shade200;
+                      ? Colors.red.shade200
+                      : Colors.blue.shade200;
                 },
               ),
               cells: [
@@ -1458,8 +1464,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       color: WidgetStateProperty.resolveWith<Color>(
         (Set<WidgetState> states) {
           return _selectedOrderTableUom[index].id == '19'
-              ? Colors.yellow
-              : Colors.green.shade200;
+              ? Colors.purpleAccent.shade200
+              : Colors.blue.shade200;
         },
       ),
       cells: [
