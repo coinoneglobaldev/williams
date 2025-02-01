@@ -572,6 +572,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               return;
                             }
                             try {
+                              if (_buyingSheet.isEmpty) {
+                                _selectedOrderTableUom = List.generate(
+                                  1,
+                                  (index) => _oum.first,
+                                );
+                              }
                               int roundedOrderQty =
                                   double.parse(_itemOrderQtyController.text)
                                       .ceil();
