@@ -646,11 +646,13 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                 ),
-                                iconAlignment: IconAlignment.end,
-                                icon: const Icon(
-                                  Icons.logout_rounded,
-                                  color: Colors.white,
-                                  size: 35,
+                                icon: Transform.rotate(
+                                  angle: 3.14159, // 180 degrees in radians (pi)
+                                  child: const Icon(
+                                    Icons.login,
+                                    color: Colors.white,
+                                    size: 35,
+                                  ),
                                 ),
                                 label: const Text('Buying Sheet'),
                               ),

@@ -652,6 +652,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
+                                iconAlignment: IconAlignment.end,
                                 icon: const Icon(
                                   Icons.login,
                                   color: Colors.white,
