@@ -308,15 +308,159 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           ),
                         ),
                         SizedBox(width: 8),
+                        // Expanded(
+                        //   flex: 2,
+                        //   child: TextField(
+                        //     controller: _itemNameController,
+                        //     readOnly: true,
+                        //     decoration: InputDecoration(
+                        //       labelText: 'Name',
+                        //       border: OutlineInputBorder(),
+                        //     ),
+                        //   ),
+                        // ),
                         Expanded(
                           flex: 2,
-                          child: TextField(
-                            controller: _itemNameController,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              labelText: 'Name',
-                              border: OutlineInputBorder(),
-                            ),
+                          child: Autocomplete<ItemListModel>(
+                            optionsBuilder:
+                                (TextEditingValue textEditingValue) {
+                              if (textEditingValue.text == '') {
+                                return const Iterable<ItemListModel>.empty();
+                              }
+                              return _items.where((ItemListModel option) {
+                                return option.name.toLowerCase().contains(
+                                    textEditingValue.text.toLowerCase());
+                              });
+                            },
+                            onSelected: (ItemListModel selection) {
+                              setState(() {
+                                selectedItem = selection;
+                                _codeController.text = selection.code;
+                                _itemNameController.text = selection.name;
+                                _itemConValController.text = selection.conVal;
+                                _itemRateController.text = selection.bulkRate;
+                                _selectedOrderUom = _oum
+                                    .where(
+                                      (e) => e.id == '19',
+                                    )
+                                    .first;
+                              });
+                              _itemOrderQtyController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset:
+                                    _itemOrderQtyController.text.length,
+                              );
+                              _orderQtyFocus.requestFocus();
+                            },
+                            fieldViewBuilder: (BuildContext context,
+                                TextEditingController fieldController,
+                                FocusNode fieldFocusNode,
+                                VoidCallback onFieldSubmitted) {
+                              if (_itemNameController.text !=
+                                  fieldController.text) {
+                                fieldController.text = _itemNameController.text;
+                              }
+
+                              return TextFormField(
+                                controller: fieldController,
+                                focusNode: fieldFocusNode,
+                                decoration: InputDecoration(
+                                  labelText: 'Name',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onChanged: (value) {
+                                  _itemNameController.text = value;
+                                },
+                                onFieldSubmitted: (String value) {
+                                  onFieldSubmitted();
+                                },
+                              );
+                            },
+                            optionsViewBuilder: (BuildContext context,
+                                AutocompleteOnSelected<ItemListModel>
+                                    onSelected,
+                                Iterable<ItemListModel> options) {
+                              return Align(
+                                alignment: Alignment.topLeft,
+                                child: Material(
+                                  color: Colors.transparent,
+                                  elevation: 25,
+                                  child: Container(
+                                    margin: const EdgeInsets.only(top: 5),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: Colors.black,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    constraints: BoxConstraints(
+                                      maxHeight:
+                                          MediaQuery.of(context).size.height *
+                                              0.25,
+                                      maxWidth: 600,
+                                    ),
+                                    child: ListView(
+                                      padding: const EdgeInsets.all(10.0),
+                                      children:
+                                          options.map((ItemListModel option) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            onSelected(option);
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                bottom: BorderSide(
+                                                  color: Colors.grey,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 100,
+                                                  child: Text(
+                                                    option.code,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 400,
+                                                  child: Text(
+                                                    '    ${option.name}',
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 50,
+                                                  child: Text(
+                                                    '    ${option.bulkRate}',
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                         SizedBox(width: 8),
