@@ -24,6 +24,7 @@ String getItemListUrl = '$transactionUrl/FnGetItemList';
 String savePoListUrl = '$transactionUrl/FnSavePoList';
 String getTokenNoUrl = '$transactionUrl/FnGetTokenNo';
 String getBuyingSheetListUrl = '$transactionUrl/FnGetBuyingSheetList';
+String getPoDetails = '$transactionUrl/FnGetPoDetails';
 String getSupplierListUrl = '$webAppGeneralUrl/FnGetSupplierList';
 String getCategoryListUrl = '$webAppGeneralUrl/FnGetCategoryList';
 String checkSelectionUrl = '$transactionUrl/FnChekcSelection';

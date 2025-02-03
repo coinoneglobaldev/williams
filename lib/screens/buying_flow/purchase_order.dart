@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/constants.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
+import 'package:williams/models/po_details_model.dart';
 
 import '../../common/custom_overlay_loading.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
@@ -13,7 +14,6 @@ import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../custom_widgets/util_class.dart';
 import '../../models/PreviousOrderCountModel.dart';
-import '../../models/buying_sheet_list_order_model.dart';
 import '../../models/category_list_model.dart';
 import '../../models/item_list_model.dart';
 import '../../models/supplier_list_model.dart';
@@ -51,7 +51,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   late List<ItemListModel> _items = [];
   late List<PreviousOrderCountModel> _previousOrders;
   bool _isLoading = false;
-  List<BuyingSheetListModel> _buyingSheet = [];
+  List<PoDetailsModel> _purchaseSheet = [];
   ItemListModel? selectedItem;
 
   bool btnIsEnabled = false;
@@ -76,7 +76,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   }
 
   void calculateTotalAmount({
-    required List<BuyingSheetListModel> buyingSheet,
+    required List<PoDetailsModel> buyingSheet,
   }) {
     _totalAmount = buyingSheet
         .asMap()
@@ -570,7 +570,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                               return;
                             }
                             try {
-                              if (_buyingSheet.isEmpty) {
+                              if (_purchaseSheet.isEmpty) {
                                 _selectedOrderTableUom = List.generate(
                                   1,
                                   (index) => _oum.first,
@@ -615,45 +615,47 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                 _rateControllers.insert(0, newRateController);
                                 _selectedOrderTableUom.insert(
                                     0, _selectedOrderUom!);
+                                //TODO: Add item to _purchaseSheet sheet
 
-                                _buyingSheet.insert(
-                                  0,
-                                  BuyingSheetListModel(
-                                    itemId: selectedItem!.id,
-                                    itemName: _itemNameController.text,
-                                    itemCode: selectedItem!.code,
-                                    uom: _selectedOrderUom!.name,
-                                    itemGroup: selectedItem!.itemGroup,
-                                    odrBQty: bulk.abs().ceil().toString(),
-                                    odrEQty: split.abs().ceil().toString(),
-                                    rate: _itemRateController.text,
-                                    boxUomId: _selectedOrderUom!.id,
-                                    uomConVal: _itemConValController.text,
-                                    itmCnt: '0',
-                                    isSelected: true,
-                                    totalQty: double.parse(
-                                      _itemOrderQtyController.text,
-                                    ).abs().ceil().toString(),
-                                    eStockQty:
-                                        selectedItem!.eStockQty.toString(),
-                                    actualNeededQty: actualNeededQty.toString(),
-                                    umoId: _selectedOrderUom!.id,
-                                  ),
-                                );
-                                _selectedCount = _buyingSheet
-                                    .where((item) => item.isSelected)
-                                    .length;
-                                calculateTotalAmount(
-                                  buyingSheet: _buyingSheet,
-                                );
-                                setState(() {});
-                                _codeController.clear();
-                                _itemNameController.clear();
-                                _itemConValController.clear();
-                                _itemOrderQtyController.clear();
-                                _itemRateController.clear();
-                                selectedItem = null;
-                                _selectedOrderUom = null;
+                                //   _purchaseSheet.insert(
+                                //     0,
+                                //     PoDetailsModel(
+                                //       itemId: selectedItem!.id,
+                                //       itemName: _itemNameController.text,
+                                //       itemCode: selectedItem!.code,
+                                //       uom: _selectedOrderUom!.name,
+                                //       itemGroup: selectedItem!.itemGroup,
+                                //       odrBQty: bulk.abs().ceil().toString(),
+                                //       odrEQty: split.abs().ceil().toString(),
+                                //       rate: _itemRateController.text,
+                                //       boxUomId: _selectedOrderUom!.id,
+                                //       uomConVal: _itemConValController.text,
+                                //       itmCnt: '0',
+                                //       isSelected: true,
+                                //       totalQty: double.parse(
+                                //         _itemOrderQtyController.text,
+                                //       ).abs().ceil().toString(),
+                                //       eStockQty:
+                                //           selectedItem!.eStockQty.toString(),
+                                //       actualNeededQty: actualNeededQty.toString(),
+                                //       umoId: _selectedOrderUom!.id,
+                                //     ),
+                                //   );
+                                //   _selectedCount = _purchaseSheet
+                                //       .where((item) => item.isSelected)
+                                //       .length;
+                                //   calculateTotalAmount(
+                                //     buyingSheet: _purchaseSheet,
+                                //   );
+                                //   setState(() {});
+                                //   _codeController.clear();
+                                //   _itemNameController.clear();
+                                //   _itemConValController.clear();
+                                //   _itemOrderQtyController.clear();
+                                //   _itemRateController.clear();
+                                //   selectedItem = null;
+                                //   _selectedOrderUom = null;
+                                // });
                               });
                             } catch (e) {
                               print('Error adding item to buying sheet: $e');
@@ -672,9 +674,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                       children: [
                         Expanded(
                           flex: 5,
-                          child: _buyingSheet.isEmpty
+                          child: _purchaseSheet.isEmpty
                               ? SizedBox()
-                              : _buyingSheetTable(data: _buyingSheet),
+                              : _buyingSheetTable(data: _purchaseSheet),
                         ),
                         SizedBox(
                           width: 10,
@@ -824,7 +826,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                       Expanded(
                         flex: 2,
                         child: Text(
-                          'Total Items: ${_buyingSheet.length}',
+                          'Total Items: ${_purchaseSheet.length}',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -877,7 +879,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                         flex: 3,
                         child: SizedBox(
                           height: 50,
-                          child: _buyingSheet.isEmpty
+                          child: _purchaseSheet.isEmpty
                               ? SizedBox()
                               : _buildSaveButton(),
                         ),
@@ -942,6 +944,47 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             ),
           ),
           const SizedBox(width: 10),
+          Flexible(
+            flex: 4,
+            child: ButtonTheme(
+              alignedDropdown: true,
+              child: DropdownButtonFormField<SupplierListModel>(
+                isExpanded: true,
+                decoration: InputDecoration(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: _suppliers
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e.name),
+                      ),
+                    )
+                    .toList(),
+                value: _selectedSupplier,
+                hint: const Text('Supplier'),
+                onChanged: (SupplierListModel? value) {
+                  setState(() {
+                    _selectedSupplier = value;
+                  });
+                  try {
+                    getPurchaseList(prmFlag: "LAST").whenComplete(() {
+                      _selectAll = false;
+                      _selectedCount = 0;
+                      _totalAmount = 0.0;
+                      setState(() {});
+                    });
+                  } catch (e) {
+                    Util.customErrorSnackBar(context, e.toString());
+                  }
+                },
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1023,27 +1066,19 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       _oum = oum;
       _previousOrders = previousOrder;
 
-      await getBuyingSheetList(
-        prmFrmDate: _formatDate(DateTime.now()).toString(),
-        prmToDate:
-            _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
-        prmCategory: '',
-        prmSupplier: '',
-        prmPreviousOrder: '',
-      );
-
-      _orderQtyControllers = List.generate(
-        _buyingSheet.length,
-        (index) {
-          double result = calculateRoundedValue(
-            _buyingSheet[index].odrBQty,
-            _buyingSheet[index].odrEQty,
-            _buyingSheet[index].uomConVal,
-          );
-          _buyingSheet[index].totalQty = result.toString();
-          return TextEditingController(text: result.toString());
-        },
-      );
+      getPurchaseList(prmFlag: "LAST");
+      // _orderQtyControllers = List.generate(
+      //   _purchaseSheet.length,
+      //   (index) {
+      //     double result = calculateRoundedValue(
+      //       _purchaseSheet[index].odrBQty,
+      //       _purchaseSheet[index].odrEQty,
+      //       _purchaseSheet[index].uomConVal,
+      //     );
+      //     _purchaseSheet[index].totalQty = result.toString();
+      //     return TextEditingController(text: result.toString());
+      //   },
+      // );
 
       // _selectedOrderTableUom = List.generate(
       //   _buyingSheet.length,
@@ -1054,8 +1089,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       //   (index) => _oum.first,
       // ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
       _rateControllers = List.generate(
-        _buyingSheet.length,
-        (index) => TextEditingController(text: _buyingSheet[index].rate),
+        _purchaseSheet.length,
+        (index) => TextEditingController(text: _purchaseSheet[index].rate),
       );
       setState(() {
         _isLoading = false;
@@ -1155,12 +1190,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
 
 //todo: check the logic
 
-  Future getBuyingSheetList({
-    required String prmFrmDate,
-    required String prmToDate,
-    required String prmCategory,
-    required String prmSupplier,
-    required String prmPreviousOrder,
+  Future getPurchaseList({
+    required String prmFlag,
   }) async {
     try {
       showDialog(
@@ -1176,122 +1207,46 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       String prmBrId = prefs.getString('brId')!;
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
-      final response = await ApiServices().fnGetBuyingSheetList(
-        prmFrmDate: prmFrmDate,
-        prmToDate: prmToDate,
+      final response = await ApiServices().fnGetPurchaseList(
         prmCmpId: prmCmpId,
         prmBrId: prmBrId,
         prmFaId: prmFaId,
         prmUId: prmUId,
-        prmItmGrpId: prmCategory,
-        prmAccId: prmSupplier,
-        prmPrvOrderCount: prmPreviousOrder,
+        prmFlag: prmFlag,
       );
       if (response.isNotEmpty) {
-        List<BuyingSheetListModel> _tempList = response;
-
-        List.generate(_tempList.length, (index) {
-          try {
-            double actualNeededQty =
-                double.parse(_tempList[index].eStockQty.toString()) -
-                    double.parse(_tempList[index].odrEQty.toString());
-
-            _tempList[index].actualNeededQty = actualNeededQty.abs().toString();
-            return _tempList[index];
-          } catch (e) {
-            print('Error calculating actual needed qty: $e');
-            return _tempList[index];
-          }
-        });
-
-        List.generate(_tempList.length, (index) {
-          try {
-            if (double.parse(_tempList[index].odrEQty) > 1 &&
-                double.parse(_tempList[index].uomConVal.toString()) == 1) {
-              final double odrEQty = double.parse(_tempList[index].eStockQty) -
-                  double.parse(_tempList[index].odrEQty);
-              _tempList[index].odrEQty = odrEQty.abs().ceil().toString();
-              log('odrEQty: $odrEQty');
-              return _tempList[index];
-            } else if (double.parse(_tempList[index].uomConVal.toString()) ==
-                1) {
-              return _tempList[index];
-            } else {
-              double split =
-                  double.parse(_tempList[index].actualNeededQty.toString()) %
-                      double.parse(_tempList[index].uomConVal.toString());
-              _tempList[index].odrEQty = split.abs().ceil().toString();
-              return _tempList[index];
-            }
-          } catch (e) {
-            print('Error calculating split: $e');
-            return _tempList[index];
-          }
-        });
-
-        List.generate(_tempList.length, (index) {
-          try {
-            if (double.parse(_tempList[index].uomConVal.toString()) == 1) {
-              return _tempList[index].odrBQty = '0';
-            } else {
-              double semiBulk = double.parse(
-                      _tempList[index].actualNeededQty.toString()) -
-                  (double.parse(_tempList[index].actualNeededQty.toString()) %
-                      double.parse(_tempList[index].uomConVal.toString()));
-              double bulk = semiBulk.abs() /
-                  double.parse(_tempList[index].uomConVal.toString());
-
-              _tempList[index].odrBQty = bulk.abs().ceil().toString();
-              return _tempList[index];
-            }
-          } catch (e) {
-            print('Error calculating bulk: $e');
-            return _tempList[index];
-          }
-        });
-        _buyingSheet = _tempList;
+        _purchaseSheet = response;
         _selectedOrderTableUom = List.generate(
-          _buyingSheet.length,
+          _purchaseSheet.length,
           (index) => _oum.first,
         );
         _orderQtyControllers = List.generate(
-          _buyingSheet.length,
+          _purchaseSheet.length,
           (index) {
-            double result = calculateRoundedValue(_buyingSheet[index].odrBQty,
-                _buyingSheet[index].odrEQty, _buyingSheet[index].uomConVal);
-            _buyingSheet[index].totalQty = result.toString();
+            double result = _purchaseSheet[index].qty.isEmpty
+                ? 0.0
+                : double.parse(_purchaseSheet[index].qty);
+            _purchaseSheet[index].totalQty = result.toString();
             return TextEditingController(text: result.toString());
           },
         );
 
         _selectedOrderTableUom = List.generate(
-          _buyingSheet.length,
+          _purchaseSheet.length,
           (index) {
-            if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
-                double.parse(_buyingSheet[index].odrEQty) > 0) {
-              _buyingSheet[index].umoId = '19';
-              return _selectedOrderTableUom[index] =
-                  _oum.where((e) => e.id == '19').first;
-            } else if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
-                double.parse(_buyingSheet[index].odrEQty) == 0) {
-              _buyingSheet[index].umoId = '19';
-              return _selectedOrderTableUom[index] =
-                  _oum.where((e) => e.id == '19').first;
-            } else if (double.parse(_buyingSheet[index].odrEQty) > 0 &&
-                double.parse(_buyingSheet[index].odrBQty) == 0) {
-              _buyingSheet[index].umoId = '21';
-              return _selectedOrderTableUom[index] =
-                  _oum.where((e) => e.id == '21').first;
+            if (_purchaseSheet[index].packId == '19') {
+              return _oum.first;
             } else {
-              _buyingSheet[index].umoId = '19';
-              return _selectedOrderTableUom[index] = _oum.first;
+              return _oum
+                  .where((e) => e.id == _purchaseSheet[index].boxUomId)
+                  .first;
             }
           },
         ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
 
         _rateControllers = List.generate(
-          _buyingSheet.length,
-          (index) => TextEditingController(text: _buyingSheet[index].rate),
+          _purchaseSheet.length,
+          (index) => TextEditingController(text: _purchaseSheet[index].rate),
         );
         setState(() {});
         if (!mounted) return;
@@ -1300,7 +1255,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         throw ('No Items Found');
       }
     } catch (e) {
-      _buyingSheet = [];
+      _purchaseSheet = [];
       Navigator.pop(context);
       debugPrint(e.toString());
       if (!mounted) return;
@@ -1344,7 +1299,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
     }
   }
 
-  Widget _buyingSheetTable({required List<BuyingSheetListModel> data}) {
+  Widget _buyingSheetTable({required List<PoDetailsModel> data}) {
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
@@ -1510,15 +1465,16 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                   onPressed: () {
                     setState(() {
                       _selectAll = !_selectAll;
-                      for (var item in _buyingSheet) {
+                      for (var item in _purchaseSheet) {
                         item.isSelected = _selectAll;
                       }
-                      _selectedCount =
-                          _buyingSheet.where((item) => item.isSelected).length;
+                      _selectedCount = _purchaseSheet
+                          .where((item) => item.isSelected)
+                          .length;
 
                       if (_selectAll) {
                         calculateTotalAmount(
-                          buyingSheet: _buyingSheet,
+                          buyingSheet: _purchaseSheet,
                         );
                       }
                     });
@@ -1566,9 +1522,10 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                     ),
                   ),
                 ),
-                _buildDataCell(item.uomConVal),
+                _buildDataCell(item.conVal),
                 _buildDataCell(item.odrBQty),
-                _buildDataCell(item.odrEQty),
+                _buildDataCell(item
+                    .shopId), //TODO: Remove this line after adding UOM in BuyingSheetListModel
                 _buildBulkSplitDropdownCell(item, index),
                 _buildEditableDataCell(_orderQtyControllers[index], index),
                 _buildEditTextRateDataCell(_rateControllers[index], index),
@@ -1578,59 +1535,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           }).toList(),
         ),
       ),
-    );
-  }
-
-  List<DataColumn> _getTableColumns() {
-    return [
-      'Code',
-      'Name',
-      'Con Val',
-      'Short \nBulk',
-      'Short \nSplit',
-      'Order \nUOM',
-      'Order Qty',
-      'Rate',
-      'Select'
-    ].map(_buildDataColumn).toList();
-  }
-
-  DataColumn _buildDataColumn(String label) {
-    return DataColumn(
-      label: Center(
-        child: Text(
-          label,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-
-  DataRow _buildDataRow(BuyingSheetListModel item, int index) {
-    return DataRow(
-      color: WidgetStateProperty.resolveWith<Color>(
-        (Set<WidgetState> states) {
-          return _selectedOrderTableUom[index].id == '19'
-              ? Colors.purpleAccent.shade200
-              : Colors.blue.shade200;
-        },
-      ),
-      cells: [
-        _buildDataCell(item.itemCode),
-        _buildDataCell(item.itemName),
-        _buildDataCell(item.uomConVal),
-        _buildDataCell(item.odrBQty),
-        _buildDataCell(item.odrEQty),
-        _buildBulkSplitDropdownCell(item, index),
-        _buildEditableDataCell(_orderQtyControllers[index], index),
-        _buildEditTextRateDataCell(_rateControllers[index], index),
-        _buildCheckboxDataCell(item),
-      ],
     );
   }
 
@@ -1656,30 +1560,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
     );
   }
 
-  DataCell _buildNameCell(
-    String? text,
-  ) {
-    return DataCell(
-      SizedBox(
-        height: 20,
-        width: MediaQuery.of(context).size.width * 0.3,
-        child: Center(
-          child: Text(
-            text ?? '',
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-          ),
-        ),
-      ),
-    );
-  }
-
-  DataCell _buildBulkSplitDropdownCell(BuyingSheetListModel item, int index) {
+  DataCell _buildBulkSplitDropdownCell(PoDetailsModel item, int index) {
     return DataCell(
       Center(
         child: ButtonTheme(
@@ -1698,12 +1579,12 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                 .toList(),
             value: _selectedOrderTableUom[index],
             hint: const Text('Order UOM'),
-            onChanged: double.parse(item.uomConVal) == 1
+            onChanged: double.parse(item.conVal) == 1
                 ? null
                 : (UomAndPackListModel? value) {
                     setState(() {
                       _selectedOrderTableUom[index] = value!;
-                      _buyingSheet[index].umoId = value.id;
+                      _purchaseSheet[index].umoId = value.id;
                     });
                     log('Order UOM: ${_selectedOrderTableUom[index].name}');
                   },
@@ -1764,13 +1645,14 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                   },
                   onChanged: (value) {
                     controller.text = value;
-                    _buyingSheet[index].totalQty = value.isEmpty ? '0' : value;
+                    _purchaseSheet[index].totalQty =
+                        value.isEmpty ? '0' : value;
                     log('Order UOM: $value');
-                    log('Order Qty: ${_buyingSheet[index].totalQty}');
-                    print(_buyingSheet[index].totalQty);
+                    log('Order Qty: ${_purchaseSheet[index].totalQty}');
+                    print(_purchaseSheet[index].totalQty);
                     print(value);
                     calculateTotalAmount(
-                      buyingSheet: _buyingSheet,
+                      buyingSheet: _purchaseSheet,
                     );
                     setState(() {});
                   },
@@ -1829,10 +1711,10 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             },
             keyboardType: TextInputType.number,
             onChanged: (value) {
-              _buyingSheet[index].rate = value;
+              _purchaseSheet[index].rate = value;
 
               calculateTotalAmount(
-                buyingSheet: _buyingSheet,
+                buyingSheet: _purchaseSheet,
               );
 
               setState(() {});
@@ -1851,9 +1733,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       double currentValue =
           double.parse(controller.text.isEmpty ? '0' : controller.text);
       controller.text = (currentValue + 1).toString();
-      _buyingSheet[index].totalQty = (currentValue + 1).toString();
+      _purchaseSheet[index].totalQty = (currentValue + 1).toString();
       calculateTotalAmount(
-        buyingSheet: _buyingSheet,
+        buyingSheet: _purchaseSheet,
       );
       setState(() {});
     } catch (e) {
@@ -1869,11 +1751,11 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
 
       double currentValue = double.parse(controller.text);
       if (currentValue > 0) {
-        _buyingSheet[index].totalQty = (currentValue - 1).toString();
+        _purchaseSheet[index].totalQty = (currentValue - 1).toString();
         controller.text = (currentValue - 1).toString();
       }
       calculateTotalAmount(
-        buyingSheet: _buyingSheet,
+        buyingSheet: _purchaseSheet,
       );
       setState(() {});
     } catch (e) {
@@ -1881,7 +1763,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
     }
   }
 
-  DataCell _buildCheckboxDataCell(BuyingSheetListModel item) {
+  DataCell _buildCheckboxDataCell(PoDetailsModel item) {
     return DataCell(
       Center(
         child: Transform.scale(
@@ -1939,8 +1821,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         prmBrId: prmBrId,
         prmFaId: prmFaId,
       );
-      List<BuyingSheetListModel> selectedItems = [];
-      for (var item in _buyingSheet) {
+      List<PoDetailsModel> selectedItems = [];
+      for (var item in _purchaseSheet) {
         if (item.isSelected) {
           selectedItems.add(item);
         }
@@ -1967,7 +1849,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           prmTaxId: '',
           prmPackId: selectedItems[i].umoId,
           prmNoPacks: selectedItems[i].totalQty,
-          prmConVal: selectedItems[i].uomConVal,
+          prmConVal: selectedItems[i].conVal, //TODO: Add conVal
           prmCmpId: prmCmpId,
           prmBrId: prmBrId,
           prmFaId: prmFaId,
@@ -1985,7 +1867,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       Navigator.pop(context);
 
       setState(() {
-        _buyingSheet.clear();
+        _purchaseSheet.clear();
         _billNoController.clear();
         _selectedCategory = null;
         _selectedSupplier = null;
@@ -1993,14 +1875,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         _selectedCount = 0;
         _totalAmount = 0.0;
       });
-      await getBuyingSheetList(
-        prmFrmDate: _formatDate(DateTime.now()).toString(),
-        prmToDate:
-            _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
-        prmCategory: '',
-        prmSupplier: '',
-        prmPreviousOrder: '',
-      );
+      await getPurchaseList(prmFlag: "LAST");
       Util.customSuccessSnackBar(
         context,
         'Order placed successfully!',
@@ -2011,12 +1886,12 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
     }
   }
 
-  void _handleItemSelection(BuyingSheetListModel item, bool? value) {
+  void _handleItemSelection(PoDetailsModel item, bool? value) {
     item.isSelected = value ?? false;
-    _selectAll = _buyingSheet.every((item) => item.isSelected);
-    _selectedCount = _buyingSheet.where((item) => item.isSelected).length;
+    _selectAll = _purchaseSheet.every((item) => item.isSelected);
+    _selectedCount = _purchaseSheet.where((item) => item.isSelected).length;
     calculateTotalAmount(
-      buyingSheet: _buyingSheet,
+      buyingSheet: _purchaseSheet,
     );
     setState(() {});
   }
@@ -2094,16 +1969,16 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           }
           if (isQtyCtrlSelected && !isBillNoSelected) {
             setState(() {
-              _buyingSheet[selectedRowIndex].totalQty = activeController.text;
+              _purchaseSheet[selectedRowIndex].totalQty = activeController.text;
               calculateTotalAmount(
-                buyingSheet: _buyingSheet,
+                buyingSheet: _purchaseSheet,
               );
             });
           } else if (!isQtyCtrlSelected && !isBillNoSelected) {
             setState(() {
-              _buyingSheet[selectedRowIndex].rate = activeController.text;
+              _purchaseSheet[selectedRowIndex].rate = activeController.text;
               calculateTotalAmount(
-                buyingSheet: _buyingSheet,
+                buyingSheet: _purchaseSheet,
               );
             });
           }

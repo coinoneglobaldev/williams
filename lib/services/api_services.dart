@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:williams/models/po_details_model.dart';
 
 import '../constants.dart';
 import '../models/PreviousOrderCountModel.dart';
@@ -719,6 +720,42 @@ class ApiServices {
         print('fnUploadFiles called and failed $e');
       }
       throw e.toString();
+    }
+  }
+
+  Future<List<PoDetailsModel>> fnGetPurchaseList({
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUId,
+    required String prmFlag,
+  }) async {
+    String uri = "$getPoDetails?PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
+        "PrmFaId=$prmFaId&PrmUId=$prmUId&PrmFlag=$prmFlag";
+
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList.map((json) => PoDetailsModel.fromJson(json)).toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnGetBuyingSheetList: $error');
+      }
+      rethrow;
     }
   }
 }
