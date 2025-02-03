@@ -44,6 +44,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   final TextEditingController _itemRateController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
   final TextEditingController _billNoController = TextEditingController();
+  final TextEditingController _itemRefController = TextEditingController();
   bool _selectAll = false;
   late List<CategoryListModel> _categories = [];
   late List<SupplierListModel> _suppliers = [];
@@ -53,6 +54,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   bool _isLoading = false;
   List<PoDetailsModel> _purchaseSheet = [];
   ItemListModel? selectedItem;
+  late String slectedSupplier;
 
   bool btnIsEnabled = false;
 
@@ -617,45 +619,113 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                     0, _selectedOrderUom!);
                                 //TODO: Add item to _purchaseSheet sheet
 
-                                //   _purchaseSheet.insert(
-                                //     0,
-                                //     PoDetailsModel(
-                                //       itemId: selectedItem!.id,
-                                //       itemName: _itemNameController.text,
-                                //       itemCode: selectedItem!.code,
-                                //       uom: _selectedOrderUom!.name,
-                                //       itemGroup: selectedItem!.itemGroup,
-                                //       odrBQty: bulk.abs().ceil().toString(),
-                                //       odrEQty: split.abs().ceil().toString(),
-                                //       rate: _itemRateController.text,
-                                //       boxUomId: _selectedOrderUom!.id,
-                                //       uomConVal: _itemConValController.text,
-                                //       itmCnt: '0',
-                                //       isSelected: true,
-                                //       totalQty: double.parse(
-                                //         _itemOrderQtyController.text,
-                                //       ).abs().ceil().toString(),
-                                //       eStockQty:
-                                //           selectedItem!.eStockQty.toString(),
-                                //       actualNeededQty: actualNeededQty.toString(),
-                                //       umoId: _selectedOrderUom!.id,
-                                //     ),
-                                //   );
-                                //   _selectedCount = _purchaseSheet
-                                //       .where((item) => item.isSelected)
-                                //       .length;
-                                //   calculateTotalAmount(
-                                //     buyingSheet: _purchaseSheet,
-                                //   );
-                                //   setState(() {});
-                                //   _codeController.clear();
-                                //   _itemNameController.clear();
-                                //   _itemConValController.clear();
-                                //   _itemOrderQtyController.clear();
-                                //   _itemRateController.clear();
-                                //   selectedItem = null;
-                                //   _selectedOrderUom = null;
-                                // });
+                                _purchaseSheet.insert(
+                                    0,
+                                    PoDetailsModel(
+                                      itemId: selectedItem!.id,
+                                      itemName: _itemNameController.text,
+                                      itemCode: selectedItem!.code,
+                                      accountCr: "",
+                                      accountDr: "",
+                                      active: "",
+                                      addChargeId: "",
+                                      addCharges: "",
+                                      addPer: "",
+                                      amount: "",
+                                      autoId: "",
+                                      balQty: "",
+                                      batchNo: "",
+                                      branchId: "",
+                                      cessAccId: "",
+                                      cessAccName: "",
+                                      cessId: "",
+                                      cessName: "",
+                                      cessValue: "",
+                                      comm: "",
+                                      commission: "",
+                                      companyId: "",
+                                      conVal: _itemConValController.text,
+                                      counrtry: "",
+                                      country: "",
+                                      crAccGroup: "",
+                                      crCode: "",
+                                      crDesc: "",
+                                      crGroupId: "",
+                                      crId: "",
+                                      discount: "",
+                                      drAccGroup: "",
+                                      drCode: "",
+                                      drDesc: "",
+                                      drGroupId: "",
+                                      drId: "",
+                                      itemGroup: selectedItem!.itemGroup,
+                                      faId: "",
+                                      gradeId: "",
+                                      gradeName: "",
+                                      id: "",
+                                      invoiceId: "",
+                                      isBefore: "",
+                                      isPercentage: "",
+                                      isTaxInclusive: "",
+                                      itemGroupId: "",
+                                      itmGroup: "",
+                                      itmGrpId: "",
+                                      margin: "",
+                                      mrp: "",
+                                      numberofPacks: "",
+                                      packId: _selectedOrderUom!.id,
+                                      packName: _selectedOrderUom!.name,
+                                      price: "",
+                                      printUom: "",
+                                      puQty: "",
+                                      puRate: "",
+                                      puTotal: "",
+                                      qty: _itemOrderQtyController.text,
+                                      refNo: _purchaseSheet.first.crId,
+                                      remarks: "",
+                                      sellingPrc: "",
+                                      shopId: "",
+                                      shopName: "",
+                                      slQty: "",
+                                      specVal: "",
+                                      tType: "",
+                                      taxAccId: "",
+                                      taxAccName: "",
+                                      taxId: "",
+                                      taxName: "",
+                                      taxValue: "",
+                                      tokenNo: "",
+                                      totalAmt: "",
+                                      trDate: "",
+                                      uomId: _selectedOrderUom!.id,
+                                      uomName: "",
+                                      uomSplitId: "",
+                                      updateDate: "",
+                                      userId: "",
+                                      boxUomId: _selectedOrderUom!.id,
+                                      isSelected: true,
+                                      totalQty: double.parse(
+                                        _itemOrderQtyController.text,
+                                      ).abs().ceil().toString(),
+                                      umoId: _selectedOrderUom!.id,
+                                      prvBoxQty: "",
+                                      prvQty: "",
+                                      rate: _itemRateController.text,
+                                    ));
+                                _selectedCount = _purchaseSheet
+                                    .where((item) => item.isSelected)
+                                    .length;
+                                calculateTotalAmount(
+                                  buyingSheet: _purchaseSheet,
+                                );
+                                setState(() {});
+                                _codeController.clear();
+                                _itemNameController.clear();
+                                _itemConValController.clear();
+                                _itemOrderQtyController.clear();
+                                _itemRateController.clear();
+                                selectedItem = null;
+                                _selectedOrderUom = null;
                               });
                             } catch (e) {
                               print('Error adding item to buying sheet: $e');
@@ -822,9 +892,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const SizedBox(height: 10),
                       Expanded(
-                        flex: 2,
+                        flex: 1,
                         child: Text(
                           'Total Items: ${_purchaseSheet.length}',
                           style: const TextStyle(
@@ -833,50 +902,28 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                           ),
                         ),
                       ),
-                      Expanded(
-                        flex: 4,
-                        child: Text(
-                          "Date: ${selectedDateRange != null ? _formatDate(selectedDateRange!.start) + ' - ' + _formatDate(selectedDateRange!.end) : _formatDate(DateTime.now()).toString() + ' - ' + _formatDate(DateTime.now().add(Duration(days: 1))).toString()}",
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          'Total Amount : £ ${_totalAmount.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                      // Expanded(
+                      //   flex: 4,
+                      //   child: Text(
+                      //     "Date: ${selectedDateRange != null ? _formatDate(selectedDateRange!.start) + ' - ' + _formatDate(selectedDateRange!.end) : _formatDate(DateTime.now()).toString() + ' - ' + _formatDate(DateTime.now().add(Duration(days: 1))).toString()}",
+                      //     style: const TextStyle(
+                      //       fontSize: 20,
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
+                      // Expanded(
+                      //   flex: 3,
+                      //   child: Text(
+                      //     'Total Amount : £ ${_totalAmount.toStringAsFixed(2)}',
+                      //     style: const TextStyle(
+                      //       fontSize: 20,
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
                       Expanded(
                         flex: 1,
-                        child: TextField(
-                          controller: _billNoController,
-                          readOnly: true,
-                          onTap: () {
-                            _billNoController.selection = TextSelection(
-                              baseOffset: 0,
-                              extentOffset: _billNoController.text.length,
-                            );
-                            setState(() {
-                              isBillNoSelected = true;
-                              isQtyCtrlSelected = false;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'Bill No.',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        flex: 3,
                         child: SizedBox(
                           height: 50,
                           child: _purchaseSheet.isEmpty
@@ -884,6 +931,38 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                               : _buildSaveButton(),
                         ),
                       ),
+                      const SizedBox(width: 20),
+
+                      Expanded(
+                        flex: 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              width: 100,
+                              child: TextField(
+                                controller: _billNoController,
+                                readOnly: true,
+                                onTap: () {
+                                  _billNoController.selection = TextSelection(
+                                    baseOffset: 0,
+                                    extentOffset: _billNoController.text.length,
+                                  );
+                                  setState(() {
+                                    isBillNoSelected = true;
+                                    isQtyCtrlSelected = false;
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  labelText: 'Bill No.',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 20),
                     ],
                   ),
                 ],
@@ -899,7 +978,14 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           Expanded(
             flex: 3,
             child: ElevatedButton(
-              onPressed: () async {},
+              onPressed: () async {
+                getPurchaseList(prmFlag: "PREVIOUS").whenComplete(() {
+                  _selectAll = false;
+                  _selectedCount = 0;
+                  _totalAmount = 0.0;
+                  setState(() {});
+                });
+              },
               // onPressed: _handleSearch,
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
@@ -915,9 +1001,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           ),
           const SizedBox(width: 10),
           Expanded(
-            flex: 4,
+            flex: 2,
             child: TextField(
-              controller: _itemNameController,
+              controller: _itemRefController,
               readOnly: true,
               decoration: InputDecoration(
                 labelText: 'Reference No.',
@@ -929,7 +1015,14 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           Expanded(
             flex: 3,
             child: ElevatedButton(
-              onPressed: () async {},
+              onPressed: () async {
+                getPurchaseList(prmFlag: "NEXT").whenComplete(() {
+                  _selectAll = false;
+                  _selectedCount = 0;
+                  _totalAmount = 0.0;
+                  setState(() {});
+                });
+              },
               // onPressed: _handleSearch,
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
@@ -1216,6 +1309,12 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       );
       if (response.isNotEmpty) {
         _purchaseSheet = response;
+        _itemRefController.text = _purchaseSheet[0].crId;
+        // _suppliers.contains(_purchaseSheet[0].accountCr);
+        _selectedSupplier = _suppliers
+            .where((e) => e.name == _purchaseSheet[0].accountCr)
+            .first;
+        ;
         _selectedOrderTableUom = List.generate(
           _purchaseSheet.length,
           (index) => _oum.first,
@@ -1365,51 +1464,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             const DataColumn2(
               label: Center(
                 child: Text(
-                  'Unit \n/Box',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              size: ColumnSize.L,
-              fixedWidth: 60,
-            ),
-            const DataColumn2(
-              label: Center(
-                child: Text(
-                  'Short \nBulk',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              size: ColumnSize.L,
-              fixedWidth: 60,
-            ),
-            const DataColumn2(
-              label: Center(
-                child: Text(
-                  'Short \nSplit',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              size: ColumnSize.L,
-              fixedWidth: 60,
-            ),
-            const DataColumn2(
-              label: Center(
-                child: Text(
                   'Order \nUOM',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -1421,6 +1475,21 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
               ),
               size: ColumnSize.L,
               fixedWidth: 140,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Unit \n/Box',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
             ),
             const DataColumn2(
               label: Center(
@@ -1522,11 +1591,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                     ),
                   ),
                 ),
-                _buildDataCell(item.conVal),
-                _buildDataCell(item.odrBQty),
-                _buildDataCell(item
-                    .shopId), //TODO: Remove this line after adding UOM in BuyingSheetListModel
                 _buildBulkSplitDropdownCell(item, index),
+                _buildDataCell(item.conVal),
                 _buildEditableDataCell(_orderQtyControllers[index], index),
                 _buildEditTextRateDataCell(_rateControllers[index], index),
                 _buildCheckboxDataCell(item),

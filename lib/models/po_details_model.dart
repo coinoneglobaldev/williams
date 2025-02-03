@@ -98,8 +98,7 @@ class PoDetailsModel {
   String addPer;
   String puRate;
   String puTotal;
-  String odrBQty;
-  String actualNeededQty;
+
   String umoId;
 
   PoDetailsModel({
@@ -189,8 +188,6 @@ class PoDetailsModel {
     required this.addPer,
     required this.puRate,
     required this.puTotal,
-    this.odrBQty = '0',
-    this.actualNeededQty = '0',
     this.umoId = '0',
   });
 
