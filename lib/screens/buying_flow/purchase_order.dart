@@ -979,7 +979,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             flex: 3,
             child: ElevatedButton(
               onPressed: () async {
-                getPurchaseList(prmFlag: "PREVIOUS").whenComplete(() {
+                getPurchaseList(
+                        prmFlag: "PREVIOUS", refNo: _itemRefController.text)
+                    .whenComplete(() {
                   _selectAll = false;
                   _selectedCount = 0;
                   _totalAmount = 0.0;
@@ -1016,7 +1018,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             flex: 3,
             child: ElevatedButton(
               onPressed: () async {
-                getPurchaseList(prmFlag: "NEXT").whenComplete(() {
+                getPurchaseList(prmFlag: "NEXT", refNo: _itemRefController.text)
+                    .whenComplete(() {
                   _selectAll = false;
                   _selectedCount = 0;
                   _totalAmount = 0.0;
@@ -1065,7 +1068,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                     _selectedSupplier = value;
                   });
                   try {
-                    getPurchaseList(prmFlag: "LAST").whenComplete(() {
+                    getPurchaseList(prmFlag: "LAST", refNo: "0")
+                        .whenComplete(() {
                       _selectAll = false;
                       _selectedCount = 0;
                       _totalAmount = 0.0;
@@ -1159,7 +1163,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       _oum = oum;
       _previousOrders = previousOrder;
 
-      getPurchaseList(prmFlag: "LAST");
+      getPurchaseList(prmFlag: "LAST", refNo: "0");
       // _orderQtyControllers = List.generate(
       //   _purchaseSheet.length,
       //   (index) {
@@ -1254,7 +1258,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String prmCmpId = prefs.getString('cmpId')!;
       final response =
-          await ApiServices().getSupplierList(prmCompanyId: prmCmpId);
+          await ApiServices().getSupplierAllList(prmCompanyId: prmCmpId);
       if (response.isNotEmpty) {
         return response;
       } else {
@@ -1285,6 +1289,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
 
   Future getPurchaseList({
     required String prmFlag,
+    required String refNo,
   }) async {
     try {
       showDialog(
@@ -1301,20 +1306,20 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
       final response = await ApiServices().fnGetPurchaseList(
-        prmCmpId: prmCmpId,
-        prmBrId: prmBrId,
-        prmFaId: prmFaId,
-        prmUId: prmUId,
-        prmFlag: prmFlag,
-      );
+          prmCmpId: prmCmpId,
+          prmBrId: prmBrId,
+          prmFaId: prmFaId,
+          prmUId: prmUId,
+          prmFlag: prmFlag,
+          prmCurntRefNo: refNo);
       if (response.isNotEmpty) {
         _purchaseSheet = response;
-        _itemRefController.text = _purchaseSheet[0].crId;
+        _itemRefController.text = _purchaseSheet[0].refNo;
         // _suppliers.contains(_purchaseSheet[0].accountCr);
         _selectedSupplier = _suppliers
             .where((e) => e.name == _purchaseSheet[0].accountCr)
             .first;
-        ;
+
         _selectedOrderTableUom = List.generate(
           _purchaseSheet.length,
           (index) => _oum.first,
@@ -1333,13 +1338,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         _selectedOrderTableUom = List.generate(
           _purchaseSheet.length,
           (index) {
-            if (_purchaseSheet[index].packId == '19') {
-              return _oum.first;
-            } else {
-              return _oum
-                  .where((e) => e.id == _purchaseSheet[index].boxUomId)
-                  .first;
-            }
+            return _oum
+                .where((e) => e.id == _purchaseSheet[index].packId)
+                .first;
           },
         ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
 
@@ -1941,7 +1942,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         _selectedCount = 0;
         _totalAmount = 0.0;
       });
-      await getPurchaseList(prmFlag: "LAST");
+      await getPurchaseList(prmFlag: "LAST", refNo: '0');
       Util.customSuccessSnackBar(
         context,
         'Order placed successfully!',

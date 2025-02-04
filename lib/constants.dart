@@ -6,7 +6,7 @@ Color secondaryColor = Colors.grey.shade800;
 Color buttonColor = Colors.blue.shade900;
 Color textColor = Colors.white;
 
-const String appVersion = '1.3.5';
+const String appVersion = '1.3.6';
 
 String baseUrl = 'https://sysware-lasovrana.co.uk/lasov';
 
@@ -26,6 +26,7 @@ String getTokenNoUrl = '$transactionUrl/FnGetTokenNo';
 String getBuyingSheetListUrl = '$transactionUrl/FnGetBuyingSheetList';
 String getPoDetails = '$transactionUrl/FnGetPoDetails';
 String getSupplierListUrl = '$webAppGeneralUrl/FnGetSupplierList';
+String getSupplierAllListUrl = '$webAppGeneralUrl/FnGetSupplierAllList';
 String getCategoryListUrl = '$webAppGeneralUrl/FnGetCategoryList';
 String checkSelectionUrl = '$transactionUrl/FnChekcSelection';
 String getPreviousOrderCounts = '$transactionUrl/FnGetPreviousOrderCount';

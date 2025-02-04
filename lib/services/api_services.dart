@@ -122,6 +122,37 @@ class ApiServices {
     }
   }
 
+  Future<List<SupplierListModel>> getSupplierAllList(
+      {required String prmCompanyId}) async {
+    String uri = "$getSupplierAllListUrl?PrmCompanyId=$prmCompanyId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList
+          .map((json) => SupplierListModel.fromJson(json))
+          .toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in getSupplierList: $error');
+      }
+      rethrow;
+    }
+  }
+
   Future<List<ItemListModel>> getItemList(
       {required String prmFrmDate,
       required String prmToDate,
@@ -729,9 +760,10 @@ class ApiServices {
     required String prmFaId,
     required String prmUId,
     required String prmFlag,
+    required String prmCurntRefNo,
   }) async {
     String uri = "$getPoDetails?PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
-        "PrmFaId=$prmFaId&PrmUId=$prmUId&PrmFlag=$prmFlag";
+        "PrmFaId=$prmFaId&PrmUId=$prmUId&PrmFlag=$prmFlag&PrmCurntRefNo=$prmCurntRefNo";
 
     if (kDebugMode) {
       print(uri);
