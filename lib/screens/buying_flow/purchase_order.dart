@@ -37,7 +37,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   UomAndPackListModel? _selectedOrderUom;
   late List<UomAndPackListModel> _selectedOrderTableUom;
   late List<TextEditingController> _orderQtyControllers;
+  late List<TextEditingController> _orderQtyReadOnnlyControllers;
   late List<TextEditingController> _rateControllers;
+  late List<TextEditingController> _rateReadOnlyControllers;
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _itemConValController = TextEditingController();
   final TextEditingController _itemOrderQtyController = TextEditingController();
@@ -55,6 +57,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   List<PoDetailsModel> _purchaseSheet = [];
   ItemListModel? selectedItem;
   late String slectedSupplier;
+  late List<String> currencyId;
 
   bool btnIsEnabled = false;
 
@@ -711,6 +714,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                       prvBoxQty: "",
                                       prvQty: "",
                                       rate: _itemRateController.text,
+                                      currencyId: "",
                                     ));
                                 _selectedCount = _purchaseSheet
                                     .where((item) => item.isSelected)
@@ -1006,7 +1010,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             flex: 2,
             child: TextField(
               controller: _itemRefController,
-              readOnly: true,
+              keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Reference No.',
                 border: OutlineInputBorder(),
@@ -1037,6 +1041,32 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                 ),
               ),
               child: const Text('Next'),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 2,
+            child: ElevatedButton(
+              onPressed: () async {
+                getPurchaseList(prmFlag: "GET", refNo: _itemRefController.text)
+                    .whenComplete(() {
+                  _selectAll = false;
+                  _selectedCount = 0;
+                  _totalAmount = 0.0;
+                  setState(() {});
+                });
+              },
+              // onPressed: _handleSearch,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: buttonColor,
+                maximumSize: const Size(100, 50),
+                minimumSize: const Size(100, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Get'),
             ),
           ),
           const SizedBox(width: 10),
@@ -1327,11 +1357,27 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         _orderQtyControllers = List.generate(
           _purchaseSheet.length,
           (index) {
-            double result = _purchaseSheet[index].qty.isEmpty
+            double result = _purchaseSheet[index].numberofPacks.isEmpty
                 ? 0.0
-                : double.parse(_purchaseSheet[index].qty);
+                : double.parse(_purchaseSheet[index].numberofPacks);
             _purchaseSheet[index].totalQty = result.toString();
             return TextEditingController(text: result.toString());
+          },
+        );
+        _orderQtyReadOnnlyControllers = List.generate(
+          _purchaseSheet.length,
+          (index) {
+            double result = _purchaseSheet[index].numberofPacks.isEmpty
+                ? 0.0
+                : double.parse(_purchaseSheet[index].numberofPacks);
+            _purchaseSheet[index].totalQty = result.toString();
+            return TextEditingController(text: result.toString());
+          },
+        );
+        currencyId = List.generate(
+          _purchaseSheet.length,
+          (index) {
+            return _purchaseSheet[index].currencyId;
           },
         );
 
@@ -1345,6 +1391,10 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
 
         _rateControllers = List.generate(
+          _purchaseSheet.length,
+          (index) => TextEditingController(text: _purchaseSheet[index].rate),
+        );
+        _rateReadOnlyControllers = List.generate(
           _purchaseSheet.length,
           (index) => TextEditingController(text: _purchaseSheet[index].rate),
         );
@@ -1594,8 +1644,18 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                 ),
                 _buildBulkSplitDropdownCell(item, index),
                 _buildDataCell(item.conVal),
-                _buildEditableDataCell(_orderQtyControllers[index], index),
-                _buildEditTextRateDataCell(_rateControllers[index], index),
+                _buildEditableDataCell(
+                  double.parse(currencyId[index]) > 1
+                      ? _orderQtyReadOnnlyControllers[index]
+                      : _orderQtyControllers[index],
+                  index,
+                ),
+                _buildEditTextRateDataCell(
+                  double.parse(currencyId[index]) > 1
+                      ? _rateReadOnlyControllers[index]
+                      : _rateControllers[index],
+                  index,
+                ),
                 _buildCheckboxDataCell(item),
               ],
             );
@@ -1661,7 +1721,10 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
     );
   }
 
-  DataCell _buildEditableDataCell(TextEditingController controller, int index) {
+  DataCell _buildEditableDataCell(
+    TextEditingController controller,
+    int index,
+  ) {
     return DataCell(
       onTap: () {
         setState(() {
