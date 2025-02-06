@@ -100,6 +100,7 @@ class PoDetailsModel {
   String puTotal;
   String currencyId;
   String umoId;
+  String optRefNo;
 
   PoDetailsModel({
     this.isSelected = false,
@@ -190,6 +191,7 @@ class PoDetailsModel {
     required this.puTotal,
     this.umoId = '0',
     required this.currencyId,
+    required this.optRefNo,
   });
 
   factory PoDetailsModel.fromJson(Map<String, dynamic> json) => PoDetailsModel(
@@ -278,6 +280,7 @@ class PoDetailsModel {
         puRate: json["PuRate"],
         puTotal: json["PuTotal"],
         currencyId: json["CurrencyId"],
+        optRefNo: json["OptRefNo"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -365,6 +368,7 @@ class PoDetailsModel {
         "AddPer": addPer,
         "PuRate": puRate,
         "PuTotal": puTotal,
-        "CurrencyId": currencyId
+        "CurrencyId": currencyId,
+        "OptRefNo": optRefNo
       };
 }
