@@ -894,16 +894,13 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                   ),
                   const SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Expanded(
-                        flex: 1,
-                        child: Text(
-                          'Total Items: ${_purchaseSheet.length}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      Text(
+                        'Total Items: ${_purchaseSheet.length}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       // Expanded(
@@ -926,45 +923,38 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                       //     ),
                       //   ),
                       // ),
-                      Expanded(
-                        flex: 1,
-                        child: SizedBox(
-                          height: 50,
-                          child: _purchaseSheet.isEmpty
-                              ? SizedBox()
-                              : _buildSaveButton(),
-                        ),
-                      ),
                       const SizedBox(width: 20),
-
-                      Expanded(
-                        flex: 1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            SizedBox(
-                              width: 100,
-                              child: TextField(
-                                controller: _billNoController,
-                                readOnly: true,
-                                onTap: () {
-                                  _billNoController.selection = TextSelection(
-                                    baseOffset: 0,
-                                    extentOffset: _billNoController.text.length,
-                                  );
-                                  setState(() {
-                                    isBillNoSelected = true;
-                                    isQtyCtrlSelected = false;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  labelText: 'Bill No.',
-                                  border: OutlineInputBorder(),
-                                ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 100,
+                            child: TextField(
+                              controller: _billNoController,
+                              onTap: () {
+                                _billNoController.selection = TextSelection(
+                                  baseOffset: 0,
+                                  extentOffset: _billNoController.text.length,
+                                );
+                                setState(() {
+                                  isBillNoSelected = true;
+                                  isQtyCtrlSelected = false;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Bill No.',
+                                border: OutlineInputBorder(),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      SizedBox(
+                        height: 50,
+                        child: _purchaseSheet.isEmpty
+                            ? SizedBox()
+                            : _buildSaveButton(),
                       ),
                       const SizedBox(width: 20),
                     ],
@@ -980,7 +970,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       child: Row(
         children: [
           Expanded(
-            flex: 3,
+            flex: 2,
             child: ElevatedButton(
               onPressed: () async {
                 getPurchaseList(
@@ -1019,7 +1009,33 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           ),
           const SizedBox(width: 10),
           Expanded(
-            flex: 3,
+            flex: 2,
+            child: ElevatedButton(
+              onPressed: () async {
+                getPurchaseList(prmFlag: "GET", refNo: _itemRefController.text)
+                    .whenComplete(() {
+                  _selectAll = false;
+                  _selectedCount = 0;
+                  _totalAmount = 0.0;
+                  setState(() {});
+                });
+              },
+              // onPressed: _handleSearch,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.green,
+                maximumSize: const Size(100, 50),
+                minimumSize: const Size(100, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Get'),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 2,
             child: ElevatedButton(
               onPressed: () async {
                 getPurchaseList(prmFlag: "NEXT", refNo: _itemRefController.text)
@@ -1041,32 +1057,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                 ),
               ),
               child: const Text('Next'),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            flex: 2,
-            child: ElevatedButton(
-              onPressed: () async {
-                getPurchaseList(prmFlag: "GET", refNo: _itemRefController.text)
-                    .whenComplete(() {
-                  _selectAll = false;
-                  _selectedCount = 0;
-                  _totalAmount = 0.0;
-                  setState(() {});
-                });
-              },
-              // onPressed: _handleSearch,
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: buttonColor,
-                maximumSize: const Size(100, 50),
-                minimumSize: const Size(100, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text('Get'),
             ),
           ),
           const SizedBox(width: 10),
@@ -1745,7 +1735,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             children: [
               IconButton(
                   visualDensity: VisualDensity.compact,
-                  onPressed: () => _decrementValue(controller, index),
+                  onPressed: double.parse(currencyId[index]) > 1
+                      ? null
+                      : () => _decrementValue(controller, index),
                   icon: const Icon(Icons.remove)),
               SizedBox(
                 width: 60,
@@ -1790,7 +1782,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
               ),
               IconButton(
                   visualDensity: VisualDensity.compact,
-                  onPressed: () => _incrementValue(controller, index),
+                  onPressed: double.parse(currencyId[index]) > 1
+                      ? null
+                      : () => _incrementValue(controller, index),
                   icon: const Icon(Icons.add)),
             ],
           ),
