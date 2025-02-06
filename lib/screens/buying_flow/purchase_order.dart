@@ -1,12 +1,12 @@
 import 'dart:developer';
 
 import 'package:data_table_2/data_table_2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:williams/constants.dart';
 import 'package:williams/custom_widgets/custom_scaffold.dart';
+import 'package:williams/models/po_details_model.dart';
 
 import '../../common/custom_overlay_loading.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
@@ -14,22 +14,20 @@ import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../custom_widgets/util_class.dart';
 import '../../models/PreviousOrderCountModel.dart';
-import '../../models/buying_sheet_list_order_model.dart';
 import '../../models/category_list_model.dart';
 import '../../models/item_list_model.dart';
 import '../../models/supplier_list_model.dart';
 import '../../models/uom_list_model.dart';
 import '../../services/api_services.dart';
-import 'purchase_order.dart';
 
-class BuyingSheetScreen extends StatefulWidget {
-  const BuyingSheetScreen({super.key});
+class PurchaseOrder extends StatefulWidget {
+  const PurchaseOrder({super.key});
 
   @override
-  State<BuyingSheetScreen> createState() => _BuyingSheetScreenState();
+  State<PurchaseOrder> createState() => _PurchaseOrderState();
 }
 
-class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
+class _PurchaseOrderState extends State<PurchaseOrder> {
   FocusNode _orderQtyFocus = FocusNode();
   FocusNode _rateFocus = FocusNode();
   DateTimeRange? selectedDateRange;
@@ -39,13 +37,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   UomAndPackListModel? _selectedOrderUom;
   late List<UomAndPackListModel> _selectedOrderTableUom;
   late List<TextEditingController> _orderQtyControllers;
+  late List<TextEditingController> _orderQtyReadOnnlyControllers;
   late List<TextEditingController> _rateControllers;
+  late List<TextEditingController> _rateReadOnlyControllers;
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _itemConValController = TextEditingController();
   final TextEditingController _itemOrderQtyController = TextEditingController();
   final TextEditingController _itemRateController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
   final TextEditingController _billNoController = TextEditingController();
+  final TextEditingController _itemRefController = TextEditingController();
   bool _selectAll = false;
   late List<CategoryListModel> _categories = [];
   late List<SupplierListModel> _suppliers = [];
@@ -53,8 +54,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   late List<ItemListModel> _items = [];
   late List<PreviousOrderCountModel> _previousOrders;
   bool _isLoading = false;
-  List<BuyingSheetListModel> _buyingSheet = [];
+  List<PoDetailsModel> _purchaseSheet = [];
   ItemListModel? selectedItem;
+  late String slectedSupplier;
+  late List<String> currencyId;
 
   bool btnIsEnabled = false;
 
@@ -78,7 +81,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   }
 
   void calculateTotalAmount({
-    required List<BuyingSheetListModel> buyingSheet,
+    required List<PoDetailsModel> buyingSheet,
   }) {
     _totalAmount = buyingSheet
         .asMap()
@@ -125,7 +128,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     child: Row(
                       children: [
                         const Text(
-                          'Buying Sheet',
+                          'Purchase Order',
                           style: TextStyle(
                             fontSize: 35.0,
                             fontWeight: FontWeight.bold,
@@ -572,7 +575,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               return;
                             }
                             try {
-                              if (_buyingSheet.isEmpty) {
+                              if (_purchaseSheet.isEmpty) {
                                 _selectedOrderTableUom = List.generate(
                                   1,
                                   (index) => _oum.first,
@@ -617,36 +620,107 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                 _rateControllers.insert(0, newRateController);
                                 _selectedOrderTableUom.insert(
                                     0, _selectedOrderUom!);
+                                //TODO: Add item to _purchaseSheet sheet
 
-                                _buyingSheet.insert(
-                                  0,
-                                  BuyingSheetListModel(
-                                    itemId: selectedItem!.id,
-                                    itemName: _itemNameController.text,
-                                    itemCode: selectedItem!.code,
-                                    uom: _selectedOrderUom!.name,
-                                    itemGroup: selectedItem!.itemGroup,
-                                    odrBQty: bulk.abs().ceil().toString(),
-                                    odrEQty: split.abs().ceil().toString(),
-                                    rate: _itemRateController.text,
-                                    boxUomId: _selectedOrderUom!.id,
-                                    uomConVal: _itemConValController.text,
-                                    itmCnt: '0',
-                                    isSelected: true,
-                                    totalQty: double.parse(
-                                      _itemOrderQtyController.text,
-                                    ).abs().ceil().toString(),
-                                    eStockQty:
-                                        selectedItem!.eStockQty.toString(),
-                                    actualNeededQty: actualNeededQty.toString(),
-                                    umoId: _selectedOrderUom!.id,
-                                  ),
-                                );
-                                _selectedCount = _buyingSheet
+                                _purchaseSheet.insert(
+                                    0,
+                                    PoDetailsModel(
+                                      itemId: selectedItem!.id,
+                                      itemName: _itemNameController.text,
+                                      itemCode: selectedItem!.code,
+                                      accountCr: "",
+                                      accountDr: "",
+                                      active: "",
+                                      addChargeId: "",
+                                      addCharges: "",
+                                      addPer: "",
+                                      amount: "",
+                                      autoId: "",
+                                      balQty: "",
+                                      batchNo: "",
+                                      branchId: "",
+                                      cessAccId: "",
+                                      cessAccName: "",
+                                      cessId: "",
+                                      cessName: "",
+                                      cessValue: "",
+                                      comm: "",
+                                      commission: "",
+                                      companyId: "",
+                                      conVal: _itemConValController.text,
+                                      counrtry: "",
+                                      country: "",
+                                      crAccGroup: "",
+                                      crCode: "",
+                                      crDesc: "",
+                                      crGroupId: "",
+                                      crId: "",
+                                      discount: "",
+                                      drAccGroup: "",
+                                      drCode: "",
+                                      drDesc: "",
+                                      drGroupId: "",
+                                      drId: "",
+                                      itemGroup: selectedItem!.itemGroup,
+                                      faId: "",
+                                      gradeId: "",
+                                      gradeName: "",
+                                      id: "",
+                                      invoiceId: "",
+                                      isBefore: "",
+                                      isPercentage: "",
+                                      isTaxInclusive: "",
+                                      itemGroupId: "",
+                                      itmGroup: "",
+                                      itmGrpId: "",
+                                      margin: "",
+                                      mrp: "",
+                                      numberofPacks: "",
+                                      packId: _selectedOrderUom!.id,
+                                      packName: _selectedOrderUom!.name,
+                                      price: "",
+                                      printUom: "",
+                                      puQty: "",
+                                      puRate: "",
+                                      puTotal: "",
+                                      qty: _itemOrderQtyController.text,
+                                      refNo: _purchaseSheet.first.crId,
+                                      remarks: "",
+                                      sellingPrc: "",
+                                      shopId: "",
+                                      shopName: "",
+                                      slQty: "",
+                                      specVal: "",
+                                      tType: "",
+                                      taxAccId: "",
+                                      taxAccName: "",
+                                      taxId: "",
+                                      taxName: "",
+                                      taxValue: "",
+                                      tokenNo: "",
+                                      totalAmt: "",
+                                      trDate: "",
+                                      uomId: _selectedOrderUom!.id,
+                                      uomName: "",
+                                      uomSplitId: "",
+                                      updateDate: "",
+                                      userId: "",
+                                      boxUomId: _selectedOrderUom!.id,
+                                      isSelected: true,
+                                      totalQty: double.parse(
+                                        _itemOrderQtyController.text,
+                                      ).abs().ceil().toString(),
+                                      umoId: _selectedOrderUom!.id,
+                                      prvBoxQty: "",
+                                      prvQty: "",
+                                      rate: _itemRateController.text,
+                                      currencyId: "",
+                                    ));
+                                _selectedCount = _purchaseSheet
                                     .where((item) => item.isSelected)
                                     .length;
                                 calculateTotalAmount(
-                                  buyingSheet: _buyingSheet,
+                                  buyingSheet: _purchaseSheet,
                                 );
                                 setState(() {});
                                 _codeController.clear();
@@ -674,9 +748,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                       children: [
                         Expanded(
                           flex: 5,
-                          child: _buyingSheet.isEmpty
+                          child: _purchaseSheet.isEmpty
                               ? SizedBox()
-                              : _buyingSheetTable(data: _buyingSheet),
+                              : _buyingSheetTable(data: _purchaseSheet),
                         ),
                         SizedBox(
                           width: 10,
@@ -787,30 +861,26 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               const SizedBox(height: 10),
                               ElevatedButton.icon(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
-                                      builder: (context) =>
-                                          const PurchaseOrder(),
-                                    ),
-                                  );
+                                  Navigator.pop(context);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.orange.shade900,
-                                  minimumSize: const Size(300, 50),
+                                  minimumSize: Size(
+                                      MediaQuery.of(context).size.width * 0.166,
+                                      50),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
                                 ),
-                                iconAlignment: IconAlignment.end,
-                                icon: const Icon(
-                                  Icons.login,
-                                  color: Colors.white,
-                                  size: 30,
+                                icon: Transform.rotate(
+                                  angle: 3.14159, // 180 degrees in radians (pi)
+                                  child: const Icon(
+                                    Icons.login,
+                                    color: Colors.white,
+                                    size: 35,
+                                  ),
                                 ),
-                                label: const Text(
-                                  'Purchase Order',
-                                ),
+                                label: const Text('Buying Sheet'),
                               ),
                               SizedBox(
                                 height:
@@ -824,70 +894,69 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   ),
                   const SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 10),
-                      Expanded(
-                        flex: 2,
-                        child: Text(
-                          'Total Items: ${_buyingSheet.length}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      Text(
+                        'Total Items: ${_purchaseSheet.length}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Expanded(
-                        flex: 4,
-                        child: Text(
-                          "Date: ${selectedDateRange != null ? _formatDate(selectedDateRange!.start) + ' - ' + _formatDate(selectedDateRange!.end) : _formatDate(DateTime.now()).toString() + ' - ' + _formatDate(DateTime.now().add(Duration(days: 1))).toString()}",
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                      // Expanded(
+                      //   flex: 4,
+                      //   child: Text(
+                      //     "Date: ${selectedDateRange != null ? _formatDate(selectedDateRange!.start) + ' - ' + _formatDate(selectedDateRange!.end) : _formatDate(DateTime.now()).toString() + ' - ' + _formatDate(DateTime.now().add(Duration(days: 1))).toString()}",
+                      //     style: const TextStyle(
+                      //       fontSize: 20,
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
+                      // Expanded(
+                      //   flex: 3,
+                      //   child: Text(
+                      //     'Total Amount : £ ${_totalAmount.toStringAsFixed(2)}',
+                      //     style: const TextStyle(
+                      //       fontSize: 20,
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
+                      const SizedBox(width: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 100,
+                            child: TextField(
+                              controller: _billNoController,
+                              onTap: () {
+                                _billNoController.selection = TextSelection(
+                                  baseOffset: 0,
+                                  extentOffset: _billNoController.text.length,
+                                );
+                                setState(() {
+                                  isBillNoSelected = true;
+                                  isQtyCtrlSelected = false;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Bill No.',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          'Total Amount : £ ${_totalAmount.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: TextField(
-                          controller: _billNoController,
-                          readOnly: true,
-                          onTap: () {
-                            _billNoController.selection = TextSelection(
-                              baseOffset: 0,
-                              extentOffset: _billNoController.text.length,
-                            );
-                            setState(() {
-                              isBillNoSelected = true;
-                              isQtyCtrlSelected = false;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'Bill No.',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
+                      const Spacer(),
+                      SizedBox(
+                        height: 50,
+                        child: _purchaseSheet.isEmpty
+                            ? SizedBox()
+                            : _buildSaveButton(),
                       ),
                       const SizedBox(width: 20),
-                      Expanded(
-                        flex: 3,
-                        child: SizedBox(
-                          height: 50,
-                          child: _buyingSheet.isEmpty
-                              ? SizedBox()
-                              : _buildSaveButton(),
-                        ),
-                      ),
                     ],
                   ),
                 ],
@@ -900,61 +969,99 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     return Expanded(
       child: Row(
         children: [
-          Flexible(
-            flex: 3,
-            child: ButtonTheme(
-              alignedDropdown: true,
-              child: DropdownButtonFormField<CategoryListModel>(
-                isExpanded: true,
-                decoration: InputDecoration(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+          Expanded(
+            flex: 2,
+            child: ElevatedButton(
+              onPressed: () async {
+                getPurchaseList(
+                        prmFlag: "PREVIOUS", refNo: _itemRefController.text)
+                    .whenComplete(() {
+                  _selectAll = false;
+                  _selectedCount = 0;
+                  _totalAmount = 0.0;
+                  setState(() {});
+                });
+              },
+              // onPressed: _handleSearch,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: buttonColor,
+                maximumSize: const Size(100, 50),
+                minimumSize: const Size(100, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                items: _categories
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e.name),
-                      ),
-                    )
-                    .toList(),
-                value: _selectedCategory,
-                hint: const Text('Category'),
-                onChanged: (CategoryListModel? value) {
-                  setState(() {
-                    _selectedCategory = value!;
-                  });
-                  try {
-                    getBuyingSheetList(
-                      prmFrmDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.start)
-                          : _formatDate(DateTime.now()).toString(),
-                      prmToDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.end)
-                          : _formatDate(DateTime.now().add(Duration(days: 1)))
-                              .toString(),
-                      prmCategory: _selectedCategory!.id,
-                      prmSupplier: _selectedSupplier?.id ?? '',
-                      prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
-                    ).whenComplete(() {
-                      _selectAll = false;
-                      _selectedCount = 0;
-                      _totalAmount = 0.0;
-                      setState(() {});
-                    });
-                  } catch (e) {
-                    Util.customErrorSnackBar(context, e.toString());
-                  }
-                },
+              ),
+              child: const Text('Previous'),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 2,
+            child: TextField(
+              controller: _itemRefController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Reference No.',
+                border: OutlineInputBorder(),
               ),
             ),
           ),
           const SizedBox(width: 10),
+          Expanded(
+            flex: 2,
+            child: ElevatedButton(
+              onPressed: () async {
+                getPurchaseList(prmFlag: "GET", refNo: _itemRefController.text)
+                    .whenComplete(() {
+                  _selectAll = false;
+                  _selectedCount = 0;
+                  _totalAmount = 0.0;
+                  setState(() {});
+                });
+              },
+              // onPressed: _handleSearch,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.green,
+                maximumSize: const Size(100, 50),
+                minimumSize: const Size(100, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Get'),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 2,
+            child: ElevatedButton(
+              onPressed: () async {
+                getPurchaseList(prmFlag: "NEXT", refNo: _itemRefController.text)
+                    .whenComplete(() {
+                  _selectAll = false;
+                  _selectedCount = 0;
+                  _totalAmount = 0.0;
+                  setState(() {});
+                });
+              },
+              // onPressed: _handleSearch,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: buttonColor,
+                maximumSize: const Size(100, 50),
+                minimumSize: const Size(100, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Next'),
+            ),
+          ),
+          const SizedBox(width: 10),
           Flexible(
-            flex: 3,
+            flex: 4,
             child: ButtonTheme(
               alignedDropdown: true,
               child: DropdownButtonFormField<SupplierListModel>(
@@ -981,18 +1088,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     _selectedSupplier = value;
                   });
                   try {
-                    getBuyingSheetList(
-                      prmFrmDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.start)
-                          : _formatDate(DateTime.now()).toString(),
-                      prmToDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.end)
-                          : _formatDate(DateTime.now().add(Duration(days: 1)))
-                              .toString(),
-                      prmCategory: _selectedCategory?.id ?? '',
-                      prmSupplier: _selectedSupplier?.id ?? '',
-                      prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
-                    ).whenComplete(() {
+                    getPurchaseList(prmFlag: "LAST", refNo: "0")
+                        .whenComplete(() {
                       _selectAll = false;
                       _selectedCount = 0;
                       _totalAmount = 0.0;
@@ -1003,106 +1100,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   }
                 },
               ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Flexible(
-            flex: 3,
-            child: ButtonTheme(
-              alignedDropdown: true,
-              child: DropdownButtonFormField<PreviousOrderCountModel>(
-                isExpanded: true,
-                decoration: InputDecoration(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                items: _previousOrders
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e.name),
-                      ),
-                    )
-                    .toList(),
-                value: _selectedPreviousOrder,
-                hint: const Text('Previous Order'),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedPreviousOrder = value;
-                  });
-                  try {
-                    getBuyingSheetList(
-                      prmFrmDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.start)
-                          : _formatDate(DateTime.now()).toString(),
-                      prmToDate: selectedDateRange != null
-                          ? _formatDate(selectedDateRange!.end)
-                          : _formatDate(DateTime.now().add(Duration(days: 1)))
-                              .toString(),
-                      prmCategory: _selectedCategory?.id ?? '',
-                      prmSupplier: _selectedSupplier?.id ?? '',
-                      prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
-                    ).whenComplete(() {
-                      _selectAll = false;
-                      _selectedCount = 0;
-                      _totalAmount = 0.0;
-                      setState(() {});
-                    });
-                  } catch (e) {
-                    Util.customErrorSnackBar(context, e.toString());
-                  }
-                },
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonColor,
-                minimumSize: const Size(50, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              onPressed: _showDateRangePicker,
-              child:
-                  const Icon(Icons.date_range, color: Colors.white, size: 30),
-            ),
-          ),
-          Spacer(),
-          SizedBox(
-            height: 50,
-            child: ElevatedButton(
-              onPressed: selectedDateRange != null
-                  ? () async {
-                      await getBuyingSheetList(
-                        prmFrmDate:
-                            _formatDate(selectedDateRange!.start).toString(),
-                        prmToDate: _formatDate(selectedDateRange!.end),
-                        prmCategory: _selectedCategory?.id ?? '',
-                        prmSupplier: _selectedSupplier?.id ?? '',
-                        prmPreviousOrder: _selectedPreviousOrder?.id ?? '',
-                      );
-                      setState(() {
-                        _selectAll = false;
-                      });
-                    }
-                  : null,
-              // onPressed: _handleSearch,
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: buttonColor,
-                maximumSize: const Size(100, 50),
-                minimumSize: const Size(100, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text('Search'),
             ),
           ),
         ],
@@ -1186,27 +1183,19 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       _oum = oum;
       _previousOrders = previousOrder;
 
-      await getBuyingSheetList(
-        prmFrmDate: _formatDate(DateTime.now()).toString(),
-        prmToDate:
-            _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
-        prmCategory: '',
-        prmSupplier: '',
-        prmPreviousOrder: '',
-      );
-
-      _orderQtyControllers = List.generate(
-        _buyingSheet.length,
-        (index) {
-          double result = calculateRoundedValue(
-            _buyingSheet[index].odrBQty,
-            _buyingSheet[index].odrEQty,
-            _buyingSheet[index].uomConVal,
-          );
-          _buyingSheet[index].totalQty = result.toString();
-          return TextEditingController(text: result.toString());
-        },
-      );
+      getPurchaseList(prmFlag: "LAST", refNo: "0");
+      // _orderQtyControllers = List.generate(
+      //   _purchaseSheet.length,
+      //   (index) {
+      //     double result = calculateRoundedValue(
+      //       _purchaseSheet[index].odrBQty,
+      //       _purchaseSheet[index].odrEQty,
+      //       _purchaseSheet[index].uomConVal,
+      //     );
+      //     _purchaseSheet[index].totalQty = result.toString();
+      //     return TextEditingController(text: result.toString());
+      //   },
+      // );
 
       // _selectedOrderTableUom = List.generate(
       //   _buyingSheet.length,
@@ -1217,8 +1206,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       //   (index) => _oum.first,
       // ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
       _rateControllers = List.generate(
-        _buyingSheet.length,
-        (index) => TextEditingController(text: _buyingSheet[index].rate),
+        _purchaseSheet.length,
+        (index) => TextEditingController(text: _purchaseSheet[index].rate),
       );
       setState(() {
         _isLoading = false;
@@ -1289,7 +1278,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String prmCmpId = prefs.getString('cmpId')!;
       final response =
-          await ApiServices().getSupplierList(prmCompanyId: prmCmpId);
+          await ApiServices().getSupplierAllList(prmCompanyId: prmCmpId);
       if (response.isNotEmpty) {
         return response;
       } else {
@@ -1318,12 +1307,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
 //todo: check the logic
 
-  Future getBuyingSheetList({
-    required String prmFrmDate,
-    required String prmToDate,
-    required String prmCategory,
-    required String prmSupplier,
-    required String prmPreviousOrder,
+  Future getPurchaseList({
+    required String prmFlag,
+    required String refNo,
   }) async {
     try {
       showDialog(
@@ -1339,122 +1325,68 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       String prmBrId = prefs.getString('brId')!;
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
-      final response = await ApiServices().fnGetBuyingSheetList(
-        prmFrmDate: prmFrmDate,
-        prmToDate: prmToDate,
-        prmCmpId: prmCmpId,
-        prmBrId: prmBrId,
-        prmFaId: prmFaId,
-        prmUId: prmUId,
-        prmItmGrpId: prmCategory,
-        prmAccId: prmSupplier,
-        prmPrvOrderCount: prmPreviousOrder,
-      );
+      final response = await ApiServices().fnGetPurchaseList(
+          prmCmpId: prmCmpId,
+          prmBrId: prmBrId,
+          prmFaId: prmFaId,
+          prmUId: prmUId,
+          prmFlag: prmFlag,
+          prmCurntRefNo: refNo);
       if (response.isNotEmpty) {
-        List<BuyingSheetListModel> _tempList = response;
+        _purchaseSheet = response;
+        _itemRefController.text = _purchaseSheet[0].refNo;
+        // _suppliers.contains(_purchaseSheet[0].accountCr);
+        _selectedSupplier = _suppliers
+            .where((e) => e.name == _purchaseSheet[0].accountCr)
+            .first;
 
-        List.generate(_tempList.length, (index) {
-          try {
-            double actualNeededQty =
-                double.parse(_tempList[index].eStockQty.toString()) -
-                    double.parse(_tempList[index].odrEQty.toString());
-
-            _tempList[index].actualNeededQty = actualNeededQty.abs().toString();
-            return _tempList[index];
-          } catch (e) {
-            print('Error calculating actual needed qty: $e');
-            return _tempList[index];
-          }
-        });
-
-        List.generate(_tempList.length, (index) {
-          try {
-            if (double.parse(_tempList[index].odrEQty) > 1 &&
-                double.parse(_tempList[index].uomConVal.toString()) == 1) {
-              final double odrEQty = double.parse(_tempList[index].eStockQty) -
-                  double.parse(_tempList[index].odrEQty);
-              _tempList[index].odrEQty = odrEQty.abs().ceil().toString();
-              log('odrEQty: $odrEQty');
-              return _tempList[index];
-            } else if (double.parse(_tempList[index].uomConVal.toString()) ==
-                1) {
-              return _tempList[index];
-            } else {
-              double split =
-                  double.parse(_tempList[index].actualNeededQty.toString()) %
-                      double.parse(_tempList[index].uomConVal.toString());
-              _tempList[index].odrEQty = split.abs().ceil().toString();
-              return _tempList[index];
-            }
-          } catch (e) {
-            print('Error calculating split: $e');
-            return _tempList[index];
-          }
-        });
-
-        List.generate(_tempList.length, (index) {
-          try {
-            if (double.parse(_tempList[index].uomConVal.toString()) == 1) {
-              return _tempList[index].odrBQty = '0';
-            } else {
-              double semiBulk = double.parse(
-                      _tempList[index].actualNeededQty.toString()) -
-                  (double.parse(_tempList[index].actualNeededQty.toString()) %
-                      double.parse(_tempList[index].uomConVal.toString()));
-              double bulk = semiBulk.abs() /
-                  double.parse(_tempList[index].uomConVal.toString());
-
-              _tempList[index].odrBQty = bulk.abs().ceil().toString();
-              return _tempList[index];
-            }
-          } catch (e) {
-            print('Error calculating bulk: $e');
-            return _tempList[index];
-          }
-        });
-        _buyingSheet = _tempList;
         _selectedOrderTableUom = List.generate(
-          _buyingSheet.length,
+          _purchaseSheet.length,
           (index) => _oum.first,
         );
         _orderQtyControllers = List.generate(
-          _buyingSheet.length,
+          _purchaseSheet.length,
           (index) {
-            double result = calculateRoundedValue(_buyingSheet[index].odrBQty,
-                _buyingSheet[index].odrEQty, _buyingSheet[index].uomConVal);
-            _buyingSheet[index].totalQty = result.toString();
+            double result = _purchaseSheet[index].numberofPacks.isEmpty
+                ? 0.0
+                : double.parse(_purchaseSheet[index].numberofPacks);
+            _purchaseSheet[index].totalQty = result.toString();
             return TextEditingController(text: result.toString());
+          },
+        );
+        _orderQtyReadOnnlyControllers = List.generate(
+          _purchaseSheet.length,
+          (index) {
+            double result = _purchaseSheet[index].numberofPacks.isEmpty
+                ? 0.0
+                : double.parse(_purchaseSheet[index].numberofPacks);
+            _purchaseSheet[index].totalQty = result.toString();
+            return TextEditingController(text: result.toString());
+          },
+        );
+        currencyId = List.generate(
+          _purchaseSheet.length,
+          (index) {
+            return _purchaseSheet[index].currencyId;
           },
         );
 
         _selectedOrderTableUom = List.generate(
-          _buyingSheet.length,
+          _purchaseSheet.length,
           (index) {
-            if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
-                double.parse(_buyingSheet[index].odrEQty) > 0) {
-              _buyingSheet[index].umoId = '19';
-              return _selectedOrderTableUom[index] =
-                  _oum.where((e) => e.id == '19').first;
-            } else if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
-                double.parse(_buyingSheet[index].odrEQty) == 0) {
-              _buyingSheet[index].umoId = '19';
-              return _selectedOrderTableUom[index] =
-                  _oum.where((e) => e.id == '19').first;
-            } else if (double.parse(_buyingSheet[index].odrEQty) > 0 &&
-                double.parse(_buyingSheet[index].odrBQty) == 0) {
-              _buyingSheet[index].umoId = '21';
-              return _selectedOrderTableUom[index] =
-                  _oum.where((e) => e.id == '21').first;
-            } else {
-              _buyingSheet[index].umoId = '19';
-              return _selectedOrderTableUom[index] = _oum.first;
-            }
+            return _oum
+                .where((e) => e.id == _purchaseSheet[index].packId)
+                .first;
           },
         ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
 
         _rateControllers = List.generate(
-          _buyingSheet.length,
-          (index) => TextEditingController(text: _buyingSheet[index].rate),
+          _purchaseSheet.length,
+          (index) => TextEditingController(text: _purchaseSheet[index].rate),
+        );
+        _rateReadOnlyControllers = List.generate(
+          _purchaseSheet.length,
+          (index) => TextEditingController(text: _purchaseSheet[index].rate),
         );
         setState(() {});
         if (!mounted) return;
@@ -1463,7 +1395,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         throw ('No Items Found');
       }
     } catch (e) {
-      _buyingSheet = [];
+      _purchaseSheet = [];
       Navigator.pop(context);
       debugPrint(e.toString());
       if (!mounted) return;
@@ -1507,7 +1439,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     }
   }
 
-  Widget _buyingSheetTable({required List<BuyingSheetListModel> data}) {
+  Widget _buyingSheetTable({required List<PoDetailsModel> data}) {
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
@@ -1573,51 +1505,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             const DataColumn2(
               label: Center(
                 child: Text(
-                  'Unit \n/Box',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              size: ColumnSize.L,
-              fixedWidth: 60,
-            ),
-            const DataColumn2(
-              label: Center(
-                child: Text(
-                  'Short \nBulk',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              size: ColumnSize.L,
-              fixedWidth: 60,
-            ),
-            const DataColumn2(
-              label: Center(
-                child: Text(
-                  'Short \nSplit',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              size: ColumnSize.L,
-              fixedWidth: 60,
-            ),
-            const DataColumn2(
-              label: Center(
-                child: Text(
                   'Order \nUOM',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -1629,6 +1516,21 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               ),
               size: ColumnSize.L,
               fixedWidth: 140,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Unit \n/Box',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
             ),
             const DataColumn2(
               label: Center(
@@ -1673,15 +1575,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   onPressed: () {
                     setState(() {
                       _selectAll = !_selectAll;
-                      for (var item in _buyingSheet) {
+                      for (var item in _purchaseSheet) {
                         item.isSelected = _selectAll;
                       }
-                      _selectedCount =
-                          _buyingSheet.where((item) => item.isSelected).length;
+                      _selectedCount = _purchaseSheet
+                          .where((item) => item.isSelected)
+                          .length;
 
                       if (_selectAll) {
                         calculateTotalAmount(
-                          buyingSheet: _buyingSheet,
+                          buyingSheet: _purchaseSheet,
                         );
                       }
                     });
@@ -1706,8 +1609,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               color: WidgetStateProperty.resolveWith<Color>(
                 (Set<WidgetState> states) {
                   return _selectedOrderTableUom[index].id == '19'
-                      ? Colors.yellow
-                      : Colors.green.shade200;
+                      ? Colors.red.shade200
+                      : Colors.blue.shade200;
                 },
               ),
               cells: [
@@ -1729,71 +1632,26 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     ),
                   ),
                 ),
-                _buildDataCell(item.uomConVal),
-                _buildDataCell(item.odrBQty),
-                _buildDataCell(item.odrEQty),
                 _buildBulkSplitDropdownCell(item, index),
-                _buildEditableDataCell(_orderQtyControllers[index], index),
-                _buildEditTextRateDataCell(_rateControllers[index], index),
+                _buildDataCell(item.conVal),
+                _buildEditableDataCell(
+                  double.parse(currencyId[index]) > 1
+                      ? _orderQtyReadOnnlyControllers[index]
+                      : _orderQtyControllers[index],
+                  index,
+                ),
+                _buildEditTextRateDataCell(
+                  double.parse(currencyId[index]) > 1
+                      ? _rateReadOnlyControllers[index]
+                      : _rateControllers[index],
+                  index,
+                ),
                 _buildCheckboxDataCell(item),
               ],
             );
           }).toList(),
         ),
       ),
-    );
-  }
-
-  List<DataColumn> _getTableColumns() {
-    return [
-      'Code',
-      'Name',
-      'Con Val',
-      'Short \nBulk',
-      'Short \nSplit',
-      'Order \nUOM',
-      'Order Qty',
-      'Rate',
-      'Select'
-    ].map(_buildDataColumn).toList();
-  }
-
-  DataColumn _buildDataColumn(String label) {
-    return DataColumn(
-      label: Center(
-        child: Text(
-          label,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-
-  DataRow _buildDataRow(BuyingSheetListModel item, int index) {
-    return DataRow(
-      color: WidgetStateProperty.resolveWith<Color>(
-        (Set<WidgetState> states) {
-          return _selectedOrderTableUom[index].id == '19'
-              ? Colors.yellow
-              : Colors.green.shade200;
-        },
-      ),
-      cells: [
-        _buildDataCell(item.itemCode),
-        _buildDataCell(item.itemName),
-        _buildDataCell(item.uomConVal),
-        _buildDataCell(item.odrBQty),
-        _buildDataCell(item.odrEQty),
-        _buildBulkSplitDropdownCell(item, index),
-        _buildEditableDataCell(_orderQtyControllers[index], index),
-        _buildEditTextRateDataCell(_rateControllers[index], index),
-        _buildCheckboxDataCell(item),
-      ],
     );
   }
 
@@ -1819,30 +1677,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  DataCell _buildNameCell(
-    String? text,
-  ) {
-    return DataCell(
-      SizedBox(
-        height: 20,
-        width: MediaQuery.of(context).size.width * 0.3,
-        child: Center(
-          child: Text(
-            text ?? '',
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-          ),
-        ),
-      ),
-    );
-  }
-
-  DataCell _buildBulkSplitDropdownCell(BuyingSheetListModel item, int index) {
+  DataCell _buildBulkSplitDropdownCell(PoDetailsModel item, int index) {
     return DataCell(
       Center(
         child: ButtonTheme(
@@ -1861,12 +1696,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 .toList(),
             value: _selectedOrderTableUom[index],
             hint: const Text('Order UOM'),
-            onChanged: double.parse(item.uomConVal) == 1
+            onChanged: double.parse(item.conVal) == 1
                 ? null
                 : (UomAndPackListModel? value) {
                     setState(() {
                       _selectedOrderTableUom[index] = value!;
-                      _buyingSheet[index].umoId = value.id;
+                      _purchaseSheet[index].umoId = value.id;
                     });
                     log('Order UOM: ${_selectedOrderTableUom[index].name}');
                   },
@@ -1876,7 +1711,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     );
   }
 
-  DataCell _buildEditableDataCell(TextEditingController controller, int index) {
+  DataCell _buildEditableDataCell(
+    TextEditingController controller,
+    int index,
+  ) {
     return DataCell(
       onTap: () {
         setState(() {
@@ -1897,7 +1735,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             children: [
               IconButton(
                   visualDensity: VisualDensity.compact,
-                  onPressed: () => _decrementValue(controller, index),
+                  onPressed: double.parse(currencyId[index]) > 1
+                      ? null
+                      : () => _decrementValue(controller, index),
                   icon: const Icon(Icons.remove)),
               SizedBox(
                 width: 60,
@@ -1927,13 +1767,14 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   },
                   onChanged: (value) {
                     controller.text = value;
-                    _buyingSheet[index].totalQty = value.isEmpty ? '0' : value;
+                    _purchaseSheet[index].totalQty =
+                        value.isEmpty ? '0' : value;
                     log('Order UOM: $value');
-                    log('Order Qty: ${_buyingSheet[index].totalQty}');
-                    print(_buyingSheet[index].totalQty);
+                    log('Order Qty: ${_purchaseSheet[index].totalQty}');
+                    print(_purchaseSheet[index].totalQty);
                     print(value);
                     calculateTotalAmount(
-                      buyingSheet: _buyingSheet,
+                      buyingSheet: _purchaseSheet,
                     );
                     setState(() {});
                   },
@@ -1941,7 +1782,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               ),
               IconButton(
                   visualDensity: VisualDensity.compact,
-                  onPressed: () => _incrementValue(controller, index),
+                  onPressed: double.parse(currencyId[index]) > 1
+                      ? null
+                      : () => _incrementValue(controller, index),
                   icon: const Icon(Icons.add)),
             ],
           ),
@@ -1992,10 +1835,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             },
             keyboardType: TextInputType.number,
             onChanged: (value) {
-              _buyingSheet[index].rate = value;
+              _purchaseSheet[index].rate = value;
 
               calculateTotalAmount(
-                buyingSheet: _buyingSheet,
+                buyingSheet: _purchaseSheet,
               );
 
               setState(() {});
@@ -2014,9 +1857,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       double currentValue =
           double.parse(controller.text.isEmpty ? '0' : controller.text);
       controller.text = (currentValue + 1).toString();
-      _buyingSheet[index].totalQty = (currentValue + 1).toString();
+      _purchaseSheet[index].totalQty = (currentValue + 1).toString();
       calculateTotalAmount(
-        buyingSheet: _buyingSheet,
+        buyingSheet: _purchaseSheet,
       );
       setState(() {});
     } catch (e) {
@@ -2032,11 +1875,11 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
       double currentValue = double.parse(controller.text);
       if (currentValue > 0) {
-        _buyingSheet[index].totalQty = (currentValue - 1).toString();
+        _purchaseSheet[index].totalQty = (currentValue - 1).toString();
         controller.text = (currentValue - 1).toString();
       }
       calculateTotalAmount(
-        buyingSheet: _buyingSheet,
+        buyingSheet: _purchaseSheet,
       );
       setState(() {});
     } catch (e) {
@@ -2044,7 +1887,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     }
   }
 
-  DataCell _buildCheckboxDataCell(BuyingSheetListModel item) {
+  DataCell _buildCheckboxDataCell(PoDetailsModel item) {
     return DataCell(
       Center(
         child: Transform.scale(
@@ -2064,16 +1907,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
 
   Widget _buildSaveButton() {
     return ElevatedButton(
-      onPressed: _selectedSupplier == null ||
-              _selectedSupplier!.name == 'All Suppliers' ||
-              _selectedCount == 0
-          ? null
-          : () {
-              _orderNow();
-              setState(() {
-                _selectAll = false;
-              });
-            },
+      onPressed: () {},
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
         minimumSize: const Size(300, 50),
@@ -2081,7 +1915,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      child: Text('Order Now (${_selectedCount})'),
+      child: Text('Update (${_selectedCount})'),
     );
   }
 
@@ -2111,8 +1945,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         prmBrId: prmBrId,
         prmFaId: prmFaId,
       );
-      List<BuyingSheetListModel> selectedItems = [];
-      for (var item in _buyingSheet) {
+      List<PoDetailsModel> selectedItems = [];
+      for (var item in _purchaseSheet) {
         if (item.isSelected) {
           selectedItems.add(item);
         }
@@ -2139,7 +1973,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           prmTaxId: '',
           prmPackId: selectedItems[i].umoId,
           prmNoPacks: selectedItems[i].totalQty,
-          prmConVal: selectedItems[i].uomConVal,
+          prmConVal: selectedItems[i].conVal, //TODO: Add conVal
           prmCmpId: prmCmpId,
           prmBrId: prmBrId,
           prmFaId: prmFaId,
@@ -2157,7 +1991,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       Navigator.pop(context);
 
       setState(() {
-        _buyingSheet.clear();
+        _purchaseSheet.clear();
         _billNoController.clear();
         _selectedCategory = null;
         _selectedSupplier = null;
@@ -2165,14 +1999,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         _selectedCount = 0;
         _totalAmount = 0.0;
       });
-      await getBuyingSheetList(
-        prmFrmDate: _formatDate(DateTime.now()).toString(),
-        prmToDate:
-            _formatDate(DateTime.now().add(Duration(days: 1))).toString(),
-        prmCategory: '',
-        prmSupplier: '',
-        prmPreviousOrder: '',
-      );
+      await getPurchaseList(prmFlag: "LAST", refNo: '0');
       Util.customSuccessSnackBar(
         context,
         'Order placed successfully!',
@@ -2183,12 +2010,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
     }
   }
 
-  void _handleItemSelection(BuyingSheetListModel item, bool? value) {
+  void _handleItemSelection(PoDetailsModel item, bool? value) {
     item.isSelected = value ?? false;
-    _selectAll = _buyingSheet.every((item) => item.isSelected);
-    _selectedCount = _buyingSheet.where((item) => item.isSelected).length;
+    _selectAll = _purchaseSheet.every((item) => item.isSelected);
+    _selectedCount = _purchaseSheet.where((item) => item.isSelected).length;
     calculateTotalAmount(
-      buyingSheet: _buyingSheet,
+      buyingSheet: _purchaseSheet,
     );
     setState(() {});
   }
@@ -2266,16 +2093,16 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           }
           if (isQtyCtrlSelected && !isBillNoSelected) {
             setState(() {
-              _buyingSheet[selectedRowIndex].totalQty = activeController.text;
+              _purchaseSheet[selectedRowIndex].totalQty = activeController.text;
               calculateTotalAmount(
-                buyingSheet: _buyingSheet,
+                buyingSheet: _purchaseSheet,
               );
             });
           } else if (!isQtyCtrlSelected && !isBillNoSelected) {
             setState(() {
-              _buyingSheet[selectedRowIndex].rate = activeController.text;
+              _purchaseSheet[selectedRowIndex].rate = activeController.text;
               calculateTotalAmount(
-                buyingSheet: _buyingSheet,
+                buyingSheet: _purchaseSheet,
               );
             });
           }
