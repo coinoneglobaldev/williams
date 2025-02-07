@@ -620,6 +620,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                 _rateControllers.insert(0, newRateController);
                                 _selectedOrderTableUom.insert(
                                     0, _selectedOrderUom!);
+                                currencyId.insert(
+                                    0, _purchaseSheet.first.currencyId);
                                 //TODO: Add item to _purchaseSheet sheet
 
                                 _purchaseSheet.insert(

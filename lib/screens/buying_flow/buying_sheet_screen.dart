@@ -2124,6 +2124,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         );
         return;
       }
+
       for (int i = 0; i < selectedItems.length; i++) {
         log('Ordering item: ${selectedItems[i].itemName}');
         log('Ordering item: ${selectedItems[i].totalQty}');
