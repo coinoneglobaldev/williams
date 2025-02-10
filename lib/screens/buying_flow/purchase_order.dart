@@ -30,7 +30,7 @@ class PurchaseOrder extends StatefulWidget {
 class _PurchaseOrderState extends State<PurchaseOrder> {
   FocusNode _orderQtyFocus = FocusNode();
   FocusNode _rateFocus = FocusNode();
-  DateTimeRange? selectedDateRange;
+  DateTime? selectedDate;
   CategoryListModel? _selectedCategory;
   SupplierListModel? _selectedSupplier;
   PreviousOrderCountModel? _selectedPreviousOrder;
@@ -77,10 +77,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
     super.initState();
     _loadCategories();
 
-    selectedDateRange = DateTimeRange(
-      start: DateTime.now(),
-      end: DateTime.now().add(Duration(days: 1)),
-    );
+    selectedDate = DateTime.now();
   }
 
   void calculateTotalAmount({
@@ -988,7 +985,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                             width: 200,
                             child: TextField(
                               controller: _billDateController,
+                              readOnly: true,
                               onTap: () {
+                                _showDatePicker(context);
                                 _billNoController.selection = TextSelection(
                                   baseOffset: 0,
                                   extentOffset: _billNoController.text.length,
@@ -1164,13 +1163,12 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
     );
   }
 
-  void _showDateRangePicker() async {
-    final DateTimeRange? result = await showDateRangePicker(
+  void _showDatePicker(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
       context: context,
+      initialDate: selectedDate ?? DateTime.now(),
       firstDate: DateTime(2022),
       lastDate: DateTime.now().add(Duration(days: 1)),
-      currentDate: DateTime.now(),
-      saveText: 'Done',
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
@@ -1187,16 +1185,18 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         );
       },
     );
-    if (result != null) {
+
+    if (picked != null && picked != selectedDate) {
       setState(() {
-        selectedDateRange = result;
+        selectedDate = picked;
+        _billDateController.text = _formatDate(picked);
       });
     }
   }
 
   String _formatDate(DateTime dte) {
     try {
-      DateFormat date = DateFormat('dd/MMM/yyyy');
+      DateFormat date = DateFormat('dd/MM/yyyy');
       return date.format(dte);
     } catch (e) {
       return '';
