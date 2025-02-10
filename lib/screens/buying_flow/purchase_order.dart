@@ -37,7 +37,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   UomAndPackListModel? _selectedOrderUom;
   late List<UomAndPackListModel> _selectedOrderTableUom;
   late List<TextEditingController> _orderQtyControllers;
-  late List<TextEditingController> _orderQtyReadOnnlyControllers;
+  late List<TextEditingController> _orderQtyReadOnlyControllers;
   late List<TextEditingController> _rateControllers;
   late List<TextEditingController> _rateReadOnlyControllers;
   final TextEditingController _itemNameController = TextEditingController();
@@ -47,6 +47,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   final TextEditingController _codeController = TextEditingController();
   final TextEditingController _billNoController = TextEditingController();
   final TextEditingController _itemRefController = TextEditingController();
+  final TextEditingController _billDateController = TextEditingController();
   bool _selectAll = false;
   late List<CategoryListModel> _categories = [];
   late List<SupplierListModel> _suppliers = [];
@@ -58,6 +59,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   ItemListModel? selectedItem;
   late String slectedSupplier;
   late List<String> currencyId;
+
+  late String refNo;
 
   bool btnIsEnabled = false;
 
@@ -592,6 +595,16 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                               final newRateController = TextEditingController(
                                   text: _itemRateController.text);
 
+                              final orderNewQtyReadOnlyControllers =
+                                  TextEditingController(
+                                text: roundedOrderQty.toString(),
+                              );
+
+                              final newRateReadOnlyController =
+                                  TextEditingController(
+                                text: _itemRateController.text,
+                              );
+
                               if (double.parse(_itemConValController.text) ==
                                   1) {
                                 split =
@@ -620,7 +633,18 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                 _rateControllers.insert(0, newRateController);
                                 _selectedOrderTableUom.insert(
                                     0, _selectedOrderUom!);
-                                //TODO: Add item to _purchaseSheet sheet
+                                _orderQtyReadOnlyControllers.insert(
+                                  0,
+                                  orderNewQtyReadOnlyControllers,
+                                );
+                                _rateReadOnlyControllers.insert(
+                                  0,
+                                  newRateReadOnlyController,
+                                );
+                                currencyId.insert(
+                                  0,
+                                  _purchaseSheet.first.currencyId,
+                                ); //TODO: Add item to _purchaseSheet sheet
 
                                 _purchaseSheet.insert(
                                   0,
@@ -694,10 +718,10 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                     tType: "",
                                     taxAccId: "",
                                     taxAccName: "",
-                                    taxId: "",
+                                    taxId: _purchaseSheet.first.taxId,
                                     taxName: "",
                                     taxValue: "",
-                                    tokenNo: "",
+                                    tokenNo: _purchaseSheet.first.tokenNo,
                                     totalAmt: "",
                                     trDate: "",
                                     uomId: _selectedOrderUom!.id,
@@ -714,10 +738,15 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                     prvBoxQty: "",
                                     prvQty: "",
                                     rate: _itemRateController.text,
-                                    currencyId: "",
-                                    optRefNo: "",
+                                    currencyId: "1",
+                                    optDate: _purchaseSheet.first.optDate,
+                                    optRefNo: _purchaseSheet.first.optRefNo,
                                   ),
                                 );
+
+                                log(_purchaseSheet
+                                    .map((item) => item.toJson())
+                                    .toString());
                                 _selectedCount = _purchaseSheet
                                     .where((item) => item.isSelected)
                                     .length;
@@ -945,6 +974,32 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                               },
                               decoration: InputDecoration(
                                 labelText: 'Bill No.',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 200,
+                            child: TextField(
+                              controller: _billDateController,
+                              onTap: () {
+                                _billNoController.selection = TextSelection(
+                                  baseOffset: 0,
+                                  extentOffset: _billNoController.text.length,
+                                );
+                                setState(() {
+                                  isBillNoSelected = true;
+                                  isQtyCtrlSelected = false;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Bill Date',
                                 border: OutlineInputBorder(),
                               ),
                             ),
@@ -1338,11 +1393,13 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       if (response.isNotEmpty) {
         _purchaseSheet = response;
         _itemRefController.text = _purchaseSheet[0].refNo;
+        refNo = _purchaseSheet[0].refNo;
         // _suppliers.contains(_purchaseSheet[0].accountCr);
         _selectedSupplier = _suppliers
             .where((e) => e.name == _purchaseSheet[0].accountCr)
             .first;
         _billNoController.text = _purchaseSheet[0].optRefNo;
+        _billDateController.text = _purchaseSheet[0].optDate;
         _selectedOrderTableUom = List.generate(
           _purchaseSheet.length,
           (index) => _oum.first,
@@ -1357,7 +1414,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             return TextEditingController(text: result.toString());
           },
         );
-        _orderQtyReadOnnlyControllers = List.generate(
+        _orderQtyReadOnlyControllers = List.generate(
           _purchaseSheet.length,
           (index) {
             double result = _purchaseSheet[index].numberofPacks.isEmpty
@@ -1443,6 +1500,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   }
 
   Widget _buyingSheetTable({required List<PoDetailsModel> data}) {
+    log(_orderQtyReadOnlyControllers[0].text);
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
@@ -1639,7 +1697,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                 _buildDataCell(item.conVal),
                 _buildEditableDataCell(
                   double.parse(currencyId[index]) > 1
-                      ? _orderQtyReadOnnlyControllers[index]
+                      ? _orderQtyReadOnlyControllers[index]
                       : _orderQtyControllers[index],
                   index,
                 ),
@@ -1910,7 +1968,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
 
   Widget _buildSaveButton() {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        _updateNow();
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
         minimumSize: const Size(300, 50),
@@ -1922,7 +1982,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
     );
   }
 
-  Future<void> _orderNow() async {
+  Future<void> _updateNow() async {
     try {
       if (_selectedSupplier!.name == 'All') {
         Util.customErrorSnackBar(context, 'Please select a supplier to order');
@@ -1943,11 +2003,11 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
 
-      final String tokenNo = await ApiServices().fnGetTokenNoUrl(
-        prmCmpId: prmCmpId,
-        prmBrId: prmBrId,
-        prmFaId: prmFaId,
-      );
+      // final String tokenNo = await ApiServices().fnGetTokenNoUrl(
+      //   prmCmpId: prmCmpId,
+      //   prmBrId: prmBrId,
+      //   prmFaId: prmFaId,
+      // );
       List<PoDetailsModel> selectedItems = [];
       for (var item in _purchaseSheet) {
         if (item.isSelected) {
@@ -1965,8 +2025,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         log('Ordering item: ${selectedItems[i].itemName}');
         log('Ordering item: ${selectedItems[i].totalQty}');
         log('Ordering item: ${selectedItems[i].rate}');
-        final response = await ApiServices().fnSavePoList(
-          prmTokenNo: tokenNo,
+        log('Ordering item: ${selectedItems[i].packId}');
+        final response = await ApiServices().updatePoList(
+          prmTokenNo: selectedItems[i].tokenNo,
           prmDatePrmToCnt: _formatDate(DateTime.now()),
           prmCurntCnt: (i + 1).toString(),
           PrmToCnt: selectedItems.length.toString(),
@@ -1974,7 +2035,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           prmItemId: selectedItems[i].itemId,
           prmUomId: selectedItems[i].boxUomId,
           prmTaxId: '',
-          prmPackId: selectedItems[i].umoId,
+          prmPackId: selectedItems[i].packId,
           prmNoPacks: selectedItems[i].totalQty,
           prmConVal: selectedItems[i].conVal, //TODO: Add conVal
           prmCmpId: prmCmpId,
@@ -1983,6 +2044,11 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           prmUId: prmUId,
           prmRate: selectedItems[i].rate,
           prmBillNo: _billNoController.text,
+          prmRefNo: selectedItems[i].refNo,
+          prmBilDate: _billDateController.text,
+          prmDate: selectedItems[i].trDate,
+          prmInvoiceId: selectedItems[i].invoiceId,
+          prmRemarks: 'Updated From Tablet',
         );
 
         if (response == '1') {
