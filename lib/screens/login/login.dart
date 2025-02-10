@@ -197,7 +197,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Williams',
+                    'La',
                     style: TextStyle(
                       height: 0.9,
                       color: buttonColor,
@@ -206,7 +206,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                     ),
                   ),
                   Text(
-                    'of London',
+                    'Sovrana',
                     style: TextStyle(
                       height: 0.9,
                       color: buttonColor,
@@ -214,14 +214,14 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
-                    'Since 1999',
-                    style: TextStyle(
-                      color: buttonColor,
-                      fontSize: 12,
-                    ),
-                    textAlign: TextAlign.right,
-                  ),
+                  // Text(
+                  //   'Since 1999',
+                  //   style: TextStyle(
+                  //     color: buttonColor,
+                  //     fontSize: 12,
+                  //   ),
+                  //   textAlign: TextAlign.right,
+                  // ),
                 ],
               ),
             ),
@@ -455,7 +455,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'Williams',
+                    'La',
                     style: TextStyle(
                       height: 0.9,
                       color: buttonColor,
@@ -464,19 +464,12 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                     ),
                   ),
                   Text(
-                    'of London',
+                    'Sovrana',
                     style: TextStyle(
                       height: 0.9,
                       color: buttonColor,
                       fontSize: 50,
                       fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'Since 1999',
-                    style: TextStyle(
-                      color: buttonColor,
-                      fontSize: 12,
                     ),
                   ),
                 ],
