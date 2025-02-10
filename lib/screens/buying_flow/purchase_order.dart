@@ -491,6 +491,13 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                           child: TextField(
                             keyboardType: TextInputType.number,
                             controller: _itemOrderQtyController,
+                            onTap: () {
+                              _itemOrderQtyController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset:
+                                    _itemOrderQtyController.text.length,
+                              );
+                            },
                             onSubmitted: (value) {
                               // Select all text in the TextField
                               _itemRateController.selection = TextSelection(
@@ -543,6 +550,13 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                         Expanded(
                           flex: 1,
                           child: TextField(
+                            onTap: () {
+                              _rateFocus.requestFocus();
+                              _itemRateController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset: _itemRateController.text.length,
+                              );
+                            },
                             focusNode: _rateFocus,
                             controller: _itemRateController,
                             keyboardType: TextInputType.number,
@@ -959,6 +973,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                             width: 200,
                             child: TextField(
                               controller: _billNoController,
+                              readOnly: true,
                               onTap: () {
                                 _billNoController.selection = TextSelection(
                                   baseOffset: 0,
@@ -2068,6 +2083,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         _selectedCount = 0;
         _totalAmount = 0.0;
       });
+      _purchaseSheet.clear();
+      selectedItems.clear();
       await getPurchaseList(prmFlag: "LAST", refNo: '0');
       Util.customSuccessSnackBar(
         context,
