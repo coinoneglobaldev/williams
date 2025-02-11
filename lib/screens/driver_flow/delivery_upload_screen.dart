@@ -481,21 +481,18 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
       if (selectedXFiles.isEmpty) {
         throw Exception('No images selected');
       }
-
       setState(() {
         isUploading = true;
       });
+
       int i = 0;
       for (final image in selectedXFiles) {
-        final dir = await getTemporaryDirectory();
-        final targetPath =
-            '${dir.absolute.path}/${i.toString()}.${image.path.split('.').last}';
-
         final directory = await getApplicationDocumentsDirectory();
         final String imageUrl =
-            '${widget.deliveryItem.refNo}-${targetPath.split('/').last}';
+            '${widget.deliveryItem.refNo}-${image.path.split('/').last}';
         uploadedImagesName[i] = imageUrl;
-        final File newImage = await File(targetPath).copy(
+
+        final File newImage = await File(image.path).copy(
           '${directory.path}/$imageUrl',
         );
 
@@ -514,7 +511,6 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
       setState(() {
         isUploading = false;
       });
-
       if (mounted) {
         Util.customSuccessSnackBar(context, 'Images uploaded successfully');
       }
