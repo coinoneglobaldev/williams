@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -492,36 +491,23 @@ class _DeliveryUploadScreenState extends State<DeliveryUploadScreen> {
         final targetPath =
             '${dir.absolute.path}/${i.toString()}.${image.path.split('.').last}';
 
-        final result = await FlutterImageCompress.compressAndGetFile(
-          image.path,
-          targetPath,
-          quality: 80,
-          format: image.path.split('.').last == 'jpg'
-              ? CompressFormat.jpeg
-              : CompressFormat.png,
+        final directory = await getApplicationDocumentsDirectory();
+        final String imageUrl =
+            '${widget.deliveryItem.refNo}-${targetPath.split('/').last}';
+        uploadedImagesName[i] = imageUrl;
+        final File newImage = await File(targetPath).copy(
+          '${directory.path}/$imageUrl',
         );
 
-        if (result != null) {
-          final directory = await getApplicationDocumentsDirectory();
-          final String imageUrl =
-              '${widget.deliveryItem.refNo}-${result.path.split('/').last}';
-          uploadedImagesName[i] = imageUrl;
-          final File newImage = await File(result.path).copy(
-            '${directory.path}/$imageUrl',
-          );
-
-          final selectedImage = XFile(newImage.path);
-          await ApiServices().fnUploadFiles(
-            imageNameWithType: imageUrl,
-            image: selectedImage,
-            sketchNameWithType: '',
-            videoNameWithType: '',
-            sketch: null,
-            video: null,
-          );
-        } else {
-          throw Exception('Failed to compress image');
-        }
+        final selectedImage = XFile(newImage.path);
+        await ApiServices().fnUploadFiles(
+          imageNameWithType: imageUrl,
+          image: selectedImage,
+          sketchNameWithType: '',
+          videoNameWithType: '',
+          sketch: null,
+          video: null,
+        );
         i++;
       }
 
