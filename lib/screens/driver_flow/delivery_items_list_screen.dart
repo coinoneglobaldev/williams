@@ -135,7 +135,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
           final item = items[index];
           return InkWell(
             onTap: () {
-              if (item.isDelivery == '0') {
+              if (item.isDelivery == '0' || item.isDelivery == '1') {
                 Navigator.push(
                   context,
                   CupertinoPageRoute(
