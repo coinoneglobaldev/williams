@@ -1670,22 +1670,28 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _selectAll = !_selectAll;
-                      for (var item in _buyingSheet) {
-                        item.isSelected = _selectAll;
-                      }
-                      _selectedCount =
-                          _buyingSheet.where((item) => item.isSelected).length;
+                  onPressed: _selectedSupplier == null
+                      ? () {
+                          Util.customErrorSnackBar(
+                              context, 'Please select a supplier');
+                        }
+                      : () {
+                          setState(() {
+                            _selectAll = !_selectAll;
+                            for (var item in _buyingSheet) {
+                              item.isSelected = _selectAll;
+                            }
+                            _selectedCount = _buyingSheet
+                                .where((item) => item.isSelected)
+                                .length;
 
-                      if (_selectAll) {
-                        calculateTotalAmount(
-                          buyingSheet: _buyingSheet,
-                        );
-                      }
-                    });
-                  },
+                            if (_selectAll) {
+                              calculateTotalAmount(
+                                buyingSheet: _buyingSheet,
+                              );
+                            }
+                          });
+                        },
                   child: Text(
                     _selectAll ? 'Deselect All' : 'Select All',
                     style: TextStyle(
@@ -2055,7 +2061,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             fillColor: WidgetStateProperty.all(Colors.white),
             value: item.isSelected,
             side: const BorderSide(color: Colors.black, width: 1),
-            onChanged: (bool? value) => _handleItemSelection(item, value),
+            onChanged: _selectedSupplier == null
+                ? (bool? value) {
+                    Util.customErrorSnackBar(
+                        context, 'Please select a supplier');
+                  }
+                : (bool? value) => _handleItemSelection(item, value),
           ),
         ),
       ),
