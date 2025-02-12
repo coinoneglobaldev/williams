@@ -1281,6 +1281,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         _purchaseSheet.length,
         (index) => TextEditingController(text: _purchaseSheet[index].rate),
       );
+
       setState(() {
         _isLoading = false;
       });
@@ -1516,6 +1517,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
 
   Widget _buyingSheetTable({required List<PoDetailsModel> data}) {
     log(_orderQtyReadOnlyControllers[0].text);
+    _selectedCount = _purchaseSheet.where((item) => item.isSelected).length;
+    log("_selectedCount: $_selectedCount");
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
