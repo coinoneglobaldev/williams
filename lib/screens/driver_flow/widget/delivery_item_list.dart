@@ -99,7 +99,7 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                 ),
               ),
               Text(
-                'Amount: € ${double.parse(widget.selectedItem.grandTotal).toStringAsFixed(2)}',
+                'Amount: £ ${double.parse(widget.selectedItem.grandTotal).toStringAsFixed(2)}',
                 style: const TextStyle(
                   fontSize: 16,
                   color: Colors.white,
