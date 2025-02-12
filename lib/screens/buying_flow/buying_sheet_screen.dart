@@ -1671,7 +1671,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                     ),
                   ),
                   onPressed: _selectedSupplier == null
-                      ? null
+                      ? () {
+                          Util.customErrorSnackBar(
+                              context, 'Please select a supplier');
+                        }
                       : () {
                           setState(() {
                             _selectAll = !_selectAll;
@@ -2059,7 +2062,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             value: item.isSelected,
             side: const BorderSide(color: Colors.black, width: 1),
             onChanged: _selectedSupplier == null
-                ? null
+                ? (bool? value) {
+                    Util.customErrorSnackBar(
+                        context, 'Please select a supplier');
+                  }
                 : (bool? value) => _handleItemSelection(item, value),
           ),
         ),
