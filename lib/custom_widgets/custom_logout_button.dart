@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screens/login/login.dart';
 
@@ -12,6 +13,20 @@ class CustomLogoutConfirmation extends StatefulWidget {
 }
 
 class _CustomLogoutConfirmationState extends State<CustomLogoutConfirmation> {
+  Future<void> removePref() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.clear();
+    print('Logout successfully & Shared Preference removed');
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const ScreenLogin(),
+      ),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -42,13 +57,7 @@ class _CustomLogoutConfirmationState extends State<CustomLogoutConfirmation> {
           height: 40,
           child: TextButton(
             onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                CupertinoPageRoute(
-                  builder: (context) => const ScreenLogin(),
-                ),
-                (route) => false,
-              );
+              removePref();
             },
             child: const Text(
               'Logout',

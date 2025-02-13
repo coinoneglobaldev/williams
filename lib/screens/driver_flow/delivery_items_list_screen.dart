@@ -3,14 +3,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:williams/screens/driver_flow/widget/delivery_item_list.dart';
-import 'package:williams/screens/driver_flow/widget/driver_home_appbar.dart';
-import 'package:williams/services/api_services.dart';
 
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/util_class.dart';
 import '../../models/daily_drop_list_model.dart';
+import '../../services/api_services.dart';
 import 'delivery_upload_screen.dart';
+import 'widget/delivery_item_list.dart';
+import 'widget/driver_home_appbar.dart';
 
 class DeliveryItemsListScreen extends StatefulWidget {
   final String name;

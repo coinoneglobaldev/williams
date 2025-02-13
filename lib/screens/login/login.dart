@@ -35,7 +35,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
   bool _isRememberMe = true;
   bool _isVisibility = false;
   bool _isButtonLoading = false;
-  final _eMailKey = GlobalKey<FormState>();
+  final _userNameKey = GlobalKey<FormState>();
   final _passwordKey = GlobalKey<FormState>();
 
   @override
@@ -61,13 +61,18 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
       pref.setString('designId', userData.desgId.toString()),
       pref.setString('userType', userData.userType.toString()),
       pref.setString('userName', _usernameController.text.trim()),
+      pref.setString('password', _passwordController.text.trim()),
+      pref.setBool('isRememberMe', _isRememberMe),
     ]);
     print("cmpId:${pref.getString('cmpId')}");
     print("brId:${pref.getString('brId')}");
     print("faId:${pref.getString('faId')}");
     print("userId:${pref.getString('userId')}");
     print("accId:${pref.getString('accId')}");
+    print("userType:${pref.getString('userType')}");
     print("userName:${pref.getString('userName')}");
+    print("password:${pref.getString('password')}");
+    print("isRememberMe:${pref.getBool('isRememberMe')}");
   }
 
   void _navigateToBackground(String userType) {
@@ -214,14 +219,6 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  // Text(
-                  //   'Since 1999',
-                  //   style: TextStyle(
-                  //     color: buttonColor,
-                  //     fontSize: 12,
-                  //   ),
-                  //   textAlign: TextAlign.right,
-                  // ),
                 ],
               ),
             ),
@@ -246,21 +243,17 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                   height: 10,
                 ),
                 Form(
-                  key: _eMailKey,
+                  key: _userNameKey,
                   child: TextFormField(
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Please enter a valid email';
-                      } else if (!value.contains('@') &&
-                          value.contains('.') &&
-                          value.length < 5) {
-                        return 'Please enter valid email';
+                        return 'Please enter a valid username';
                       }
                       return null;
                     },
                     controller: _usernameController,
                     decoration: InputDecoration(
-                      hintText: 'Email',
+                      hintText: 'Username',
                       hintStyle: const TextStyle(
                         color: Colors.grey,
                         fontSize: 14,
@@ -316,7 +309,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                   ),
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Checkbox(
                       value: _isRememberMe,
@@ -342,17 +335,6 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                         fontSize: 12,
                       ),
                     ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'Forgot Password ?',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 ElevatedButton(
@@ -360,7 +342,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                     backgroundColor: buttonColor,
                   ),
                   onPressed: () async {
-                    if (!_eMailKey.currentState!.validate() ||
+                    if (!_userNameKey.currentState!.validate() ||
                         !_passwordKey.currentState!.validate()) {
                       return;
                     }
@@ -509,21 +491,17 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                       ),
                       const SizedBox(height: 10),
                       Form(
-                        key: _eMailKey,
+                        key: _userNameKey,
                         child: TextFormField(
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Please enter a valid email';
-                            } else if (!value.contains('@') &&
-                                value.contains('.') &&
-                                value.length < 5) {
-                              return 'Please enter valid email';
+                              return 'Please enter a valid username';
                             }
                             return null;
                           },
                           controller: _usernameController,
                           decoration: InputDecoration(
-                            hintText: 'Email',
+                            hintText: 'Username',
                             hintStyle: const TextStyle(
                               color: Colors.grey,
                               fontSize: 14,
@@ -582,7 +560,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                           backgroundColor: buttonColor,
                         ),
                         onPressed: () async {
-                          if (!_eMailKey.currentState!.validate() ||
+                          if (!_userNameKey.currentState!.validate() ||
                               !_passwordKey.currentState!.validate()) {
                             return;
                           }
