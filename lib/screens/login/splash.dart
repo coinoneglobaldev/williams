@@ -17,54 +17,52 @@ class ScreenSplash extends StatefulWidget {
 }
 
 class _ScreenSplashState extends State<ScreenSplash> {
-  String? userName;
-  String? passWord;
-  String? prmCmpId;
-  String? prmBrId;
-
   @override
   void initState() {
     super.initState();
     fnLoginCheck();
   }
 
-  fnLoginCheck() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    String? accId = pref.getString("accId");
-    String? userType = pref.getString("userType");
-    String? userName = pref.getString("userName");
-    String? password = pref.getString("password");
-    if (accId != '' && userName != '' && password != '') {
+  Future<void> fnLoginCheck() async {
+    if (!mounted) return;
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    final String? accId = pref.getString("accId");
+    final String? userType = pref.getString("userType");
+    final String? userName = pref.getString("userName");
+    final bool? isRememberMe = pref.getBool("isRememberMe");
+
+    if (accId != null &&
+        accId.isNotEmpty &&
+        userName != null &&
+        userName.isNotEmpty &&
+        isRememberMe == true) {
       await Future.delayed(const Duration(seconds: 2));
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        CupertinoPageRoute(
-          builder: (context) {
-            if (userType == 'BSHT') {
-              return _fnNavigateToBuyerPage();
-            } else if (userType == 'PACK') {
-              return _fnNavigateToPackingPage();
-            } else if (userType == 'DRVR') {
-              return _fnNavigateToDriverPage();
-            } else {
-              return _fnNavigateToLoginPage();
-            }
-          },
-        ),
-      );
+      if (userType != null) {
+        switch (userType) {
+          case 'BSHT':
+            _fnNavigateToBuyerPage();
+            break;
+          case 'PACK':
+            _fnNavigateToPackingPage();
+            break;
+          case 'DRVR':
+            await _fnNavigateToDriverPage();
+            break;
+          default:
+            _fnNavigateToLoginPage();
+        }
+      } else {
+        _fnNavigateToLoginPage();
+      }
     } else {
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        CupertinoPageRoute(
-          builder: (context) => _fnNavigateToLoginPage(),
-        ),
-      );
+      _fnNavigateToLoginPage();
     }
   }
 
   _fnNavigateToPackingPage() {
+    if (!mounted) return;
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
@@ -78,6 +76,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
   }
 
   _fnNavigateToBuyerPage() {
+    if (!mounted) return;
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
@@ -91,6 +90,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
   }
 
   _fnNavigateToDriverPage() async {
+    if (!mounted) return;
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -111,6 +111,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
   }
 
   _fnNavigateToLoginPage() {
+    if (!mounted) return;
     Navigator.pushReplacement(
       context,
       CupertinoPageRoute(
