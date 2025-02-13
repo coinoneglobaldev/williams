@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +12,7 @@ import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
+import '../../custom_widgets/util_class.dart';
 import '../../models/round_type_model.dart';
 import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
@@ -457,6 +460,14 @@ class _SalesOrderListState extends State<SalesOrderList> {
           prmFaId: prmFaId,
           prmUId: prmUId,
         );
+
+        if (orderListItems.isEmpty) {
+          log('No items found');
+
+          Navigator.pop(context);
+          Util.customErrorSnackBar(context, 'No items found');
+          return;
+        }
 
         if (!mounted) return;
         Navigator.pop(context);
