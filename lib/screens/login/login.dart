@@ -61,13 +61,18 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
       pref.setString('designId', userData.desgId.toString()),
       pref.setString('userType', userData.userType.toString()),
       pref.setString('userName', _usernameController.text.trim()),
+      pref.setString('password', _passwordController.text.trim()),
+      pref.setString('isRememberMe', _isRememberMe.toString()),
     ]);
     print("cmpId:${pref.getString('cmpId')}");
     print("brId:${pref.getString('brId')}");
     print("faId:${pref.getString('faId')}");
     print("userId:${pref.getString('userId')}");
     print("accId:${pref.getString('accId')}");
+    print("userType:${pref.getString('userType')}");
     print("userName:${pref.getString('userName')}");
+    print("password:${pref.getString('password')}");
+    print("isRememberMe:${pref.getString('isRememberMe')}");
   }
 
   void _navigateToBackground(String userType) {
@@ -214,14 +219,6 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  // Text(
-                  //   'Since 1999',
-                  //   style: TextStyle(
-                  //     color: buttonColor,
-                  //     fontSize: 12,
-                  //   ),
-                  //   textAlign: TextAlign.right,
-                  // ),
                 ],
               ),
             ),
