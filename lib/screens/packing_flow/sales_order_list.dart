@@ -1,19 +1,21 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:williams/services/api_services.dart';
-
 import '../../common/custom_overlay_loading.dart';
 import '../../custom_widgets/custom_alert_box.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_logout_button.dart';
 import '../../custom_widgets/custom_scaffold.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
+import '../../custom_widgets/util_class.dart';
 import '../../models/round_type_model.dart';
 import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
 import '../../models/uom_list_model.dart';
+import '../../services/api_services.dart';
 import 'order_item_view.dart';
 
 class SalesOrderList extends StatefulWidget {
@@ -457,6 +459,14 @@ class _SalesOrderListState extends State<SalesOrderList> {
           prmFaId: prmFaId,
           prmUId: prmUId,
         );
+
+        if (orderListItems.isEmpty) {
+          log('No items found');
+
+          Navigator.pop(context);
+          Util.customErrorSnackBar(context, 'No items found');
+          return;
+        }
 
         if (!mounted) return;
         Navigator.pop(context);

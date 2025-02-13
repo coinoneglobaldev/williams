@@ -1,8 +1,8 @@
-name: williams
+name: lasovrana
 description: "A new Flutter project."
 publish_to: "none"
 
-version: 3.0.0+1
+version: 1.0.0+1
 # 1.0.2+2 IOS
 environment:
   sdk: ^3.5.4

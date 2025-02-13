@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:williams/custom_widgets/custom_scaffold.dart';
-import 'package:williams/custom_widgets/util_class.dart';
 
 import '../../common/custom_overlay_loading.dart';
+import '../../custom_widgets/custom_scaffold.dart';
+import '../../custom_widgets/util_class.dart';
 import '../../models/delivery_save_model.dart';
 import '../../models/sales_order_item_list_model.dart';
 import '../../models/sales_order_list_model.dart';
@@ -916,23 +916,73 @@ class _OrderItemViewState extends State<OrderItemView> {
     }
   }
 
-  _fnGetOrderList() async {
+  Future<void> _fnGetOrderList() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String prmCmpId = prefs.getString('cmpId')!;
       String prmBrId = prefs.getString('brId')!;
       String prmFaId = prefs.getString('faId')!;
       String prmUId = prefs.getString('userId')!;
-      orderListItems = await ApiServices()
-          .getSalesOrderItemList(
+
+      orderListItems.clear();
+
+      List<SalesOrderItemListModel> _orderTempListItems =
+          await ApiServices().getSalesOrderItemList(
         prmOrderId: widget.selectedSalesOrderList.id,
         prmCmpId: prmCmpId,
         prmBrId: prmBrId,
         prmFaId: prmFaId,
         prmUId: prmUId,
-      )
-          .whenComplete(() {
-        setState(() {});
+      );
+      log(_orderTempListItems.length.toString());
+      if (_orderTempListItems.isEmpty) {
+        log('No items found');
+
+        Navigator.pop(context);
+        Util.customErrorSnackBar(context, 'No items found');
+        return;
+      }
+      List<int> _filteredItemGroupId = _orderTempListItems
+          .map((e) => int.parse(e.itemGroupId))
+          .toSet()
+          .toList();
+      _filteredItemGroupId.sort((a, b) => a.compareTo(b));
+
+      // Convert back to string format
+      List<String> _filteredItemGroupIdString =
+          _filteredItemGroupId.map((e) => e.toString()).toSet().toList();
+
+      // Reorder items based on sorted group IDs
+      for (int i = 0; i < _filteredItemGroupIdString.length; i++) {
+        for (int j = 0; j < _orderTempListItems.length; j++) {
+          if (_filteredItemGroupIdString[i] ==
+              _orderTempListItems[j].itemGroupId) {
+            orderListItems.add(_orderTempListItems[j]);
+          }
+        }
+      }
+
+      setState(() {
+        if (orderListItems.isNotEmpty) {
+          _fnSetSelectedItem(selectedRowItem: orderListItems[0]);
+        }
+
+        selectedPackList = List<UomAndPackListModel>.filled(
+            orderListItems.length, widget.packTypeList[0]);
+
+        for (int i = 0; i < orderListItems.length; i++) {
+          try {
+            selectedPackList[i] = widget.packTypeList.where((element) {
+              return element.id == orderListItems[i].packId;
+            }).first;
+          } catch (e) {
+            selectedPackList[i] = widget.packTypeList[0];
+          }
+        }
+
+        notesControllers = orderListItems
+            .map((item) => TextEditingController(text: item.remarks))
+            .toList();
       });
     } catch (e) {
       if (!mounted) return;
