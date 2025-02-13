@@ -7,14 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:williams/common/custom_overlay_loading.dart';
-import 'package:williams/models/delivery_save_model.dart';
-import 'package:williams/services/api_services.dart';
-
+import '../../common/custom_overlay_loading.dart';
 import '../../constants.dart';
 import '../../custom_widgets/custom_scaffold_driver.dart';
 import '../../custom_widgets/util_class.dart';
 import '../../models/daily_drop_list_model.dart';
+import '../../models/delivery_save_model.dart';
+import '../../services/api_services.dart';
 
 class DeliveryUploadScreen extends StatefulWidget {
   final DailyDropListModel deliveryItem;
