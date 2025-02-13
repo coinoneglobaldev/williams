@@ -1,4 +1,4 @@
-package com.coinone.williams
+package com.coinone.lasov
 
 import io.flutter.embedding.android.FlutterActivity
 

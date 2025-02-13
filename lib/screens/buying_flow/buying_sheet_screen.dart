@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:data_table_2/data_table_2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +20,7 @@ import '../../models/item_list_model.dart';
 import '../../models/supplier_list_model.dart';
 import '../../models/uom_list_model.dart';
 import '../../services/api_services.dart';
+import 'purchase_order.dart';
 
 class BuyingSheetScreen extends StatefulWidget {
   const BuyingSheetScreen({super.key});
@@ -306,15 +308,159 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                           ),
                         ),
                         SizedBox(width: 8),
+                        // Expanded(
+                        //   flex: 2,
+                        //   child: TextField(
+                        //     controller: _itemNameController,
+                        //     readOnly: true,
+                        //     decoration: InputDecoration(
+                        //       labelText: 'Name',
+                        //       border: OutlineInputBorder(),
+                        //     ),
+                        //   ),
+                        // ),
                         Expanded(
                           flex: 2,
-                          child: TextField(
-                            controller: _itemNameController,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              labelText: 'Name',
-                              border: OutlineInputBorder(),
-                            ),
+                          child: Autocomplete<ItemListModel>(
+                            optionsBuilder:
+                                (TextEditingValue textEditingValue) {
+                              if (textEditingValue.text == '') {
+                                return const Iterable<ItemListModel>.empty();
+                              }
+                              return _items.where((ItemListModel option) {
+                                return option.name.toLowerCase().contains(
+                                    textEditingValue.text.toLowerCase());
+                              });
+                            },
+                            onSelected: (ItemListModel selection) {
+                              setState(() {
+                                selectedItem = selection;
+                                _codeController.text = selection.code;
+                                _itemNameController.text = selection.name;
+                                _itemConValController.text = selection.conVal;
+                                _itemRateController.text = selection.bulkRate;
+                                _selectedOrderUom = _oum
+                                    .where(
+                                      (e) => e.id == '19',
+                                    )
+                                    .first;
+                              });
+                              _itemOrderQtyController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset:
+                                    _itemOrderQtyController.text.length,
+                              );
+                              _orderQtyFocus.requestFocus();
+                            },
+                            fieldViewBuilder: (BuildContext context,
+                                TextEditingController fieldController,
+                                FocusNode fieldFocusNode,
+                                VoidCallback onFieldSubmitted) {
+                              if (_itemNameController.text !=
+                                  fieldController.text) {
+                                fieldController.text = _itemNameController.text;
+                              }
+
+                              return TextFormField(
+                                controller: fieldController,
+                                focusNode: fieldFocusNode,
+                                decoration: InputDecoration(
+                                  labelText: 'Name',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onChanged: (value) {
+                                  _itemNameController.text = value;
+                                },
+                                onFieldSubmitted: (String value) {
+                                  onFieldSubmitted();
+                                },
+                              );
+                            },
+                            optionsViewBuilder: (BuildContext context,
+                                AutocompleteOnSelected<ItemListModel>
+                                    onSelected,
+                                Iterable<ItemListModel> options) {
+                              return Align(
+                                alignment: Alignment.topLeft,
+                                child: Material(
+                                  color: Colors.transparent,
+                                  elevation: 25,
+                                  child: Container(
+                                    margin: const EdgeInsets.only(top: 5),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: Colors.black,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    constraints: BoxConstraints(
+                                      maxHeight:
+                                          MediaQuery.of(context).size.height *
+                                              0.25,
+                                      maxWidth: 600,
+                                    ),
+                                    child: ListView(
+                                      padding: const EdgeInsets.all(10.0),
+                                      children:
+                                          options.map((ItemListModel option) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            onSelected(option);
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                bottom: BorderSide(
+                                                  color: Colors.grey,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 100,
+                                                  child: Text(
+                                                    option.code,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 400,
+                                                  child: Text(
+                                                    '    ${option.name}',
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 50,
+                                                  child: Text(
+                                                    '    ${option.bulkRate}',
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                         SizedBox(width: 8),
@@ -426,6 +572,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                               return;
                             }
                             try {
+                              if (_buyingSheet.isEmpty) {
+                                _selectedOrderTableUom = List.generate(
+                                  1,
+                                  (index) => _oum.first,
+                                );
+                              }
                               int roundedOrderQty =
                                   double.parse(_itemOrderQtyController.text)
                                       .ceil();
@@ -487,6 +639,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                     eStockQty:
                                         selectedItem!.eStockQty.toString(),
                                     actualNeededQty: actualNeededQty.toString(),
+                                    umoId: _selectedOrderUom!.id,
                                   ),
                                 );
                                 _selectedCount = _buyingSheet
@@ -630,9 +783,38 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   ],
                                 ),
                               ),
+
+                              const SizedBox(height: 10),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                      builder: (context) =>
+                                          const PurchaseOrder(),
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.orange.shade900,
+                                  minimumSize: const Size(300, 50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                iconAlignment: IconAlignment.end,
+                                icon: const Icon(
+                                  Icons.login,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                label: const Text(
+                                  'Purchase Order',
+                                ),
+                              ),
                               SizedBox(
                                 height:
-                                    MediaQuery.of(context).size.height * 0.25,
+                                    MediaQuery.of(context).size.height * 0.2,
                               ),
                             ],
                           ),
@@ -1250,17 +1432,21 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           (index) {
             if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
                 double.parse(_buyingSheet[index].odrEQty) > 0) {
+              _buyingSheet[index].umoId = '19';
               return _selectedOrderTableUom[index] =
                   _oum.where((e) => e.id == '19').first;
             } else if (double.parse(_buyingSheet[index].odrBQty) > 0 &&
                 double.parse(_buyingSheet[index].odrEQty) == 0) {
+              _buyingSheet[index].umoId = '19';
               return _selectedOrderTableUom[index] =
                   _oum.where((e) => e.id == '19').first;
             } else if (double.parse(_buyingSheet[index].odrEQty) > 0 &&
                 double.parse(_buyingSheet[index].odrBQty) == 0) {
+              _buyingSheet[index].umoId = '21';
               return _selectedOrderTableUom[index] =
                   _oum.where((e) => e.id == '21').first;
             } else {
+              _buyingSheet[index].umoId = '19';
               return _selectedOrderTableUom[index] = _oum.first;
             }
           },
@@ -1484,22 +1670,28 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _selectAll = !_selectAll;
-                      for (var item in _buyingSheet) {
-                        item.isSelected = _selectAll;
-                      }
-                      _selectedCount =
-                          _buyingSheet.where((item) => item.isSelected).length;
+                  onPressed: _selectedSupplier == null
+                      ? () {
+                          Util.customErrorSnackBar(
+                              context, 'Please select a supplier');
+                        }
+                      : () {
+                          setState(() {
+                            _selectAll = !_selectAll;
+                            for (var item in _buyingSheet) {
+                              item.isSelected = _selectAll;
+                            }
+                            _selectedCount = _buyingSheet
+                                .where((item) => item.isSelected)
+                                .length;
 
-                      if (_selectAll) {
-                        calculateTotalAmount(
-                          buyingSheet: _buyingSheet,
-                        );
-                      }
-                    });
-                  },
+                            if (_selectAll) {
+                              calculateTotalAmount(
+                                buyingSheet: _buyingSheet,
+                              );
+                            }
+                          });
+                        },
                   child: Text(
                     _selectAll ? 'Deselect All' : 'Select All',
                     style: TextStyle(
@@ -1680,7 +1872,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 : (UomAndPackListModel? value) {
                     setState(() {
                       _selectedOrderTableUom[index] = value!;
+                      _buyingSheet[index].umoId = value.id;
                     });
+                    log('Order UOM: ${_selectedOrderTableUom[index].name}');
                   },
           ),
         ),
@@ -1867,7 +2061,12 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
             fillColor: WidgetStateProperty.all(Colors.white),
             value: item.isSelected,
             side: const BorderSide(color: Colors.black, width: 1),
-            onChanged: (bool? value) => _handleItemSelection(item, value),
+            onChanged: _selectedSupplier == null
+                ? (bool? value) {
+                    Util.customErrorSnackBar(
+                        context, 'Please select a supplier');
+                  }
+                : (bool? value) => _handleItemSelection(item, value),
           ),
         ),
       ),
@@ -1949,7 +2148,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           prmItemId: selectedItems[i].itemId,
           prmUomId: selectedItems[i].boxUomId,
           prmTaxId: '',
-          prmPackId: _selectedOrderTableUom[i].id,
+          prmPackId: selectedItems[i].umoId,
           prmNoPacks: selectedItems[i].totalQty,
           prmConVal: selectedItems[i].uomConVal,
           prmCmpId: prmCmpId,

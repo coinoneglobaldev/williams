@@ -109,9 +109,9 @@ class _OrderItemViewState extends State<OrderItemView> {
   }) {
     final columns = [
       'Qty',
+      'Unit \n/Box',
       'Pack',
       'Code',
-      'Con \nVal',
       'Description',
       'Notes',
       'Check',
@@ -163,6 +163,9 @@ class _OrderItemViewState extends State<OrderItemView> {
                     : "Deselect All",
               ),
             ),
+            const SizedBox(
+              width: 135,
+            ),
           ],
         ),
         Expanded(
@@ -193,7 +196,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                       color: Colors.black,
                     )),
                     columnSpacing: 5,
-                    horizontalMargin: 5,
+                    horizontalMargin: 2,
                     dataRowMaxHeight: 80,
                     dataRowMinHeight: 80,
                     headingRowColor:
@@ -248,10 +251,11 @@ class _OrderItemViewState extends State<OrderItemView> {
                               Center(
                                 child: Container(
                                   padding: const EdgeInsets.all(5),
-                                  width: 60,
                                   height: 70,
                                   decoration: BoxDecoration(
-                                      color: Colors.yellow,
+                                      color: selectedPackList[index].id == '19'
+                                          ? Colors.yellow
+                                          : Colors.green.shade200,
                                       borderRadius: BorderRadius.circular(5),
                                       boxShadow: [
                                         BoxShadow(
@@ -276,27 +280,53 @@ class _OrderItemViewState extends State<OrderItemView> {
                               ),
                             ),
                             DataCell(
+                              onTap: () {
+                                setState(() {
+                                  selectedRowIndex = index;
+                                });
+                                _fnSwitchToQtyMode();
+                                _fnSetSelectedItem(
+                                  selectedRowItem: rowItem,
+                                );
+                              },
                               Center(
-                                child: ButtonTheme(
-                                  alignedDropdown: true,
-                                  child: DropdownButton(
-                                    borderRadius: BorderRadius.circular(10),
-                                    isDense: true,
-                                    dropdownColor: Colors.white,
-                                    items: widget.packTypeList
-                                        .map(
-                                          (e) => DropdownMenuItem(
-                                            value: e,
-                                            child: Text(e.name),
-                                          ),
-                                        )
-                                        .toList(),
-                                    value: selectedPackList[index],
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedPackList[index] = value!;
-                                      });
-                                    },
+                                child: Text(
+                                  double.parse(rowItem.conVal)
+                                      .toStringAsFixed(2),
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 2,
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              SizedBox(
+                                width: 130,
+                                child: Center(
+                                  child: ButtonTheme(
+                                    alignedDropdown: true,
+                                    child: DropdownButton(
+                                      borderRadius: BorderRadius.circular(10),
+                                      isDense: true,
+                                      dropdownColor: Colors.white,
+                                      items: widget.packTypeList
+                                          .map(
+                                            (e) => DropdownMenuItem(
+                                              value: e,
+                                              child: Text(e.name),
+                                            ),
+                                          )
+                                          .toList(),
+                                      value: selectedPackList[index],
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedPackList[index] = value!;
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
@@ -334,34 +364,13 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 );
                               },
                               Center(
-                                child: Text(
-                                  rowItem.conVal,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 2,
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              onTap: () {
-                                setState(() {
-                                  selectedRowIndex = index;
-                                });
-                                _fnSwitchToQtyMode();
-                                _fnSetSelectedItem(
-                                  selectedRowItem: rowItem,
-                                );
-                              },
-                              Center(
                                 child: Container(
                                   padding: const EdgeInsets.all(5),
-                                  width: 80,
                                   height: 70,
                                   decoration: BoxDecoration(
-                                    color: Colors.yellow,
+                                    color: selectedPackList[index].id == '19'
+                                        ? Colors.yellow
+                                        : Colors.green.shade200,
                                     borderRadius: BorderRadius.circular(5),
                                     boxShadow: [
                                       BoxShadow(
@@ -567,7 +576,7 @@ class _OrderItemViewState extends State<OrderItemView> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
-            flex: 10,
+            flex: 12,
             child: _buildOrderItemTable(
               data: orderListItems,
             ),
@@ -805,6 +814,7 @@ class _OrderItemViewState extends State<OrderItemView> {
     required String shorts,
   }) async {
     try {
+      FocusScope.of(context).unfocus();
       showDialog(
         barrierColor: Colors.black.withValues(alpha: 0.8),
         barrierDismissible: false,
@@ -867,6 +877,7 @@ class _OrderItemViewState extends State<OrderItemView> {
 
   Future<void> _selectAllSavePackingItem({required String isSelectAll}) async {
     try {
+      FocusScope.of(context).unfocus();
       showDialog(
         barrierColor: Colors.black.withValues(alpha: 0.8),
         barrierDismissible: false,

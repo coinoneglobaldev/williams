@@ -49,7 +49,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Williams',
+                  'La',
                   style: TextStyle(
                     height: 0.9,
                     color: buttonColor,
@@ -58,7 +58,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
                   ),
                 ),
                 Text(
-                  'of London',
+                  'Sovrana',
                   style: TextStyle(
                     height: 0.9,
                     color: buttonColor,

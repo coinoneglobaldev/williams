@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:williams/models/po_details_model.dart';
 
 import '../constants.dart';
 import '../models/PreviousOrderCountModel.dart';
@@ -93,6 +94,37 @@ class ApiServices {
   Future<List<SupplierListModel>> getSupplierList(
       {required String prmCompanyId}) async {
     String uri = "$getSupplierListUrl?PrmCompanyId=$prmCompanyId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList
+          .map((json) => SupplierListModel.fromJson(json))
+          .toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in getSupplierList: $error');
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<SupplierListModel>> getSupplierAllList(
+      {required String prmCompanyId}) async {
+    String uri = "$getSupplierAllListUrl?PrmCompanyId=$prmCompanyId";
     if (kDebugMode) {
       print(uri);
     }
@@ -719,6 +751,95 @@ class ApiServices {
         print('fnUploadFiles called and failed $e');
       }
       throw e.toString();
+    }
+  }
+
+  Future<List<PoDetailsModel>> fnGetPurchaseList({
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUId,
+    required String prmFlag,
+    required String prmCurntRefNo,
+  }) async {
+    String uri = "$getPoDetails?PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
+        "PrmFaId=$prmFaId&PrmUId=$prmUId&PrmFlag=$prmFlag&PrmCurntRefNo=$prmCurntRefNo";
+
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList.map((json) => PoDetailsModel.fromJson(json)).toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnGetBuyingSheetList: $error');
+      }
+      rethrow;
+    }
+  }
+
+  Future<String> updatePoList({
+    required String prmTokenNo,
+    required String prmDatePrmToCnt,
+    required String prmCurntCnt,
+    required String PrmToCnt,
+    required String prmAccId,
+    required String prmItemId,
+    required String prmUomId,
+    required String prmTaxId,
+    required String prmPackId,
+    required String prmNoPacks,
+    required String prmConVal,
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUId,
+    required String prmRate,
+    required String prmBillNo,
+    required String prmRefNo,
+    required String prmInvoiceId,
+    required String prmDate,
+    required String prmBilDate,
+    required String prmRemarks,
+  }) async {
+    String uri =
+        "$updatePoListDate?PrmTokenNo=$prmTokenNo&PrmDate=$prmDatePrmToCnt&"
+        "PrmCurntCnt=$prmCurntCnt&PrmToCnt=$PrmToCnt&PrmAccId=$prmAccId&"
+        "PrmItemId=$prmItemId&PrmUomId=$prmUomId&PrmTaxId=$prmTaxId&"
+        "PrmPackId=$prmPackId&PrmNoPacks=$prmNoPacks&PrmConVal=$prmConVal&"
+        "PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId&"
+        "PrmRate=$prmRate&PrmBillNo=$prmBillNo&PrmRefNo=$prmRefNo&PrmInvoiceId=$prmInvoiceId&"
+        "PrmDate=$prmDate&PrmBilDate=$prmBilDate&PrmRemarks=$prmRemarks";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri));
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+
+      final Map<String, dynamic> responseMap = json.decode(response.body);
+
+      return responseMap['ErrorCode'].toString();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnSavePackingItem: $error');
+      }
+      rethrow;
     }
   }
 }
