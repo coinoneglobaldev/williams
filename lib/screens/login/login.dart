@@ -51,7 +51,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
     await Future.wait([
       pref.setString('userId', userData.id.toString()),
       pref.setString('groupId', userData.grpid.toString()),
-      pref.setString('userImage', userData.usrImage.toString()),
+      pref.setString('userIuserImage', userData.usrImage.toString()),
       pref.setString('cmpId', userData.cmpId.toString()),
       pref.setString('brId', userData.brid.toString()),
       pref.setString('faId', userData.faid.toString()),
@@ -64,15 +64,17 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
       pref.setString('password', _passwordController.text.trim()),
       pref.setBool('isRememberMe', _isRememberMe),
     ]);
-    print("cmpId:${pref.getString('cmpId')}");
-    print("brId:${pref.getString('brId')}");
-    print("faId:${pref.getString('faId')}");
-    print("userId:${pref.getString('userId')}");
-    print("accId:${pref.getString('accId')}");
-    print("userType:${pref.getString('userType')}");
-    print("userName:${pref.getString('userName')}");
-    print("password:${pref.getString('password')}");
-    print("isRememberMe:${pref.getBool('isRememberMe')}");
+    if (kDebugMode) {
+      print("cmpId:${pref.getString('cmpId')}");
+      print("brId:${pref.getString('brId')}");
+      print("faId:${pref.getString('faId')}");
+      print("userId:${pref.getString('userId')}");
+      print("accId:${pref.getString('accId')}");
+      print("userType:${pref.getString('userType')}");
+      print("userName:${pref.getString('userName')}");
+      print("password:${pref.getString('password')}");
+      print("isRememberMe:${pref.getBool('isRememberMe')}");
+    }
   }
 
   void _navigateToBackground(String userType) {

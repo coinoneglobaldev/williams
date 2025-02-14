@@ -16,7 +16,6 @@ class _CustomLogoutConfirmationState extends State<CustomLogoutConfirmation> {
   Future<void> removePref() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     await pref.clear();
-    print('Logout successfully & Shared Preference removed');
     if (!mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
