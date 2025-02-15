@@ -147,16 +147,17 @@ class _OrderItemViewState extends State<OrderItemView> {
                 backgroundColor: Colors.green,
                 minimumSize: const Size(130, 35),
               ),
-              onPressed: orderListItems.any((element) => element.short != "")
-                  ? null
-                  : () {
-                      _selectAllSavePackingItem(
-                        isSelectAll: orderListItems
-                                .any((element) => element.isRelease == "False")
-                            ? "1"
-                            : "-1",
-                      );
-                    },
+              onPressed: null,
+              // onPressed: orderListItems.any((element) => element.short != "")
+              //     ? null
+              //     : () {
+              //         _selectAllSavePackingItem(
+              //           isSelectAll: orderListItems
+              //                   .any((element) => element.isRelease == "False")
+              //               ? "1"
+              //               : "-1",
+              //         );
+              //       },
               child: Text(
                 orderListItems.any((element) => element.isRelease == "False")
                     ? "Select All"
@@ -303,29 +304,32 @@ class _OrderItemViewState extends State<OrderItemView> {
                               ),
                             ),
                             DataCell(
-                              SizedBox(
-                                width: 130,
-                                child: Center(
-                                  child: ButtonTheme(
-                                    alignedDropdown: true,
-                                    child: DropdownButton(
-                                      borderRadius: BorderRadius.circular(10),
-                                      isDense: true,
-                                      dropdownColor: Colors.white,
-                                      items: widget.packTypeList
-                                          .map(
-                                            (e) => DropdownMenuItem(
-                                              value: e,
-                                              child: Text(e.name),
-                                            ),
-                                          )
-                                          .toList(),
-                                      value: selectedPackList[index],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          selectedPackList[index] = value!;
-                                        });
-                                      },
+                              IgnorePointer(
+                                child: SizedBox(
+                                  width: 130,
+                                  child: Center(
+                                    child: ButtonTheme(
+                                      alignedDropdown: true,
+                                      child: DropdownButton(
+                                        borderRadius: BorderRadius.circular(10),
+                                        isDense: true,
+                                        dropdownColor: Colors.white,
+                                        items: widget.packTypeList
+                                            .map(
+                                              (e) => DropdownMenuItem(
+                                                value: e,
+                                                child: Text(e.name),
+                                              ),
+                                            )
+                                            .toList(),
+                                        icon: SizedBox(),
+                                        value: selectedPackList[index],
+                                        onChanged: (value) {
+                                          setState(() {
+                                            selectedPackList[index] = value!;
+                                          });
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -778,15 +782,20 @@ class _OrderItemViewState extends State<OrderItemView> {
                           height: 60,
                           child: ElevatedButton(
                             onPressed: () {
-                              _fnSave(
-                                  prmIsRlz:
-                                      selectedOrderItem.isRelease == 'False' &&
-                                              _shortController.text == ''
-                                          ? '1'
-                                          : '0',
-                                  autoId: selectedOrderItem.autoId,
-                                  quantity: _qtyControllers.text,
-                                  shorts: _shortController.text);
+                              if (double.parse(_qtyControllers.text) <
+                                  double.parse(selectedOrderItem.qty)) {
+                                _showQuantityWarning();
+                              } else {
+                                _fnSave(
+                                    prmIsRlz: selectedOrderItem.isRelease ==
+                                                'False' &&
+                                            _shortController.text == ''
+                                        ? '1'
+                                        : '0',
+                                    autoId: selectedOrderItem.autoId,
+                                    quantity: _qtyControllers.text,
+                                    shorts: _shortController.text);
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
@@ -1083,6 +1092,28 @@ class _OrderItemViewState extends State<OrderItemView> {
           ),
         ),
       ),
+    );
+  }
+
+  // use it to show if qty lesser than selected qty is typed
+  void _showQuantityWarning() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Invalid Quantity'),
+          content: Text(
+              'Please enter a number greater than ${selectedOrderItem.qty}.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 
