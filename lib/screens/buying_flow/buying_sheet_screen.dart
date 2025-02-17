@@ -1363,6 +1363,10 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           _tempList.length,
           (index) {
             try {
+              if (_tempList[index].uomConVal == '1.00') {
+                return '0';
+              }
+
               final int result = double.parse(_tempList[index].odrEQty) ~/
                   double.parse(_tempList[index].uomConVal);
               log('aaaaaaaaa: ${_tempList[index].odrEQty}-${_tempList[index].uomConVal} - $result');
@@ -1380,6 +1384,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           _tempList.length,
           (index) {
             try {
+              if (_tempList[index].uomConVal == '1.00') {
+                return double.parse(_tempList[index].odrEQty).ceil().toString();
+              }
               final double result = double.parse(_tempList[index].odrEQty) /
                   double.parse(_tempList[index].uomConVal);
               log('result: $result');
