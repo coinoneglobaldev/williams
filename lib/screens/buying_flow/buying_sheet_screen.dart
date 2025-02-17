@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,6 +40,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   late List<UomAndPackListModel> _selectedOrderTableUom;
   late List<TextEditingController> _orderQtyControllers;
   late List<TextEditingController> _rateControllers;
+  late List<String> _orderBulk;
+  late List<String> _orderSplit;
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _itemConValController = TextEditingController();
   final TextEditingController _itemOrderQtyController = TextEditingController();
@@ -617,6 +620,9 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                 _selectedOrderTableUom.insert(
                                     0, _selectedOrderUom!);
 
+                                _orderBulk.insert(0, '');
+                                _orderSplit.insert(0, '');
+
                                 _buyingSheet.insert(
                                   0,
                                   BuyingSheetListModel(
@@ -639,6 +645,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                         selectedItem!.eStockQty.toString(),
                                     actualNeededQty: actualNeededQty.toString(),
                                     umoId: _selectedOrderUom!.id,
+                                    orderBulk: "",
+                                    orderSplit: '',
                                   ),
                                 );
                                 _selectedCount = _buyingSheet
@@ -1351,6 +1359,49 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
       );
       if (response.isNotEmpty) {
         List<BuyingSheetListModel> _tempList = response;
+        _orderBulk = List.generate(
+          _tempList.length,
+          (index) {
+            try {
+              if (_tempList[index].uomConVal == '1.00') {
+                return '0';
+              }
+
+              final int result = double.parse(_tempList[index].odrEQty) ~/
+                  double.parse(_tempList[index].uomConVal);
+              log('aaaaaaaaa: ${_tempList[index].odrEQty}-${_tempList[index].uomConVal} - $result');
+              return result.toString();
+            } catch (e) {
+              if (kDebugMode) {
+                print('Error calculating bulk: $e');
+              }
+              return '0';
+            }
+          },
+        );
+
+        _orderSplit = List.generate(
+          _tempList.length,
+          (index) {
+            try {
+              if (_tempList[index].uomConVal == '1.00') {
+                return double.parse(_tempList[index].odrEQty).ceil().toString();
+              }
+              final double result = double.parse(_tempList[index].odrEQty) /
+                  double.parse(_tempList[index].uomConVal);
+              log('result: $result');
+
+              double decimalPart = result - result.truncate();
+              String decimalStr = decimalPart.toString().substring(2, 3);
+              return decimalStr;
+            } catch (e) {
+              if (kDebugMode) {
+                print('Error calculating bulk: $e');
+              }
+              return '0';
+            }
+          },
+        );
 
         List.generate(_tempList.length, (index) {
           try {
@@ -1451,6 +1502,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           },
         ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
 
+        log(_orderSplit.toString());
         _rateControllers = List.generate(
           _buyingSheet.length,
           (index) => TextEditingController(text: _buyingSheet[index].rate),
@@ -1528,7 +1580,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           dataRowHeight: 60,
           horizontalMargin: 10,
           columnSpacing: 10,
-          minWidth: 800,
+          minWidth: 1000,
           headingRowColor: WidgetStateProperty.all(
             Colors.grey.shade400.withValues(alpha: 0.5),
           ),
@@ -1573,6 +1625,36 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               label: Center(
                 child: Text(
                   'Unit \n/Box',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Order \nBulk',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              size: ColumnSize.L,
+              fixedWidth: 60,
+            ),
+            const DataColumn2(
+              label: Center(
+                child: Text(
+                  'Order \nSplit',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -1735,6 +1817,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   ),
                 ),
                 _buildDataCell(item.uomConVal),
+                _buildDataCell(_orderBulk[index]),
+                _buildDataCell(_orderSplit[index]),
                 _buildDataCell(item.odrBQty),
                 _buildDataCell(item.odrEQty),
                 _buildBulkSplitDropdownCell(item, index),

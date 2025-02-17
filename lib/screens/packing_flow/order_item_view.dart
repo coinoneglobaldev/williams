@@ -37,6 +37,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   final TextEditingController _itemDetailsController = TextEditingController();
   final TextEditingController _shortController = TextEditingController();
   int selectedRowIndex = 0;
+  int selectedCheck = 0;
   late List<SalesOrderItemListModel> orderListItems;
   late SalesOrderItemListModel selectedOrderItem;
   List<UomAndPackListModel> selectedPackList = [];
@@ -439,6 +440,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 _fnSetSelectedItem(
                                   selectedRowItem: rowItem,
                                 );
+                                selectedCheck = index;
                               },
                               Center(
                                 child: Transform.scale(
@@ -458,6 +460,13 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       _fnSetSelectedItem(
                                         selectedRowItem: rowItem,
                                       );
+                                      setState(() {
+                                        selectedRowIndex = index;
+                                      });
+                                      _fnSetSelectedItem(
+                                        selectedRowItem: rowItem,
+                                      );
+                                      selectedCheck = index;
                                       _fnSave(
                                         prmIsRlz: rowItem.isRelease == 'False'
                                             ? '1'
@@ -927,6 +936,11 @@ class _OrderItemViewState extends State<OrderItemView> {
 
   Future<void> _fnGetOrderList() async {
     try {
+      String currentSelectedAutoId = '';
+      if (orderListItems.isNotEmpty &&
+          selectedRowIndex < orderListItems.length) {
+        currentSelectedAutoId = orderListItems[selectedRowIndex].autoId;
+      }
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String prmCmpId = prefs.getString('cmpId')!;
       String prmBrId = prefs.getString('brId')!;
@@ -943,7 +957,6 @@ class _OrderItemViewState extends State<OrderItemView> {
         prmFaId: prmFaId,
         prmUId: prmUId,
       );
-      log(_orderTempListItems.length.toString());
       if (_orderTempListItems.isEmpty) {
         log('No items found');
 
@@ -972,10 +985,30 @@ class _OrderItemViewState extends State<OrderItemView> {
       }
 
       setState(() {
-        if (orderListItems.isNotEmpty) {
+        if (currentSelectedAutoId.isNotEmpty) {
+          int newIndex = orderListItems
+              .indexWhere((item) => item.autoId == currentSelectedAutoId);
+          if (newIndex != -1) {
+            selectedRowIndex = newIndex;
+            log(_orderTempListItems.length != newIndex
+                ? (newIndex + 1).toString()
+                : newIndex.toString());
+            _fnSetSelectedItem(
+                selectedRowItem: orderListItems[
+                    _orderTempListItems.length - 1 > newIndex
+                        ? newIndex + 1
+                        : newIndex]);
+          } else {
+            // If the previously selected item is not found, select the first item
+            selectedRowIndex = 0;
+            if (orderListItems.isNotEmpty) {
+              _fnSetSelectedItem(selectedRowItem: orderListItems[0]);
+            }
+          }
+        } else if (orderListItems.isNotEmpty) {
+          selectedRowIndex = 0;
           _fnSetSelectedItem(selectedRowItem: orderListItems[0]);
         }
-
         selectedPackList = List<UomAndPackListModel>.filled(
             orderListItems.length, widget.packTypeList[0]);
 
@@ -1120,13 +1153,23 @@ class _OrderItemViewState extends State<OrderItemView> {
   void _fnSetSelectedItem({
     required SalesOrderItemListModel selectedRowItem,
   }) {
-    setState(() {
-      selectedOrderItem = selectedRowItem;
-      _itemDetailsController.text =
-          '${selectedOrderItem.itemName}, ${selectedOrderItem.printUom}';
-      _qtyControllers.text = selectedOrderItem.qty;
-      _shortController.text = selectedOrderItem.short;
-    });
+    if (selectedRowItem == orderListItems.last) {
+      setState(() {
+        selectedOrderItem = orderListItems.last;
+        _itemDetailsController.text =
+            '${selectedOrderItem.itemName}, ${selectedOrderItem.printUom}';
+        _qtyControllers.text = selectedOrderItem.qty;
+        _shortController.text = selectedOrderItem.short;
+      });
+    } else {
+      setState(() {
+        selectedOrderItem = selectedRowItem;
+        _itemDetailsController.text =
+            '${selectedOrderItem.itemName}, ${selectedOrderItem.printUom}';
+        _qtyControllers.text = selectedOrderItem.qty;
+        _shortController.text = selectedOrderItem.short;
+      });
+    }
   }
 
   void _fnClearTextFields() {
