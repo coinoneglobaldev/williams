@@ -1391,11 +1391,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                   double.parse(_tempList[index].uomConVal);
               log('result: $result');
 
-              double decimalPart =
-                  result - result.truncate(); // Get only decimal part
-              String decimalStr =
-                  decimalPart.toString().substring(2, 3); // Get first digit
-
+              double decimalPart = result - result.truncate();
+              String decimalStr = decimalPart.toString().substring(2, 3);
               return decimalStr;
             } catch (e) {
               if (kDebugMode) {
