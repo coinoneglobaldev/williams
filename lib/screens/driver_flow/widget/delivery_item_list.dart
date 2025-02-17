@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:lasovrana/screens/driver_flow/widget/transport_item_list.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../custom_widgets/util_class.dart';
 import '../../../models/daily_drop_list_model.dart';
 
@@ -110,6 +113,28 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    minimumSize: const Size(100, 40),
+                    elevation: 4,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => TransportItemList(
+                          selectedItem: widget.selectedItem,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Check',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+                SizedBox(height: 10),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,

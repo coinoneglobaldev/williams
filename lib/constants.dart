@@ -49,3 +49,5 @@ String fnUpdateCustomerLocationUrl = '$transactionUrl/FnUpdateCustomerLocation';
 String fnGetVehicleTransportListUrl =
     '$transactionUrl/FnGetVehicleTransportList';
 String fnSaveDeliveryDetailsUrl = '$transactionUrl/FnSaveDeliveryDetails';
+String fnGetTransportItemListUrl = '$transactionUrl/FnGetTransportItemList';
+String fnSaveCheckListUrl = '$transactionUrl/FnSaveCheckList';
