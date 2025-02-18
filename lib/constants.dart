@@ -6,7 +6,7 @@ Color secondaryColor = Colors.grey.shade800;
 Color buttonColor = Colors.blue.shade900;
 Color textColor = Colors.white;
 
-const String appVersion = '4.0.2';
+const String appVersion = '4.0.3';
 
 String baseUrl = 'https://sysware-lasovrana.co.uk/lasov';
 

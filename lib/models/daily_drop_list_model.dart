@@ -58,6 +58,7 @@ class DailyDropListModel {
   String isHold;
   String isDelivery;
   String deliveryDateTime;
+  String isChk;
 
   DailyDropListModel({
     required this.autoId,
@@ -106,6 +107,7 @@ class DailyDropListModel {
     required this.isHold,
     required this.isDelivery,
     required this.deliveryDateTime,
+    required this.isChk,
   });
 
   factory DailyDropListModel.fromJson(Map<String, dynamic> json) =>
@@ -156,6 +158,7 @@ class DailyDropListModel {
         isHold: json["IsHold"],
         isDelivery: json["IsDelivery"],
         deliveryDateTime: json["DeliveryDateTime"],
+        isChk: json["IsChk"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -205,5 +208,6 @@ class DailyDropListModel {
         "IsHold": isHold,
         "IsDelivery": isDelivery,
         "DeliveryDateTime": deliveryDateTime,
+        "IsChk": isChk,
       };
 }

@@ -151,6 +151,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
             },
             child: DeliveryItemList(
               selectedItem: item,
+              refreshCallback: fetchDeliveryItems,
             ),
           );
         },

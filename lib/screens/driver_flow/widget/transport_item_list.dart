@@ -82,7 +82,6 @@ class _TransportItemListState extends State<TransportItemList> {
     try {
       String isAll =
           transportItems.every((item) => item.isChk == '1') ? '1' : '0';
-
       for (int i = 0; i < transportItems.length; i++) {
         final result = await apiServices.fnSaveCheckList(
           prmTrnportAutoId: widget.selectedItem.autoId,
@@ -90,7 +89,7 @@ class _TransportItemListState extends State<TransportItemList> {
           prmTokenNo: widget.selectedItem.tokenNo,
           prmInvoiceId: widget.selectedItem.id,
           prmChkVal: transportItems[i].isChk,
-          prmItemId: transportItems[i].id,
+          prmItemId: transportItems[i].itemId,
           prmCmpId: widget.selectedItem.companyId,
           prmBrId: widget.selectedItem.branchId,
           prmFaId: widget.selectedItem.faId,
@@ -133,7 +132,8 @@ class _TransportItemListState extends State<TransportItemList> {
           style: TextButton.styleFrom(
             backgroundColor: Colors.grey,
           ),
-          onPressed: _toggleSelectAll,
+          // onPressed: _toggleSelectAll,
+          onPressed: null,
           icon: Icon(
             allSelected ? Icons.deselect : Icons.select_all,
             color: Colors.black,

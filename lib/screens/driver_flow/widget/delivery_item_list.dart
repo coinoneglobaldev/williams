@@ -9,9 +9,11 @@ import '../../../models/daily_drop_list_model.dart';
 
 class DeliveryItemList extends StatefulWidget {
   final DailyDropListModel selectedItem;
+  final Function refreshCallback;
 
   const DeliveryItemList({
     required this.selectedItem,
+    required this.refreshCallback,
     super.key,
   });
 
@@ -115,23 +117,27 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: widget.selectedItem.isChk == '0'
+                        ? Colors.red
+                        : Colors.blue,
                     minimumSize: const Size(100, 40),
                     elevation: 4,
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) => TransportItemList(
-                          selectedItem: widget.selectedItem,
-                        ),
-                      ),
-                    );
-                  },
+                  onPressed: widget.selectedItem.isDelivery == '1'
+                      ? null
+                      : () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => TransportItemList(
+                                selectedItem: widget.selectedItem,
+                              ),
+                            ),
+                          ).then((value) => widget.refreshCallback());
+                        },
                   child: const Text(
                     'Check',
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
                 SizedBox(height: 10),
