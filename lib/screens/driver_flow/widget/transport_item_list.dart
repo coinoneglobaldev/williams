@@ -99,7 +99,7 @@ class _TransportItemListState extends State<TransportItemList> {
           prmUId: widget.selectedItem.userId,
           prmIsAll: allSelected
               ? isAll == '1' && transportItems.length == i + 1
-                  ? transportItems.length == 0
+                  ? transportItems.isEmpty
                       ? '0'
                       : '1'
                   : '0'
@@ -121,7 +121,7 @@ class _TransportItemListState extends State<TransportItemList> {
       });
       Util.customErrorSnackBar(
         context,
-        "Failed to update location.\n(${e.toString()})",
+        "Failed to Save selected items.\n(${e.toString()})",
       );
       rethrow;
     }
