@@ -99,9 +99,11 @@ class _TransportItemListState extends State<TransportItemList> {
           prmUId: widget.selectedItem.userId,
           prmIsAll: allSelected
               ? isAll == '1' && transportItems.length == i + 1
-                  ? '1'
+                  ? transportItems.length == 0
+                      ? '0'
+                      : '1'
                   : '0'
-              : '0',
+              : '1',
         );
         if (!mounted) return;
         if (result.message != "Success") {
