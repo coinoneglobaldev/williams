@@ -82,6 +82,9 @@ class _TransportItemListState extends State<TransportItemList> {
     try {
       String isAll =
           transportItems.every((item) => item.isChk == '1') ? '1' : '0';
+      final bool allSelected =
+          transportItems.every((item) => item.isChk == '1');
+
       for (int i = 0; i < transportItems.length; i++) {
         final result = await apiServices.fnSaveCheckList(
           prmTrnportAutoId: widget.selectedItem.autoId,
@@ -94,7 +97,11 @@ class _TransportItemListState extends State<TransportItemList> {
           prmBrId: widget.selectedItem.branchId,
           prmFaId: widget.selectedItem.faId,
           prmUId: widget.selectedItem.userId,
-          prmIsAll: isAll == '1' && transportItems.length == i + 1 ? '1' : '0',
+          prmIsAll: allSelected
+              ? isAll == '1' && transportItems.length == i + 1
+                  ? '1'
+                  : '0'
+              : '0',
         );
         if (!mounted) return;
         if (result.message != "Success") {
