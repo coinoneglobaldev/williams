@@ -8,12 +8,14 @@ class CustomScaffoldDriver extends ConsumerStatefulWidget {
   final String title;
   final Widget bodyWidget;
   final bool resizeToAvoidBottomInset;
+  final List<Widget>? actions;
 
   const CustomScaffoldDriver({
     super.key,
     required this.title,
     required this.bodyWidget,
     this.resizeToAvoidBottomInset = true,
+    this.actions,
   });
 
   @override
@@ -49,6 +51,7 @@ class _ScreenHomePageState extends ConsumerState<CustomScaffoldDriver> {
             ),
             onPressed: () => Navigator.pop(context),
           ),
+          actions: widget.actions,
         ),
         // key: _scaffoldKey,
         body: Padding(

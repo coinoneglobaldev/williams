@@ -6,9 +6,10 @@ Color secondaryColor = Colors.grey.shade800;
 Color buttonColor = Colors.blue.shade900;
 Color textColor = Colors.white;
 
-const String appVersion = '1.3.9';
+const String appVersion = '4.0.5';
 
-String baseUrl = 'https://sysware-lasovrana.co.uk/lasov';
+String baseUrl = 'https://sysware-lasovrana.co.uk/lasov'; //old base url
+// String baseUrl = 'https://syswarex1.co.uk/lasova'; //new base url
 
 String webAppLogUrl = '$baseUrl/WebAppLog.asmx';
 String webAppGeneralUrl = '$baseUrl/WebAppGeneral.asmx';
@@ -18,6 +19,7 @@ String fileUploadUrl =
     'https://sysware-lasovrana.co.uk/file/api/Template/GeneralFileUpload';
 
 String loginUrl = '$webAppLogUrl/FnGetUserLogIn';
+String fnRegisterDriverUrl = '$transactionUrl/FnRegisterDriver';
 
 // used in buying
 String getItemListUrl = '$transactionUrl/FnGetItemList';
@@ -49,3 +51,5 @@ String fnUpdateCustomerLocationUrl = '$transactionUrl/FnUpdateCustomerLocation';
 String fnGetVehicleTransportListUrl =
     '$transactionUrl/FnGetVehicleTransportList';
 String fnSaveDeliveryDetailsUrl = '$transactionUrl/FnSaveDeliveryDetails';
+String fnGetTransportItemListUrl = '$transactionUrl/FnGetTransportItemList';
+String fnSaveCheckListUrl = '$transactionUrl/FnSaveCheckList';

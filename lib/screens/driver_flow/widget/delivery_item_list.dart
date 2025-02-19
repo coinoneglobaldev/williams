@@ -1,14 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:lasovrana/screens/driver_flow/widget/transport_item_list.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../custom_widgets/util_class.dart';
 import '../../../models/daily_drop_list_model.dart';
 
 class DeliveryItemList extends StatefulWidget {
   final DailyDropListModel selectedItem;
+  final Function refreshCallback;
 
   const DeliveryItemList({
     required this.selectedItem,
+    required this.refreshCallback,
     super.key,
   });
 
@@ -110,6 +115,38 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: widget.selectedItem.isChk == '0'
+                        ? Colors.blue
+                        : widget.selectedItem.isChk == '1'
+                            ? Colors.orange
+                            : Colors.red,
+                    minimumSize: const Size(100, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 15,
+                    shadowColor: Colors.black,
+                  ),
+                  onPressed: widget.selectedItem.isDelivery == '1'
+                      ? null
+                      : () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => TransportItemList(
+                                selectedItem: widget.selectedItem,
+                              ),
+                            ),
+                          ).then((value) => widget.refreshCallback());
+                        },
+                  child: const Text(
+                    'Check',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                SizedBox(height: 10),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,

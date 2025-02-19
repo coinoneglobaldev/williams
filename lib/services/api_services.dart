@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+
 import '../constants.dart';
 import '../models/PreviousOrderCountModel.dart';
 import '../models/buying_sheet_list_order_model.dart';
@@ -19,6 +20,7 @@ import '../models/round_type_model.dart';
 import '../models/sales_order_item_list_model.dart';
 import '../models/sales_order_list_model.dart';
 import '../models/supplier_list_model.dart';
+import '../models/transport_item_list_model.dart';
 import '../models/uom_list_model.dart';
 
 class ApiServices {
@@ -55,6 +57,40 @@ class ApiServices {
       return LoginModel.fromJson(mapData);
     } catch (e) {
       throw Exception("Error during getUserLogIn request");
+    }
+  }
+
+  Future<CommonResponseModel> fnRegisterDriver({
+    required String prmName,
+    required String prmCode,
+    required String prmPassword,
+    required String prmEmail,
+  }) async {
+    var uri = '$fnRegisterDriverUrl?PrmName=$prmName&PrmCode=$prmCode&'
+        'PrmPassword=$prmPassword&PrmEmail=$prmEmail';
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      Map<String, dynamic> mapData = json.decode(response.body);
+      if (kDebugMode) {
+        print("mapData: $mapData");
+      }
+      return CommonResponseModel.fromJson(mapData);
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnRegisterDriver: $error');
+      }
+      rethrow;
     }
   }
 
@@ -837,6 +873,86 @@ class ApiServices {
     } catch (error) {
       if (kDebugMode) {
         print('Exception in fnSavePackingItem: $error');
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<TransportItemListModel>> fnGetTransportItemList({
+    required String prmInvoiceId,
+    required String prmTokeNo,
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUId,
+  }) async {
+    String uri = "$fnGetTransportItemListUrl?PrmInvoiceId=$prmInvoiceId&"
+        "PrmTokeNo=$prmTokeNo&PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&"
+        "PrmFaId=$prmFaId&PrmUId=$prmUId";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final List<dynamic> responseList = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseList);
+      }
+      return responseList
+          .map((json) => TransportItemListModel.fromJson(json))
+          .toList();
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnGetTransportItemList: $error');
+      }
+      rethrow;
+    }
+  }
+
+  Future<CommonResponseModel> fnSaveCheckList({
+    required String prmTrnportAutoId,
+    required String prmItemAutoId,
+    required String prmTokenNo,
+    required String prmInvoiceId,
+    required String prmChkVal,
+    required String prmItemId,
+    required String prmCmpId,
+    required String prmBrId,
+    required String prmFaId,
+    required String prmUId,
+    required String prmIsAll,
+  }) async {
+    String uri = "$fnSaveCheckListUrl?PrmTrnportAutoId=$prmTrnportAutoId&"
+        "PrmItemAutoId=$prmItemAutoId&PrmTokenNo=$prmTokenNo&"
+        "PrmInvoiceId=$prmInvoiceId&PrmChkVal=$prmChkVal&PrmItemId=$prmItemId&"
+        "PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId&"
+        "PrmIsAll=$prmIsAll";
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      final Map<String, dynamic> responseJson = json.decode(response.body);
+      return CommonResponseModel.fromJson(responseJson);
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnSaveDeliveryDetails: $error');
       }
       rethrow;
     }

@@ -37,6 +37,7 @@ class _OrderItemViewState extends State<OrderItemView> {
   final TextEditingController _itemDetailsController = TextEditingController();
   final TextEditingController _shortController = TextEditingController();
   int selectedRowIndex = 0;
+  int selectedCheck = 0;
   late List<SalesOrderItemListModel> orderListItems;
   late SalesOrderItemListModel selectedOrderItem;
   List<UomAndPackListModel> selectedPackList = [];
@@ -147,16 +148,17 @@ class _OrderItemViewState extends State<OrderItemView> {
                 backgroundColor: Colors.green,
                 minimumSize: const Size(130, 35),
               ),
-              onPressed: orderListItems.any((element) => element.short != "")
-                  ? null
-                  : () {
-                      _selectAllSavePackingItem(
-                        isSelectAll: orderListItems
-                                .any((element) => element.isRelease == "False")
-                            ? "1"
-                            : "-1",
-                      );
-                    },
+              onPressed: null,
+              // onPressed: orderListItems.any((element) => element.short != "")
+              //     ? null
+              //     : () {
+              //         _selectAllSavePackingItem(
+              //           isSelectAll: orderListItems
+              //                   .any((element) => element.isRelease == "False")
+              //               ? "1"
+              //               : "-1",
+              //         );
+              //       },
               child: Text(
                 orderListItems.any((element) => element.isRelease == "False")
                     ? "Select All"
@@ -303,29 +305,32 @@ class _OrderItemViewState extends State<OrderItemView> {
                               ),
                             ),
                             DataCell(
-                              SizedBox(
-                                width: 130,
-                                child: Center(
-                                  child: ButtonTheme(
-                                    alignedDropdown: true,
-                                    child: DropdownButton(
-                                      borderRadius: BorderRadius.circular(10),
-                                      isDense: true,
-                                      dropdownColor: Colors.white,
-                                      items: widget.packTypeList
-                                          .map(
-                                            (e) => DropdownMenuItem(
-                                              value: e,
-                                              child: Text(e.name),
-                                            ),
-                                          )
-                                          .toList(),
-                                      value: selectedPackList[index],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          selectedPackList[index] = value!;
-                                        });
-                                      },
+                              IgnorePointer(
+                                child: SizedBox(
+                                  width: 130,
+                                  child: Center(
+                                    child: ButtonTheme(
+                                      alignedDropdown: true,
+                                      child: DropdownButton(
+                                        borderRadius: BorderRadius.circular(10),
+                                        isDense: true,
+                                        dropdownColor: Colors.white,
+                                        items: widget.packTypeList
+                                            .map(
+                                              (e) => DropdownMenuItem(
+                                                value: e,
+                                                child: Text(e.name),
+                                              ),
+                                            )
+                                            .toList(),
+                                        icon: SizedBox(),
+                                        value: selectedPackList[index],
+                                        onChanged: (value) {
+                                          setState(() {
+                                            selectedPackList[index] = value!;
+                                          });
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -435,6 +440,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                                 _fnSetSelectedItem(
                                   selectedRowItem: rowItem,
                                 );
+                                selectedCheck = index;
                               },
                               Center(
                                 child: Transform.scale(
@@ -454,6 +460,13 @@ class _OrderItemViewState extends State<OrderItemView> {
                                       _fnSetSelectedItem(
                                         selectedRowItem: rowItem,
                                       );
+                                      setState(() {
+                                        selectedRowIndex = index;
+                                      });
+                                      _fnSetSelectedItem(
+                                        selectedRowItem: rowItem,
+                                      );
+                                      selectedCheck = index;
                                       _fnSave(
                                         prmIsRlz: rowItem.isRelease == 'False'
                                             ? '1'
@@ -778,15 +791,20 @@ class _OrderItemViewState extends State<OrderItemView> {
                           height: 60,
                           child: ElevatedButton(
                             onPressed: () {
-                              _fnSave(
-                                  prmIsRlz:
-                                      selectedOrderItem.isRelease == 'False' &&
-                                              _shortController.text == ''
-                                          ? '1'
-                                          : '0',
-                                  autoId: selectedOrderItem.autoId,
-                                  quantity: _qtyControllers.text,
-                                  shorts: _shortController.text);
+                              if (double.parse(_qtyControllers.text) <
+                                  double.parse(selectedOrderItem.qty)) {
+                                _showQuantityWarning();
+                              } else {
+                                _fnSave(
+                                    prmIsRlz: selectedOrderItem.isRelease ==
+                                                'False' &&
+                                            _shortController.text == ''
+                                        ? '1'
+                                        : '0',
+                                    autoId: selectedOrderItem.autoId,
+                                    quantity: _qtyControllers.text,
+                                    shorts: _shortController.text);
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
@@ -918,6 +936,11 @@ class _OrderItemViewState extends State<OrderItemView> {
 
   Future<void> _fnGetOrderList() async {
     try {
+      String currentSelectedAutoId = '';
+      if (orderListItems.isNotEmpty &&
+          selectedRowIndex < orderListItems.length) {
+        currentSelectedAutoId = orderListItems[selectedRowIndex].autoId;
+      }
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String prmCmpId = prefs.getString('cmpId')!;
       String prmBrId = prefs.getString('brId')!;
@@ -934,7 +957,6 @@ class _OrderItemViewState extends State<OrderItemView> {
         prmFaId: prmFaId,
         prmUId: prmUId,
       );
-      log(_orderTempListItems.length.toString());
       if (_orderTempListItems.isEmpty) {
         log('No items found');
 
@@ -963,10 +985,30 @@ class _OrderItemViewState extends State<OrderItemView> {
       }
 
       setState(() {
-        if (orderListItems.isNotEmpty) {
+        if (currentSelectedAutoId.isNotEmpty) {
+          int newIndex = orderListItems
+              .indexWhere((item) => item.autoId == currentSelectedAutoId);
+          if (newIndex != -1) {
+            selectedRowIndex = newIndex;
+            log(_orderTempListItems.length != newIndex
+                ? (newIndex + 1).toString()
+                : newIndex.toString());
+            _fnSetSelectedItem(
+                selectedRowItem: orderListItems[
+                    _orderTempListItems.length - 1 > newIndex
+                        ? newIndex + 1
+                        : newIndex]);
+          } else {
+            // If the previously selected item is not found, select the first item
+            selectedRowIndex = 0;
+            if (orderListItems.isNotEmpty) {
+              _fnSetSelectedItem(selectedRowItem: orderListItems[0]);
+            }
+          }
+        } else if (orderListItems.isNotEmpty) {
+          selectedRowIndex = 0;
           _fnSetSelectedItem(selectedRowItem: orderListItems[0]);
         }
-
         selectedPackList = List<UomAndPackListModel>.filled(
             orderListItems.length, widget.packTypeList[0]);
 
@@ -1086,16 +1128,48 @@ class _OrderItemViewState extends State<OrderItemView> {
     );
   }
 
+  // use it to show if qty lesser than selected qty is typed
+  void _showQuantityWarning() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Invalid Quantity'),
+          content: Text(
+              'Please enter a number greater than ${selectedOrderItem.qty}.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _fnSetSelectedItem({
     required SalesOrderItemListModel selectedRowItem,
   }) {
-    setState(() {
-      selectedOrderItem = selectedRowItem;
-      _itemDetailsController.text =
-          '${selectedOrderItem.itemName}, ${selectedOrderItem.printUom}';
-      _qtyControllers.text = selectedOrderItem.qty;
-      _shortController.text = selectedOrderItem.short;
-    });
+    if (selectedRowItem == orderListItems.last) {
+      setState(() {
+        selectedOrderItem = orderListItems.last;
+        _itemDetailsController.text =
+            '${selectedOrderItem.itemName}, ${selectedOrderItem.printUom}';
+        _qtyControllers.text = selectedOrderItem.qty;
+        _shortController.text = selectedOrderItem.short;
+      });
+    } else {
+      setState(() {
+        selectedOrderItem = selectedRowItem;
+        _itemDetailsController.text =
+            '${selectedOrderItem.itemName}, ${selectedOrderItem.printUom}';
+        _qtyControllers.text = selectedOrderItem.qty;
+        _shortController.text = selectedOrderItem.short;
+      });
+    }
   }
 
   void _fnClearTextFields() {
