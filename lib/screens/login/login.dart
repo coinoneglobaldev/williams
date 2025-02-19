@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lasovrana/screens/login/registration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/orientation_setup.dart';
@@ -337,6 +338,23 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                         fontSize: 12,
                       ),
                     ),
+                    Spacer(),
+                    Text('Don\'t have an account?',
+                        style: TextStyle(color: themeColor)),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => const ScreenRegistration(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Register',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
                   ],
                 ),
                 ElevatedButton(
@@ -404,9 +422,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                           textAlign: TextAlign.center,
                         ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
               ],
             ),
           ],

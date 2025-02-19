@@ -118,10 +118,16 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: widget.selectedItem.isChk == '0'
-                        ? Colors.red
-                        : Colors.blue,
+                        ? Colors.blue
+                        : widget.selectedItem.isChk == '1'
+                            ? Colors.orange
+                            : Colors.red,
                     minimumSize: const Size(100, 40),
-                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 15,
+                    shadowColor: Colors.black,
                   ),
                   onPressed: widget.selectedItem.isDelivery == '1'
                       ? null

@@ -8,7 +8,8 @@ Color textColor = Colors.white;
 
 const String appVersion = '4.0.3';
 
-String baseUrl = 'https://sysware-lasovrana.co.uk/lasov';
+// String baseUrl = 'https://sysware-lasovrana.co.uk/lasov'; //old base url
+String baseUrl = 'https://syswarex1.co.uk/lasova';
 
 String webAppLogUrl = '$baseUrl/WebAppLog.asmx';
 String webAppGeneralUrl = '$baseUrl/WebAppGeneral.asmx';
@@ -18,6 +19,7 @@ String fileUploadUrl =
     'https://sysware-lasovrana.co.uk/file/api/Template/GeneralFileUpload';
 
 String loginUrl = '$webAppLogUrl/FnGetUserLogIn';
+String fnRegisterDriverUrl = '$transactionUrl/FnRegisterDriver';
 
 // used in buying
 String getItemListUrl = '$transactionUrl/FnGetItemList';
