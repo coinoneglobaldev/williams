@@ -6,10 +6,10 @@ Color secondaryColor = Colors.grey.shade800;
 Color buttonColor = Colors.blue.shade900;
 Color textColor = Colors.white;
 
-const String appVersion = '4.0.3';
+const String appVersion = '4.0.5';
 
-// String baseUrl = 'https://sysware-lasovrana.co.uk/lasov'; //old base url
-String baseUrl = 'https://syswarex1.co.uk/lasova';
+String baseUrl = 'https://sysware-lasovrana.co.uk/lasov'; //old base url
+// String baseUrl = 'https://syswarex1.co.uk/lasova'; //new base url
 
 String webAppLogUrl = '$baseUrl/WebAppLog.asmx';
 String webAppGeneralUrl = '$baseUrl/WebAppGeneral.asmx';
