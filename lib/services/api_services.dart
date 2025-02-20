@@ -60,6 +60,40 @@ class ApiServices {
     }
   }
 
+  Future<CommonResponseModel> fnRegisterDriver({
+    required String prmName,
+    required String prmCode,
+    required String prmPassword,
+    required String prmEmail,
+  }) async {
+    var uri = '$fnRegisterDriverUrl?PrmName=$prmName&PrmCode=$prmCode&'
+        'PrmPassword=$prmPassword&PrmEmail=$prmEmail';
+    if (kDebugMode) {
+      print(uri);
+    }
+    try {
+      final response = await http.get(Uri.parse(uri)).timeout(
+          const Duration(
+            seconds: 15,
+          ), onTimeout: () {
+        throw 'timeout';
+      });
+      if (kDebugMode) {
+        print("Response: ${response.body}");
+      }
+      Map<String, dynamic> mapData = json.decode(response.body);
+      if (kDebugMode) {
+        print("mapData: $mapData");
+      }
+      return CommonResponseModel.fromJson(mapData);
+    } catch (error) {
+      if (kDebugMode) {
+        print('Exception in fnRegisterDriver: $error');
+      }
+      rethrow;
+    }
+  }
+
   Future<List<CategoryListModel>> getCategoryList({
     required String prmCompanyId,
   }) async {

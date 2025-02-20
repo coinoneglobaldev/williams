@@ -80,12 +80,12 @@ class _TransportItemListState extends State<TransportItemList> {
       isLoading = true;
     });
     try {
-      String isAll =
-          transportItems.every((item) => item.isChk == '1') ? '1' : '0';
       final bool allSelected =
           transportItems.every((item) => item.isChk == '1');
+      final bool someSelected = transportItems.any((item) => item.isChk == '1');
 
       for (int i = 0; i < transportItems.length; i++) {
+        bool isLastItem = i == transportItems.length - 1;
         final result = await apiServices.fnSaveCheckList(
           prmTrnportAutoId: widget.selectedItem.autoId,
           prmItemAutoId: transportItems[i].autoId,
@@ -97,13 +97,15 @@ class _TransportItemListState extends State<TransportItemList> {
           prmBrId: widget.selectedItem.branchId,
           prmFaId: widget.selectedItem.faId,
           prmUId: widget.selectedItem.userId,
-          prmIsAll: allSelected
-              ? isAll == '1' && transportItems.length == i + 1
-                  ? transportItems.isEmpty
-                      ? '0'
-                      : '1'
+          prmIsAll: transportItems.length == 1
+              ? allSelected
+                  ? '2'
                   : '0'
-              : '1',
+              : allSelected && isLastItem
+                  ? '2'
+                  : !allSelected && isLastItem && someSelected
+                      ? '1'
+                      : '0',
         );
         if (!mounted) return;
         if (result.message != "Success") {
@@ -164,8 +166,14 @@ class _TransportItemListState extends State<TransportItemList> {
                   itemBuilder: (context, index) {
                     final item = transportItems[index];
                     return CheckboxListTile(
-                      title: Text('Item Name: ${item.itemName}'),
-                      subtitle: Text('Quantity: ${item.qty}'),
+                      title: Text(item.itemName),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Unit of Measure: ${item.uomName}'),
+                          Text('Order: ${item.qty}'),
+                        ],
+                      ),
                       value: item.isChk == '1',
                       onChanged: (bool? value) {
                         setState(() {
@@ -189,15 +197,15 @@ class _TransportItemListState extends State<TransportItemList> {
             right: 16,
             left: 16,
             child: ElevatedButton(
-              onPressed: _handleSave,
+              onPressed: isLoading ? null : _handleSave,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(50),
                 ),
               ),
-              child: const Text(
-                'Save Selected Items',
+              child: Text(
+                isLoading ? 'Loading please wait' : 'Save Selected Items',
                 style: TextStyle(fontSize: 16),
               ),
             ),
