@@ -2050,7 +2050,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         log('Ordering item: ${selectedItems[i].packId}');
         final response = await ApiServices().updatePoList(
           prmTokenNo: selectedItems[i].tokenNo,
-          prmDatePrmToCnt: _formatDate(DateTime.now()),
           prmCurntCnt: (i + 1).toString(),
           PrmToCnt: selectedItems.length.toString(),
           prmAccId: _selectedSupplier!.id,
