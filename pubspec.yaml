@@ -2,8 +2,7 @@ name: lasovrana
 description: "A new Flutter project."
 publish_to: "none"
 
-version: 4.0.5+1
-# 1.0.3+2 IOS
+version: 1.0.4+2
 environment:
   sdk: ^3.5.4
 
