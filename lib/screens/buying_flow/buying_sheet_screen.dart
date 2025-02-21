@@ -1584,6 +1584,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           headingRowColor: WidgetStateProperty.all(
             Colors.grey.shade400.withValues(alpha: 0.5),
           ),
+
           border: TableBorder.symmetric(
             inside: const BorderSide(
               color: Colors.black,
@@ -1592,6 +1593,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           ),
           columns: [
             const DataColumn2(
+
               label: Center(
                 child: Text(
                   'Code',
@@ -1619,7 +1621,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 ),
               ),
               size: ColumnSize.L,
-              fixedWidth: 200,
             ),
             const DataColumn2(
               label: Center(
@@ -1742,6 +1743,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               fixedWidth: 90,
             ),
             DataColumn2(
+              fixedWidth: 80,
               label: Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(

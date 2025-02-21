@@ -1583,7 +1583,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                 ),
               ),
               size: ColumnSize.L,
-              fixedWidth: 200,
             ),
             const DataColumn2(
               label: Center(
@@ -1683,6 +1682,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                 ),
               ),
               size: ColumnSize.L,
+              fixedWidth: 80,
             ),
           ],
           rows: data.asMap().entries.map((entry) {
@@ -1991,7 +1991,11 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   Widget _buildSaveButton() {
     return ElevatedButton(
       onPressed: () {
-        _updateNow();
+        bool atLeastOneSelected = _purchaseSheet.any((item) => item.isSelected);
+        if(atLeastOneSelected){ _updateNow();}else{
+          Util.customErrorSnackBar(context, 'Please select at least one item to order');
+        }
+
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
