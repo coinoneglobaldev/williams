@@ -132,7 +132,36 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                       return null;
                     },
                     controller: _usernameController,
-                    decoration: InputDecoration(
+                    decoration: InputDecoration(border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide(
+                        color: themeColor,
+                        width: 1,
+                      ),
+                    ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: themeColor,
+                          width: 1,
+                        ),
+                      ),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: themeColor,
+                          width: 1,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 1,
+                        ),
+                      ),
                       hintText: 'Username',
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
                       prefixIcon:
@@ -152,7 +181,37 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                     },
                     controller: _passwordController,
                     obscureText: !_isVisibility,
-                    decoration: InputDecoration(
+                    decoration: InputDecoration(border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: themeColor,
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: themeColor,
+                          width: 1,
+                        ),
+                      ),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: themeColor,
+                          width: 1,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 1,
+                        ),
+                      ),
                       hintText: 'Password',
                       hintStyle:
                           const TextStyle(color: Colors.grey, fontSize: 14),
@@ -186,7 +245,36 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                     },
                     controller: _confirmPasswordController,
                     obscureText: !_isVisibility,
-                    decoration: InputDecoration(
+                    decoration: InputDecoration(border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide(
+                        color: themeColor,
+                        width: 1,
+                      ),
+                    ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: themeColor,
+                          width: 1,
+                        ),
+                      ),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: themeColor,
+                          width: 1,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 1,
+                        ),
+                      ),
                       hintText: 'Confirm Password',
                       hintStyle:
                           const TextStyle(color: Colors.grey, fontSize: 14),
@@ -211,7 +299,7 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text('  Already have an account?',
-                        style: TextStyle(color: Colors.black)),
+                        style: TextStyle(color: Colors.black,fontSize: 12,)),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -222,13 +310,16 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                         );
                       },
                       child:
-                          Text('Login', style: TextStyle(color: Colors.blue)),
+                          Text('Login', style: TextStyle(color: Colors.blue,fontSize: 12,)),
                     ),
                   ],
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
                   ),
                   onPressed: () async {
                     if (!(_userNameKey.currentState?.validate() ?? false) ||
@@ -296,7 +387,7 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                           textAlign: TextAlign.center,
                         ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 25),
               ],
             ),
           ],

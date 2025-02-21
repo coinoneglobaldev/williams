@@ -7,21 +7,21 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../custom_widgets/util_class.dart';
 import '../../../models/daily_drop_list_model.dart';
 
-class DeliveryItemList extends StatefulWidget {
+class DeliveryItemCard extends StatefulWidget {
   final DailyDropListModel selectedItem;
   final Function refreshCallback;
 
-  const DeliveryItemList({
+  const DeliveryItemCard({
     required this.selectedItem,
     required this.refreshCallback,
     super.key,
   });
 
   @override
-  State<DeliveryItemList> createState() => _DeliveryItemListState();
+  State<DeliveryItemCard> createState() => _DeliveryItemCardState();
 }
 
-class _DeliveryItemListState extends State<DeliveryItemList> {
+class _DeliveryItemCardState extends State<DeliveryItemCard> {
   Future<void> _launchGoogleMaps() async {
     final item = widget.selectedItem;
     if ([item.latitude, item.longitude, item.address].every((x) => x.isEmpty)) {
@@ -53,7 +53,7 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.only(bottom: 10),
       width: double.infinity,
       decoration: BoxDecoration(
@@ -74,8 +74,8 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                       ? 'Sorry, Account not available'
                       : widget.selectedItem.accountDr,
                   style: const TextStyle(
-                    letterSpacing: 2,
-                    fontSize: 16,
+                    letterSpacing: 1,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -88,7 +88,7 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                       ? 'Sorry, Address not available'
                       : widget.selectedItem.address,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 14,
                     color: Colors.white,
                   ),
                   maxLines: 3,
@@ -98,14 +98,14 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
               Text(
                 'Item count: ${widget.selectedItem.itmCnt}',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   color: Colors.white,
                 ),
               ),
               Text(
                 'Amount: £ ${double.parse(widget.selectedItem.grandTotal).toStringAsFixed(2)}',
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   color: Colors.white,
                 ),
               ),
@@ -122,11 +122,13 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                         : widget.selectedItem.isChk == '1'
                             ? Colors.orange
                             : Colors.red,
-                    minimumSize: const Size(100, 40),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    elevation: 15,
+                    elevation: 10,
                     shadowColor: Colors.black,
                   ),
                   onPressed: widget.selectedItem.isDelivery == '1'
@@ -143,22 +145,23 @@ class _DeliveryItemListState extends State<DeliveryItemList> {
                         },
                   child: const Text(
                     'Check',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white,fontSize: 14,),
                   ),
                 ),
                 SizedBox(height: 10),
                 Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      widget.selectedItem.refNo,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
+                  child: Text(
+                    widget.selectedItem.refNo,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                 ),
                 SizedBox(height: 10),

@@ -9,7 +9,7 @@ import '../../custom_widgets/util_class.dart';
 import '../../models/daily_drop_list_model.dart';
 import '../../services/api_services.dart';
 import 'delivery_upload_screen.dart';
-import 'widget/delivery_item_list.dart';
+import 'widget/delivery_item_card.dart';
 import 'widget/driver_home_appbar.dart';
 
 class DeliveryItemsListScreen extends StatefulWidget {
@@ -149,7 +149,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
                     context, "Delivery already uploaded");
               }
             },
-            child: DeliveryItemList(
+            child: DeliveryItemCard(
               selectedItem: item,
               refreshCallback: fetchDeliveryItems,
             ),
@@ -177,7 +177,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
         },
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 15,),
             child: Column(
               children: [
                 DriverHomeAppbar(name: widget.name, dNo: widget.dNo),
@@ -247,14 +247,18 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
                 Expanded(
                   child: isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : TabBarView(
-                          physics: NeverScrollableScrollPhysics(),
-                          controller: _tabController,
-                          children: [
-                            _buildDeliveryList(pendingDeliveries),
-                            _buildDeliveryList(finishedDeliveries),
-                          ],
-                        ),
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                        clipBehavior: Clip.antiAlias,
+                        child: TabBarView(
+                            physics: NeverScrollableScrollPhysics(),
+                            controller: _tabController,
+                            children: [
+                              _buildDeliveryList(pendingDeliveries),
+                              _buildDeliveryList(finishedDeliveries),
+                            ],
+                          ),
+                      ),
                 ),
               ],
             ),
