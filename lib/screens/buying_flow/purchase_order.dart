@@ -4,6 +4,7 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../common/custom_overlay_loading.dart';
 import '../../constants.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
@@ -1210,7 +1211,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
 
   String _formatDate(DateTime dte) {
     try {
-      DateFormat date = DateFormat('dd/MM/yyyy');
+      DateFormat date = DateFormat('dd/MMM/yyyy');
       return date.format(dte);
     } catch (e) {
       return '';
@@ -1414,7 +1415,11 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             .where((e) => e.name == _purchaseSheet[0].accountCr)
             .first;
         _billNoController.text = _purchaseSheet[0].optRefNo;
-        _billDateController.text = _purchaseSheet[0].optDate;
+        String formattedBillDate = DateFormat('yyyy-MM-dd').format(
+            DateFormat('MM/dd/yyyy hh:mm:ss a')
+                .parse(_purchaseSheet[0].optDate));
+        _billDateController.text =
+            _formatDate(DateTime.parse(formattedBillDate));
         _selectedOrderTableUom = List.generate(
           _purchaseSheet.length,
           (index) => _oum.first,
