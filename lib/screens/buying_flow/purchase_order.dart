@@ -779,7 +779,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                           },
                           child: Text('Add'),
                         ),
-                        SizedBox(width: 8),
+                        SizedBox(width: 5),
                       ],
                     ),
                   ),
@@ -924,10 +924,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                 ),
                                 label: const Text('Buying Sheet'),
                               ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.2,
-                              ),
+                              Expanded(flex:3,child: SizedBox())
                             ],
                           ),
                         ),

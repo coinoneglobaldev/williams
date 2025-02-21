@@ -819,10 +819,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   'Purchase Order',
                                 ),
                               ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.2,
-                              ),
+                              Expanded(flex:3,child: SizedBox())
+
                             ],
                           ),
                         ),
