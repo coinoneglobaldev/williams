@@ -792,7 +792,7 @@ class _OrderItemViewState extends State<OrderItemView> {
                           child: ElevatedButton(
                             onPressed: () {
                               if (double.parse(_qtyControllers.text) <
-                                  double.parse(selectedOrderItem.qty)) {
+                                  double.parse(selectedOrderItem.ordQty)) {
                                 _showQuantityWarning();
                               } else {
                                 _fnSave(
@@ -872,7 +872,6 @@ class _OrderItemViewState extends State<OrderItemView> {
               .then((value) {
             if (value.errorCode == 0) {
               _fnGetOrderList().whenComplete(() {
-                _fnClearTextFields();
                 Navigator.pop(context);
               });
             } else {
@@ -1136,7 +1135,7 @@ class _OrderItemViewState extends State<OrderItemView> {
         return AlertDialog(
           title: Text('Invalid Quantity'),
           content: Text(
-              'Please enter a number greater than ${selectedOrderItem.qty}.'),
+              'Please enter a number greater than ${selectedOrderItem.ordQty}.'),
           actions: [
             TextButton(
               onPressed: () {

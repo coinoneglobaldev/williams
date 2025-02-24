@@ -24,13 +24,14 @@ class DeliveryItemCard extends StatefulWidget {
 class _DeliveryItemCardState extends State<DeliveryItemCard> {
   Future<void> _launchGoogleMaps() async {
     final item = widget.selectedItem;
-    if ([item.latitude, item.longitude, item.address].every((x) => x.isEmpty)) {
+    if ([item.latitude, item.longitude, item.firstLineAdd]
+        .every((x) => x.isEmpty)) {
       _handleError('Address or location not available');
       return;
     }
     final String query = item.latitude.isNotEmpty && item.longitude.isNotEmpty
         ? '${item.latitude},${item.longitude}'
-        : item.address;
+        : '${item.zipCode},${item.firstLineAdd}';
     final Uri googleMapsUrl =
         Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
     try {
@@ -145,7 +146,10 @@ class _DeliveryItemCardState extends State<DeliveryItemCard> {
                         },
                   child: const Text(
                     'Check',
-                    style: TextStyle(color: Colors.white,fontSize: 14,),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
                 SizedBox(height: 10),
