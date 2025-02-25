@@ -1175,18 +1175,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         ),
       );
       _suppliers = suppliers;
-      _suppliers.insert(
-        0,
-        SupplierListModel(
-          id: '0',
-          name: 'All Suppliers',
-          code: '',
-          address: '',
-          email: '',
-          mobNo: '',
-          phoneNo: '',
-        ),
-      );
       _items = items;
       _oum = oum;
       _previousOrders = previousOrder;
@@ -2159,7 +2147,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   Widget _buildSaveButton() {
     return ElevatedButton(
       onPressed: _selectedSupplier == null ||
-              _selectedSupplier!.name == 'All Suppliers' ||
               _selectedCount == 0
           ? null
           : () {
@@ -2175,7 +2162,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      child: Text('Order Now (${_selectedCount})'),
+      child: Text('Order Now ($_selectedCount)'),
     );
   }
 

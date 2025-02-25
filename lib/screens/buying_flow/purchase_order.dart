@@ -80,9 +80,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
     selectedDate = DateTime.now();
   }
 
-  void calculateTotalAmount({
+  Future<void> calculateTotalAmount({
     required List<PoDetailsModel> buyingSheet,
-  }) {
+  }) async {
     _totalAmount = buyingSheet
         .asMap()
         .entries
@@ -966,7 +966,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(
-                            width: 200,
+                            width: 100,
                             child: TextField(
                               controller: _billNoController,
                               readOnly: true,
@@ -993,7 +993,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(
-                            width: 200,
+                            width: 150,
                             child: TextField(
                               controller: _billDateController,
                               readOnly: true,
@@ -1016,7 +1016,18 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                           ),
                         ],
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          'Total Amount : £ ${_totalAmount.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
                       SizedBox(
                         height: 50,
                         child: _purchaseSheet.isEmpty
@@ -1046,6 +1057,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                   _selectAll = false;
                   _selectedCount = 0;
                   _totalAmount = 0.0;
+                  calculateTotalAmount(buyingSheet: _purchaseSheet);
+
                   setState(() {});
                 });
               },
@@ -1085,6 +1098,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                   _selectedCount = 0;
                   _totalAmount = 0.0;
                   setState(() {});
+                  calculateTotalAmount(buyingSheet: _purchaseSheet);
                 });
               },
               // onPressed: _handleSearch,
@@ -1110,6 +1124,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                   _selectAll = false;
                   _selectedCount = 0;
                   _totalAmount = 0.0;
+                  calculateTotalAmount(buyingSheet: _purchaseSheet);
+
                   setState(() {});
                 });
               },
@@ -1235,18 +1251,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         ),
       );
       _suppliers = suppliers;
-      _suppliers.insert(
-        0,
-        SupplierListModel(
-          id: '0',
-          name: 'All Suppliers',
-          code: '',
-          address: '',
-          email: '',
-          mobNo: '',
-          phoneNo: '',
-        ),
-      );
       _items = items;
       _oum = oum;
       _previousOrders = previousOrder;
@@ -1277,7 +1281,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         _purchaseSheet.length,
         (index) => TextEditingController(text: _purchaseSheet[index].rate),
       );
-
       setState(() {
         _isLoading = false;
       });
@@ -1446,7 +1449,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             return _purchaseSheet[index].currencyId;
           },
         );
-
         _selectedOrderTableUom = List.generate(
           _purchaseSheet.length,
           (index) {
@@ -1455,7 +1457,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                 .first;
           },
         ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
-
         _rateControllers = List.generate(
           _purchaseSheet.length,
           (index) => TextEditingController(text: _purchaseSheet[index].rate),
@@ -1464,6 +1465,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           _purchaseSheet.length,
           (index) => TextEditingController(text: _purchaseSheet[index].rate),
         );
+       await calculateTotalAmount(buyingSheet: _purchaseSheet);
         setState(() {});
         if (!mounted) return;
         Navigator.pop(context);
