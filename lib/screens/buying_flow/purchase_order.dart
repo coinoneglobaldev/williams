@@ -899,7 +899,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                   ],
                                 ),
                               ),
-
                               const SizedBox(height: 10),
                               ElevatedButton.icon(
                                 onPressed: () {
