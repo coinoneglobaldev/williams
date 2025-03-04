@@ -143,7 +143,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
                   ),
                 ),
                 Text(
-                  'Sovrana',
+                  'SovranaX',
                   style: TextStyle(
                     height: 0.9,
                     color: buttonColor,

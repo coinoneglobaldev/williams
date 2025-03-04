@@ -215,7 +215,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
                       ),
                     ),
                     Text(
-                      'Sovrana',
+                      'SovranaX',
                       style: TextStyle(
                         height: 0.9,
                         color: buttonColor,

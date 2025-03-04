@@ -98,7 +98,7 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                           color: buttonColor,
                           fontSize: 50,
                           fontWeight: FontWeight.bold)),
-                  Text('Sovrana',
+                  Text('SovranaX',
                       style: TextStyle(
                           height: 0.9,
                           color: buttonColor,
