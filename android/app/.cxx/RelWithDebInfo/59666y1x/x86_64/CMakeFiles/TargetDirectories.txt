@@ -1,0 +1,2 @@
+D:/github/williams/android/app/.cxx/RelWithDebInfo/59666y1x/x86_64/CMakeFiles/edit_cache.dir
+D:/github/williams/android/app/.cxx/RelWithDebInfo/59666y1x/x86_64/CMakeFiles/rebuild_cache.dir
