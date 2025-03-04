@@ -1,0 +1,2 @@
+/Users/coinone/Documents/GitHub/williams/android/app/.cxx/RelWithDebInfo/h3x575x4/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/coinone/Documents/GitHub/williams/android/app/.cxx/RelWithDebInfo/h3x575x4/arm64-v8a/CMakeFiles/rebuild_cache.dir

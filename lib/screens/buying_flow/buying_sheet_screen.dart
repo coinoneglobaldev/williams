@@ -819,10 +819,8 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                                   'Purchase Order',
                                 ),
                               ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.2,
-                              ),
+                              Expanded(flex:3,child: SizedBox())
+
                             ],
                           ),
                         ),
@@ -1177,18 +1175,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
         ),
       );
       _suppliers = suppliers;
-      _suppliers.insert(
-        0,
-        SupplierListModel(
-          id: '0',
-          name: 'All Suppliers',
-          code: '',
-          address: '',
-          email: '',
-          mobNo: '',
-          phoneNo: '',
-        ),
-      );
       _items = items;
       _oum = oum;
       _previousOrders = previousOrder;
@@ -1584,6 +1570,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           headingRowColor: WidgetStateProperty.all(
             Colors.grey.shade400.withValues(alpha: 0.5),
           ),
+
           border: TableBorder.symmetric(
             inside: const BorderSide(
               color: Colors.black,
@@ -1592,6 +1579,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           ),
           columns: [
             const DataColumn2(
+
               label: Center(
                 child: Text(
                   'Code',
@@ -1619,7 +1607,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
                 ),
               ),
               size: ColumnSize.L,
-              fixedWidth: 200,
             ),
             const DataColumn2(
               label: Center(
@@ -1742,6 +1729,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
               fixedWidth: 90,
             ),
             DataColumn2(
+              fixedWidth: 80,
               label: Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -2159,7 +2147,6 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
   Widget _buildSaveButton() {
     return ElevatedButton(
       onPressed: _selectedSupplier == null ||
-              _selectedSupplier!.name == 'All Suppliers' ||
               _selectedCount == 0
           ? null
           : () {
@@ -2175,7 +2162,7 @@ class _BuyingSheetScreenState extends State<BuyingSheetScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      child: Text('Order Now (${_selectedCount})'),
+      child: Text('Order Now ($_selectedCount)'),
     );
   }
 

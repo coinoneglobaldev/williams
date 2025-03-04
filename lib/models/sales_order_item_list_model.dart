@@ -105,6 +105,7 @@ class SalesOrderItemListModel {
   String puRate;
   String isRelease;
   String short;
+  String ordQty;
 
   SalesOrderItemListModel({
     this.isChecked = false,
@@ -200,6 +201,7 @@ class SalesOrderItemListModel {
     required this.puRate,
     required this.isRelease,
     required this.short,
+    required this.ordQty,
   });
 
   factory SalesOrderItemListModel.fromJson(Map<String, dynamic> json) =>
@@ -296,6 +298,7 @@ class SalesOrderItemListModel {
         puRate: json["PuRate"],
         isRelease: json["IsRelease"],
         short: json["Short"],
+        ordQty: json["OrdQty"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -392,5 +395,6 @@ class SalesOrderItemListModel {
         "PuRate": puRate,
         "IsRelease": isRelease,
         "Short": short,
+        "OrdQty": ordQty,
       };
 }

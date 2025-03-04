@@ -4,6 +4,7 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../common/custom_overlay_loading.dart';
 import '../../constants.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
@@ -79,9 +80,9 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
     selectedDate = DateTime.now();
   }
 
-  void calculateTotalAmount({
+  Future<void> calculateTotalAmount({
     required List<PoDetailsModel> buyingSheet,
-  }) {
+  }) async {
     _totalAmount = buyingSheet
         .asMap()
         .entries
@@ -778,7 +779,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                           },
                           child: Text('Add'),
                         ),
-                        SizedBox(width: 8),
+                        SizedBox(width: 5),
                       ],
                     ),
                   ),
@@ -898,7 +899,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                   ],
                                 ),
                               ),
-
                               const SizedBox(height: 10),
                               ElevatedButton.icon(
                                 onPressed: () {
@@ -923,10 +923,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                 ),
                                 label: const Text('Buying Sheet'),
                               ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.2,
-                              ),
+                              Expanded(flex:3,child: SizedBox())
                             ],
                           ),
                         ),
@@ -969,7 +966,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(
-                            width: 200,
+                            width: 100,
                             child: TextField(
                               controller: _billNoController,
                               readOnly: true,
@@ -996,7 +993,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(
-                            width: 200,
+                            width: 150,
                             child: TextField(
                               controller: _billDateController,
                               readOnly: true,
@@ -1019,7 +1016,18 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                           ),
                         ],
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          'Total Amount : £ ${_totalAmount.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
                       SizedBox(
                         height: 50,
                         child: _purchaseSheet.isEmpty
@@ -1049,6 +1057,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                   _selectAll = false;
                   _selectedCount = 0;
                   _totalAmount = 0.0;
+                  calculateTotalAmount(buyingSheet: _purchaseSheet);
+
                   setState(() {});
                 });
               },
@@ -1088,6 +1098,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                   _selectedCount = 0;
                   _totalAmount = 0.0;
                   setState(() {});
+                  calculateTotalAmount(buyingSheet: _purchaseSheet);
                 });
               },
               // onPressed: _handleSearch,
@@ -1113,6 +1124,8 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                   _selectAll = false;
                   _selectedCount = 0;
                   _totalAmount = 0.0;
+                  calculateTotalAmount(buyingSheet: _purchaseSheet);
+
                   setState(() {});
                 });
               },
@@ -1210,7 +1223,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
 
   String _formatDate(DateTime dte) {
     try {
-      DateFormat date = DateFormat('dd/MM/yyyy');
+      DateFormat date = DateFormat('dd/MMM/yyyy');
       return date.format(dte);
     } catch (e) {
       return '';
@@ -1238,18 +1251,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         ),
       );
       _suppliers = suppliers;
-      _suppliers.insert(
-        0,
-        SupplierListModel(
-          id: '0',
-          name: 'All Suppliers',
-          code: '',
-          address: '',
-          email: '',
-          mobNo: '',
-          phoneNo: '',
-        ),
-      );
       _items = items;
       _oum = oum;
       _previousOrders = previousOrder;
@@ -1280,7 +1281,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         _purchaseSheet.length,
         (index) => TextEditingController(text: _purchaseSheet[index].rate),
       );
-
       setState(() {
         _isLoading = false;
       });
@@ -1414,7 +1414,11 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             .where((e) => e.name == _purchaseSheet[0].accountCr)
             .first;
         _billNoController.text = _purchaseSheet[0].optRefNo;
-        _billDateController.text = _purchaseSheet[0].optDate;
+        String formattedBillDate = DateFormat('yyyy-MM-dd').format(
+            DateFormat('MM/dd/yyyy hh:mm:ss a')
+                .parse(_purchaseSheet[0].optDate));
+        _billDateController.text =
+            _formatDate(DateTime.parse(formattedBillDate));
         _selectedOrderTableUom = List.generate(
           _purchaseSheet.length,
           (index) => _oum.first,
@@ -1445,7 +1449,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
             return _purchaseSheet[index].currencyId;
           },
         );
-
         _selectedOrderTableUom = List.generate(
           _purchaseSheet.length,
           (index) {
@@ -1454,7 +1457,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                 .first;
           },
         ); // TODO: Remove this line after adding UOM in BuyingSheetListModel
-
         _rateControllers = List.generate(
           _purchaseSheet.length,
           (index) => TextEditingController(text: _purchaseSheet[index].rate),
@@ -1463,6 +1465,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           _purchaseSheet.length,
           (index) => TextEditingController(text: _purchaseSheet[index].rate),
         );
+       await calculateTotalAmount(buyingSheet: _purchaseSheet);
         setState(() {});
         if (!mounted) return;
         Navigator.pop(context);
@@ -1578,7 +1581,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                 ),
               ),
               size: ColumnSize.L,
-              fixedWidth: 200,
             ),
             const DataColumn2(
               label: Center(
@@ -1678,6 +1680,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                 ),
               ),
               size: ColumnSize.L,
+              fixedWidth: 80,
             ),
           ],
           rows: data.asMap().entries.map((entry) {
@@ -1986,7 +1989,11 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
   Widget _buildSaveButton() {
     return ElevatedButton(
       onPressed: () {
-        _updateNow();
+        bool atLeastOneSelected = _purchaseSheet.any((item) => item.isSelected);
+        if(atLeastOneSelected){ _updateNow();}else{
+          Util.customErrorSnackBar(context, 'Please select at least one item to order');
+        }
+
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
@@ -2045,7 +2052,6 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
         log('Ordering item: ${selectedItems[i].packId}');
         final response = await ApiServices().updatePoList(
           prmTokenNo: selectedItems[i].tokenNo,
-          prmDatePrmToCnt: _formatDate(DateTime.now()),
           prmCurntCnt: (i + 1).toString(),
           PrmToCnt: selectedItems.length.toString(),
           prmAccId: _selectedSupplier!.id,

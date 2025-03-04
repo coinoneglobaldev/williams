@@ -828,7 +828,7 @@ class ApiServices {
 
   Future<String> updatePoList({
     required String prmTokenNo,
-    required String prmDatePrmToCnt,
+    required String prmDate,
     required String prmCurntCnt,
     required String PrmToCnt,
     required String prmAccId,
@@ -846,18 +846,16 @@ class ApiServices {
     required String prmBillNo,
     required String prmRefNo,
     required String prmInvoiceId,
-    required String prmDate,
     required String prmBilDate,
     required String prmRemarks,
   }) async {
-    String uri =
-        "$updatePoListDate?PrmTokenNo=$prmTokenNo&PrmDate=$prmDatePrmToCnt&"
+    String uri = "$updatePoListDate?PrmTokenNo=$prmTokenNo&PrmDate=$prmDate&"
         "PrmCurntCnt=$prmCurntCnt&PrmToCnt=$PrmToCnt&PrmAccId=$prmAccId&"
         "PrmItemId=$prmItemId&PrmUomId=$prmUomId&PrmTaxId=$prmTaxId&"
         "PrmPackId=$prmPackId&PrmNoPacks=$prmNoPacks&PrmConVal=$prmConVal&"
         "PrmCmpId=$prmCmpId&PrmBrId=$prmBrId&PrmFaId=$prmFaId&PrmUId=$prmUId&"
         "PrmRate=$prmRate&PrmBillNo=$prmBillNo&PrmRefNo=$prmRefNo&PrmInvoiceId=$prmInvoiceId&"
-        "PrmDate=$prmDate&PrmBilDate=$prmBilDate&PrmRemarks=$prmRemarks";
+        "PrmBilDate=$prmBilDate&PrmRemarks=$prmRemarks";
     if (kDebugMode) {
       print(uri);
     }

@@ -1,0 +1,2 @@
+C:/Users/coino/Documents/GitHub/williams/android/app/.cxx/Debug/362j4t4q/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/coino/Documents/GitHub/williams/android/app/.cxx/Debug/362j4t4q/x86_64/CMakeFiles/rebuild_cache.dir
