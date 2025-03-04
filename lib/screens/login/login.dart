@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lasovrana/screens/login/registration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/orientation_setup.dart';
@@ -19,6 +18,7 @@ import '../../services/api_services.dart';
 import '../buying_flow/buying_sheet_screen.dart';
 import '../driver_flow/delivery_items_list_screen.dart';
 import '../packing_flow/sales_order_list.dart';
+import 'registration.dart';
 
 class ScreenLogin extends ConsumerStatefulWidget {
   const ScreenLogin({
@@ -186,529 +186,568 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
   }
 
   Widget _mobileView(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      decoration: BoxDecoration(
-          image: DecorationImage(
-        image: const AssetImage('assets/images/login_background.jpg'),
-        fit: BoxFit.cover,
-      )),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'La',
-                    style: TextStyle(
-                      height: 0.9,
-                      color: buttonColor,
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold,
+    return SingleChildScrollView(
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+          image: const AssetImage('assets/images/login_background.jpg'),
+          fit: BoxFit.cover,
+        )),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'La',
+                      style: TextStyle(
+                        height: 0.9,
+                        color: buttonColor,
+                        fontSize: 50,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Sovrana',
-                    style: TextStyle(
-                      height: 0.9,
-                      color: buttonColor,
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      'SovranaX',
+                      style: TextStyle(
+                        height: 0.9,
+                        color: buttonColor,
+                        fontSize: 50,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(
-                  height: 15,
-                ),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: const Text(
-                    ' Enter your login details',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                    ),
-                    textAlign: TextAlign.center,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(
+                    height: 15,
                   ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Form(
-                  key: _userNameKey,
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter a valid username';
-                      }
-                      return null;
-                    },
-                    controller: _usernameController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide(
-                        color: themeColor,
-                        width: 1,
-                      ),
-                    ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: themeColor,
-                          width: 1,
-                        ),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: themeColor,
-                          width: 1,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: Colors.red,
-                          width: 1,
-                        ),
-                      ),
-                      hintText: 'Username',
-                      hintStyle: const TextStyle(
-                        color: Colors.grey,
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: const Text(
+                      ' Enter your login details',
+                      style: TextStyle(
+                        color: Colors.black,
                         fontSize: 14,
                       ),
-                      prefixIcon: Icon(
-                        Icons.person,
-                        color: themeColor,
-                        size: 20,
-                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Form(
-                  key: _passwordKey,
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter password';
-                      }
-                      return null;
-                    },
-                    controller: _passwordController,
-                    obscureText: !_isVisibility,
-                    decoration: InputDecoration(border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide(
-                        color: themeColor,
-                        width: 1,
-                      ),
-                    ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: themeColor,
-                          width: 1,
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Form(
+                    key: _userNameKey,
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter a valid username';
+                        }
+                        return null;
+                      },
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
                         ),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: themeColor,
-                          width: 1,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: themeColor,
+                            width: 1,
+                          ),
                         ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: Colors.red,
-                          width: 1,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: themeColor,
+                            width: 1,
+                          ),
                         ),
-                      ),
-                      hintText: 'Password',
-                      hintStyle: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
-                      ),
-                      prefixIcon: Icon(
-                        Icons.lock,
-                        color: themeColor,
-                        size: 20,
-                      ),
-                      suffixIcon: InkWell(
-                        onTap: () {
-                          setState(() {
-                            _isVisibility = !_isVisibility;
-                          });
-                        },
-                        child: Icon(
-                          _isVisibility
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: themeColor,
+                            width: 1,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: Colors.red,
+                            width: 1,
+                          ),
+                        ),
+                        hintText: 'Username',
+                        hintStyle: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.person,
                           color: themeColor,
                           size: 20,
                         ),
                       ),
                     ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Checkbox(
-                      value: _isRememberMe,
-                      onChanged: (value) {
-                        setState(() {
-                          _isRememberMe = value!;
-                        });
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Form(
+                    key: _passwordKey,
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter password';
+                        }
+                        return null;
                       },
-                      activeColor: Colors.black,
-                      checkColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      side: const BorderSide(
-                        color: Colors.grey,
-                        width: 2,
-                      ),
-                    ),
-                    const Text(
-                      'Remember me',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                      ),
-                    ),
-                    Spacer(),
-                    Text('Don\'t have an account?',
-                        style: TextStyle(color: themeColor,                        fontSize: 12,
-                        )),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => const ScreenRegistration(),
+                      controller: _passwordController,
+                      obscureText: !_isVisibility,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: themeColor,
+                            width: 1,
                           ),
-                        );
-                      },
-                      child: Text(
-                        'Register',
-                        style: TextStyle(color: Colors.blue,                        fontSize: 12,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: themeColor,
+                            width: 1,
+                          ),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: themeColor,
+                            width: 1,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: Colors.red,
+                            width: 1,
+                          ),
+                        ),
+                        hintText: 'Password',
+                        hintStyle: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.lock,
+                          color: themeColor,
+                          size: 20,
+                        ),
+                        suffixIcon: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _isVisibility = !_isVisibility;
+                            });
+                          },
+                          child: Icon(
+                            _isVisibility
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: themeColor,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
                   ),
-                  onPressed: () async {
-                    if (!_userNameKey.currentState!.validate() ||
-                        !_passwordKey.currentState!.validate()) {
-                      return;
-                    }
-                    setState(() {
-                      _isButtonLoading = true;
-                    });
-                    try {
-                      LoginModel loginData = await apiServices.getUserLogIn(
-                        prmUsername: _usernameController.text.trim(),
-                        prmPassword: _passwordController.text.trim(),
-                        prmMacAddress: '',
-                        prmIpAddress: '',
-                        prmLat: '',
-                        prmLong: '',
-                        prmAppType: '',
-                      );
-                      if (!mounted) return;
-                      if (loginData.errorCode == 0) {
-                        await _saveUserData(loginData);
-                        _navigateToBackground(loginData.data[0].userType);
-                      } else {
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Checkbox(
+                        value: _isRememberMe,
+                        onChanged: (value) {
+                          setState(() {
+                            _isRememberMe = value!;
+                          });
+                        },
+                        activeColor: Colors.black,
+                        checkColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        side: const BorderSide(
+                          color: Colors.grey,
+                          width: 2,
+                        ),
+                      ),
+                      const Text(
+                        'Remember me',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Spacer(),
+                      Text('Don\'t have an account?',
+                          style: TextStyle(
+                            color: themeColor,
+                            fontSize: 12,
+                          )),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => const ScreenRegistration(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Register',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    onPressed: () async {
+                      if (!_userNameKey.currentState!.validate() ||
+                          !_passwordKey.currentState!.validate()) {
+                        return;
+                      }
+                      setState(() {
+                        _isButtonLoading = true;
+                      });
+                      try {
+                        LoginModel loginData = await apiServices.getUserLogIn(
+                          prmUsername: _usernameController.text.trim(),
+                          prmPassword: _passwordController.text.trim(),
+                          prmMacAddress: '',
+                          prmIpAddress: '',
+                          prmLat: '',
+                          prmLong: '',
+                          prmAppType: '',
+                        );
+                        if (!mounted) return;
+                        if (loginData.errorCode == 0) {
+                          await _saveUserData(loginData);
+                          _navigateToBackground(loginData.data[0].userType);
+                        } else {
+                          if (!context.mounted) return;
+                          Util.customErrorSnackBar(
+                            context,
+                            "Error: ${loginData.message}",
+                          );
+                        }
+                      } catch (e) {
+                        if (kDebugMode) {
+                          print('Login error: $e');
+                        }
                         if (!context.mounted) return;
                         Util.customErrorSnackBar(
                           context,
-                          "Error: ${loginData.message}",
+                          "An error occurred during login. Please try again.",
                         );
+                      } finally {
+                        if (mounted) {
+                          setState(() {
+                            _isButtonLoading = false;
+                          });
+                        }
                       }
-                    } catch (e) {
-                      if (kDebugMode) {
-                        print('Login error: $e');
-                      }
-                      if (!context.mounted) return;
-                      Util.customErrorSnackBar(
-                        context,
-                        "An error occurred during login. Please try again.",
-                      );
-                    } finally {
-                      if (mounted) {
-                        setState(() {
-                          _isButtonLoading = false;
-                        });
-                      }
-                    }
-                  },
-                  child: _isButtonLoading
-                      ? const CustomLogoSpinner(
-                          oneSize: 10,
-                          roundSize: 30,
-                        )
-                      : const Text(
-                          'LOGIN',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                    },
+                    child: _isButtonLoading
+                        ? const CustomLogoSpinner(
+                            oneSize: 10,
+                            roundSize: 30,
+                          )
+                        : const Text(
+                            'LOGIN',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                ),
-                const SizedBox(height: 25),
-              ],
-            ),
-          ],
+                  ),
+                  const SizedBox(height: 25),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _tabletView(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/login_background.jpg'),
-          fit: BoxFit.cover,
+    return SingleChildScrollView(
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/login_background.jpg'),
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Left side - Logo and Company Name
-            Expanded(
-              flex: 1,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'La',
-                    style: TextStyle(
-                      height: 0.9,
-                      color: buttonColor,
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Left side - Logo and Company Name
+              Expanded(
+                flex: 1,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'La',
+                      style: TextStyle(
+                        height: 0.9,
+                        color: buttonColor,
+                        fontSize: 50,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Sovrana',
-                    style: TextStyle(
-                      height: 0.9,
-                      color: buttonColor,
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Right side - Login Form
-            Expanded(
-              flex: 1,
-              child: Container(
-                margin: const EdgeInsets.only(top: 50),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.5),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3),
+                    Text(
+                      'SovranaX',
+                      style: TextStyle(
+                        height: 0.9,
+                        color: buttonColor,
+                        fontSize: 50,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
-                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text(
-                        'Enter your login details',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
+              ),
+
+              // Right side - Login Form
+              Expanded(
+                flex: 1,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 50),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withValues(alpha: 0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3),
                       ),
-                      const SizedBox(height: 10),
-                      Form(
-                        key: _userNameKey,
-                        child: TextFormField(
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter a valid username';
-                            }
-                            return null;
-                          },
-                          controller: _usernameController,
-                          decoration: InputDecoration(
-                            hintText: 'Username',
-                            hintStyle: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                            prefixIcon: Icon(
-                              Icons.person,
-                              color: themeColor,
-                              size: 20,
-                            ),
+                    ],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text(
+                          'Enter your login details',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Form(
-                        key: _passwordKey,
-                        child: TextFormField(
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter password';
-                            }
-                            return null;
-                          },
-                          controller: _passwordController,
-                          obscureText: !_isVisibility,
-                          decoration: InputDecoration(
-                            hintText: 'Password',
-                            hintStyle: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                            prefixIcon: Icon(
-                              Icons.lock,
-                              color: themeColor,
-                              size: 20,
-                            ),
-                            suffixIcon: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  _isVisibility = !_isVisibility;
-                                });
-                              },
-                              child: Icon(
-                                _isVisibility
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
+                        const SizedBox(height: 10),
+                        Form(
+                          key: _userNameKey,
+                          child: TextFormField(
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter a valid username';
+                              }
+                              return null;
+                            },
+                            controller: _usernameController,
+                            decoration: InputDecoration(
+                              hintText: 'Username',
+                              hintStyle: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.person,
                                 color: themeColor,
                                 size: 20,
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: buttonColor,
+                        const SizedBox(height: 10),
+                        Form(
+                          key: _passwordKey,
+                          child: TextFormField(
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter password';
+                              }
+                              return null;
+                            },
+                            controller: _passwordController,
+                            obscureText: !_isVisibility,
+                            decoration: InputDecoration(
+                              hintText: 'Password',
+                              hintStyle: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.lock,
+                                color: themeColor,
+                                size: 20,
+                              ),
+                              suffixIcon: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    _isVisibility = !_isVisibility;
+                                  });
+                                },
+                                child: Icon(
+                                  _isVisibility
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: themeColor,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                        onPressed: () async {
-                          if (!_userNameKey.currentState!.validate() ||
-                              !_passwordKey.currentState!.validate()) {
-                            return;
-                          }
-                          setState(() {
-                            _isButtonLoading = true;
-                          });
-                          try {
-                            LoginModel loginData =
-                                await apiServices.getUserLogIn(
-                              prmUsername: _usernameController.text.trim(),
-                              prmPassword: _passwordController.text.trim(),
-                              prmMacAddress: '',
-                              prmIpAddress: '',
-                              prmLat: '',
-                              prmLong: '',
-                              prmAppType: '',
-                            );
-                            if (!mounted) return;
-                            if (loginData.errorCode == 0) {
-                              await _saveUserData(loginData);
-                              _navigateToBackground(loginData.data[0].userType);
-                            } else {
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Don\'t have an account?',
+                                  style: TextStyle(
+                                    color: themeColor,
+                                    fontSize: 12,
+                                  )),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                      builder: (context) =>
+                                          const ScreenRegistration(),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'Register',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ]),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: buttonColor,
+                          ),
+                          onPressed: () async {
+                            if (!_userNameKey.currentState!.validate() ||
+                                !_passwordKey.currentState!.validate()) {
+                              return;
+                            }
+                            setState(() {
+                              _isButtonLoading = true;
+                            });
+                            try {
+                              LoginModel loginData =
+                                  await apiServices.getUserLogIn(
+                                prmUsername: _usernameController.text.trim(),
+                                prmPassword: _passwordController.text.trim(),
+                                prmMacAddress: '',
+                                prmIpAddress: '',
+                                prmLat: '',
+                                prmLong: '',
+                                prmAppType: '',
+                              );
+                              if (!mounted) return;
+                              if (loginData.errorCode == 0) {
+                                await _saveUserData(loginData);
+                                _navigateToBackground(
+                                    loginData.data[0].userType);
+                              } else {
+                                if (!context.mounted) return;
+                                Util.customErrorSnackBar(
+                                  context,
+                                  "Error: ${loginData.message}",
+                                );
+                              }
+                            } catch (e) {
+                              if (kDebugMode) {
+                                print('Login error: $e');
+                              }
                               if (!context.mounted) return;
                               Util.customErrorSnackBar(
                                 context,
-                                "Error: ${loginData.message}",
+                                "An error occurred during login. Please try again.",
                               );
+                            } finally {
+                              if (mounted) {
+                                setState(() {
+                                  _isButtonLoading = false;
+                                });
+                              }
                             }
-                          } catch (e) {
-                            if (kDebugMode) {
-                              print('Login error: $e');
-                            }
-                            if (!context.mounted) return;
-                            Util.customErrorSnackBar(
-                              context,
-                              "An error occurred during login. Please try again.",
-                            );
-                          } finally {
-                            if (mounted) {
-                              setState(() {
-                                _isButtonLoading = false;
-                              });
-                            }
-                          }
-                        },
-                        child: _isButtonLoading
-                            ? const CustomLogoSpinner(
-                                oneSize: 10,
-                                roundSize: 30,
-                              )
-                            : const Text(
-                                'LOGIN',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                          },
+                          child: _isButtonLoading
+                              ? const CustomLogoSpinner(
+                                  oneSize: 10,
+                                  roundSize: 30,
+                                )
+                              : const Text(
+                                  'LOGIN',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
