@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:lasovrana/custom_widgets/custom_scaffold_driver.dart';
-import 'package:lasovrana/services/api_services.dart';
 
+import '../../../custom_widgets/custom_scaffold_driver.dart';
 import '../../../custom_widgets/util_class.dart';
 import '../../../models/daily_drop_list_model.dart';
 import '../../../models/transport_item_list_model.dart';
+import '../../../services/api_services.dart';
 
 class TransportItemList extends StatefulWidget {
   final DailyDropListModel selectedItem;

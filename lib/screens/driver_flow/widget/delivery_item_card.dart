@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:lasovrana/screens/driver_flow/widget/transport_item_list.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../custom_widgets/util_class.dart';
 import '../../../models/daily_drop_list_model.dart';
+import 'transport_item_list.dart';
 
 class DeliveryItemCard extends StatefulWidget {
   final DailyDropListModel selectedItem;

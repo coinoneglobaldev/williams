@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lasovrana/models/delivery_save_model.dart';
 
 import '../../common/orientation_setup.dart';
 import '../../constants.dart';
@@ -10,6 +9,7 @@ import '../../custom_screens/custom_network_error.dart';
 import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/custom_spinning_logo.dart';
 import '../../custom_widgets/util_class.dart';
+import '../../models/delivery_save_model.dart';
 import '../../providers/connectivity_status_provider.dart';
 import '../../services/api_services.dart';
 import 'login.dart';
@@ -132,15 +132,17 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                       return null;
                     },
                     controller: _usernameController,
-                    decoration: InputDecoration(border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide(
-                        color: themeColor,
-                        width: 1,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
                       ),
-                    ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: themeColor,
+                          width: 1,
+                        ),
+                      ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide(
@@ -181,9 +183,10 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                     },
                     controller: _passwordController,
                     obscureText: !_isVisibility,
-                    decoration: InputDecoration(border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide(
@@ -245,15 +248,17 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                     },
                     controller: _confirmPasswordController,
                     obscureText: !_isVisibility,
-                    decoration: InputDecoration(border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide(
-                        color: themeColor,
-                        width: 1,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
                       ),
-                    ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          color: themeColor,
+                          width: 1,
+                        ),
+                      ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide(
@@ -299,7 +304,10 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text('  Already have an account?',
-                        style: TextStyle(color: Colors.black,fontSize: 12,)),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        )),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -309,8 +317,11 @@ class _ScreenLoginState extends ConsumerState<ScreenRegistration> {
                           ),
                         );
                       },
-                      child:
-                          Text('Login', style: TextStyle(color: Colors.blue,fontSize: 12,)),
+                      child: Text('Login',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 12,
+                          )),
                     ),
                   ],
                 ),
