@@ -98,6 +98,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String userName = prefs.getString('userName')!;
     final String accId = prefs.getString('accId')!;
+    String remarks = prefs.getString('remarks')!;
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
@@ -105,6 +106,7 @@ class _ScreenSplashState extends State<ScreenSplash> {
         builder: (context) => DeliveryItemsListScreen(
           name: userName,
           dNo: accId,
+          remark: remarks,
         ),
       ),
     );

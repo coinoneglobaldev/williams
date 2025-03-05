@@ -47,6 +47,7 @@ class Datum {
   String desgId;
   String userType;
   String isValiMacAdd;
+  String remarks;
 
   Datum({
     required this.id,
@@ -62,6 +63,7 @@ class Datum {
     required this.desgId,
     required this.userType,
     required this.isValiMacAdd,
+    required this.remarks,
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -78,6 +80,7 @@ class Datum {
         desgId: json["DesgId"],
         userType: json["UserType"],
         isValiMacAdd: json["IsValiMacAdd"],
+        remarks: json["Remarks"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -94,5 +97,6 @@ class Datum {
         "DesgId": desgId,
         "UserType": userType,
         "IsValiMacAdd": isValiMacAdd,
+        "Remarks": remarks,
       };
 }
