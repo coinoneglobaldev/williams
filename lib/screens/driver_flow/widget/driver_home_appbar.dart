@@ -1,12 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../custom_widgets/custom_logout_button.dart';
 
 class DriverHomeAppbar extends StatelessWidget {
   final String name;
   final String dNo;
-
-  const DriverHomeAppbar({
+  final Uri url =
+      Uri.parse('https://flowares.com/index.php/home/accountdeletion');
+  DriverHomeAppbar({
     super.key,
     required this.name,
     required this.dNo,
@@ -62,16 +65,58 @@ class DriverHomeAppbar extends StatelessWidget {
         //   ),
         // ),
         // SizedBox(width: 10),
-        IconButton(
-          icon: Icon(Icons.logout),
-          color: Colors.black,
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => const CustomLogoutConfirmation(),
-            );
-          },
-        ),
+
+        PopupMenuButton(
+            itemBuilder: (context) => [
+                  PopupMenuItem(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const CustomLogoutConfirmation(),
+                      );
+                    },
+                    child: Text('Logout'),
+                  ),
+                  PopupMenuItem(
+                    onTap: () async {
+                      if (!await launchUrl(url)) {
+                        if (kDebugMode) {
+                          print('Could not launch $url');
+                        }
+                      }
+                    },
+                    child: Text('Account Deletion'),
+                  ),
+                ])
+
+        // SizedBox(
+        //   width: 150,
+        //   child: ExpansionTile(
+        //     title: Text('Help!'),
+        //     controlAffinity: ListTileControlAffinity.trailing,
+        //     children: <Widget>[
+        //       ListTile(
+        //           onTap: () {
+        //             showDialog(
+        //               context: context,
+        //               builder: (context) => const CustomLogoutConfirmation(),
+        //             );
+        //           },
+        //           title: Text('Logout')),
+        //       ListTile(onTap: () {}, title: Text('Account Deletion'))
+        //     ],
+        //   ),
+        // ),
+        // IconButton(
+        //   icon: Icon(Icons.logout),
+        //   color: Colors.black,
+        //   onPressed: () {
+        //     showDialog(
+        //       context: context,
+        //       builder: (context) => const CustomLogoutConfirmation(),
+        //     );
+        //   },
+        // ),
       ],
     );
   }
