@@ -10,7 +10,7 @@ import '../../models/daily_drop_list_model.dart';
 import '../../services/api_services.dart';
 import 'delivery_upload_screen.dart';
 import 'widget/delivery_item_card.dart';
-import 'widget/driver_home_appbar.dart';
+import 'widget/driver_home_header.dart';
 
 class DeliveryItemsListScreen extends StatefulWidget {
   final String name;
@@ -67,11 +67,12 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
       isLoading = true;
     });
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String prmCmpId = prefs.getString('cmpId')!;
-      String prmBrId = prefs.getString('brId')!;
-      String prmFaId = prefs.getString('faId')!;
-      String prmUId = prefs.getString('userId')!;
+      SharedPreferences driverPreferences =
+          await SharedPreferences.getInstance();
+      String prmCmpId = driverPreferences.getString('cmpId')!;
+      String prmBrId = driverPreferences.getString('brId')!;
+      String prmFaId = driverPreferences.getString('faId')!;
+      String prmUId = driverPreferences.getString('userId')!;
       String todayDate = _formatDate(DateTime.now());
 
       final items = await apiServices.fnGetVehicleTransportList(
@@ -177,10 +178,12 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
         },
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15,),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15,
+            ),
             child: Column(
               children: [
-                DriverHomeAppbar(name: widget.name, dNo: widget.dNo),
+                DriverHomeHeader(name: widget.name, dNo: widget.dNo),
                 const SizedBox(height: 10),
                 // Tab Bar
                 Container(
@@ -249,8 +252,8 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
                       ? const Center(child: CircularProgressIndicator())
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(20),
-                        clipBehavior: Clip.antiAlias,
-                        child: TabBarView(
+                          clipBehavior: Clip.antiAlias,
+                          child: TabBarView(
                             physics: NeverScrollableScrollPhysics(),
                             controller: _tabController,
                             children: [
@@ -258,7 +261,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
                               _buildDeliveryList(finishedDeliveries),
                             ],
                           ),
-                      ),
+                        ),
                 ),
               ],
             ),

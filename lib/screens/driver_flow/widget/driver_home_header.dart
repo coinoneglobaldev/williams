@@ -4,12 +4,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../custom_widgets/custom_logout_button.dart';
 
-class DriverHomeAppbar extends StatelessWidget {
+class DriverHomeHeader extends StatelessWidget {
   final String name;
   final String dNo;
   final Uri url =
       Uri.parse('https://flowares.com/index.php/home/accountdeletion');
-  DriverHomeAppbar({
+  DriverHomeHeader({
     super.key,
     required this.name,
     required this.dNo,
