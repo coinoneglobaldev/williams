@@ -64,6 +64,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
       pref.setString('userName', _usernameController.text.trim()),
       pref.setString('password', _passwordController.text.trim()),
       pref.setBool('isRememberMe', _isRememberMe),
+      pref.setString('remarks', userData.remarks.toString()),
     ]);
     if (kDebugMode) {
       print("cmpId:${pref.getString('cmpId')}");
@@ -123,6 +124,8 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
   }
 
   _fnNavigateToDriverPage() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String remarks = pref.getString('remarks')!;
     // Set portrait orientation for driver
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -138,6 +141,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> {
         builder: (context) => DeliveryItemsListScreen(
           name: userName,
           dNo: accId,
+          remark: remarks,
         ),
       ),
     );

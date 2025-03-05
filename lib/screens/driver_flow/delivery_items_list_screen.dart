@@ -16,11 +16,13 @@ import 'widget/driver_home_header.dart';
 class DeliveryItemsListScreen extends StatefulWidget {
   final String name;
   final String dNo;
+  final String remark;
 
   const DeliveryItemsListScreen({
     super.key,
     required this.name,
     required this.dNo,
+    required this.remark,
   });
 
   @override
@@ -61,6 +63,12 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
     } catch (e) {
       return '';
     }
+  }
+
+  Future<String> hideFloatingActionButton() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String remarks = pref.getString('remarks')!;
+    return remarks;
   }
 
   Future<List<DailyDropListModel>> fetchDeliveryItems() async {
@@ -154,6 +162,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
             child: DeliveryItemCard(
               selectedItem: item,
               refreshCallback: fetchDeliveryItems,
+              remark: widget.remark,
             ),
           );
         },
@@ -165,20 +174,20 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: SizedBox(
-        width: 150,
-        child: FloatingActionButton(
-            backgroundColor: Colors.orange,
-            child: Text('Add Delivery', style: TextStyle(color: Colors.black)),
-            onPressed: () {
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (context) => DeliveryItemsListAddScreen(),
-                ),
-              );
-            }),
-      ),
+      // floatingActionButton: SizedBox(
+      //   width: 150,
+      //   child: FloatingActionButton(
+      //       backgroundColor: Colors.orange,
+      //       child: Text('Add Delivery', style: TextStyle(color: Colors.black)),
+      //       onPressed: () {
+      //         Navigator.push(
+      //           context,
+      //           CupertinoPageRoute(
+      //             builder: (context) => DeliveryItemsListAddScreen(),
+      //           ),
+      //         );
+      //       }),
+      // ),
       body: PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, dynamic result) {
