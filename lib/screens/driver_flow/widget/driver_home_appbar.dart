@@ -67,27 +67,28 @@ class DriverHomeAppbar extends StatelessWidget {
         // SizedBox(width: 10),
 
         PopupMenuButton(
-            itemBuilder: (context) => [
-                  PopupMenuItem(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const CustomLogoutConfirmation(),
-                      );
-                    },
-                    child: Text('Logout'),
-                  ),
-                  PopupMenuItem(
-                    onTap: () async {
-                      if (!await launchUrl(url)) {
-                        if (kDebugMode) {
-                          print('Could not launch $url');
-                        }
-                      }
-                    },
-                    child: Text('Account Deletion'),
-                  ),
-                ])
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => const CustomLogoutConfirmation(),
+                );
+              },
+              child: Text('Logout'),
+            ),
+            PopupMenuItem(
+              onTap: () async {
+                if (!await launchUrl(url)) {
+                  if (kDebugMode) {
+                    print('Could not launch $url');
+                  }
+                }
+              },
+              child: Text('Account Deletion'),
+            ),
+          ],
+        ),
 
         // SizedBox(
         //   width: 150,
