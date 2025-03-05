@@ -8,6 +8,7 @@ import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/util_class.dart';
 import '../../models/daily_drop_list_model.dart';
 import '../../services/api_services.dart';
+import 'delivery_items_list_add_screen.dart';
 import 'delivery_upload_screen.dart';
 import 'widget/delivery_item_card.dart';
 import 'widget/driver_home_header.dart';
@@ -164,6 +165,20 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      floatingActionButton: SizedBox(
+        width: 150,
+        child: FloatingActionButton(
+            backgroundColor: Colors.orange,
+            child: Text('Add Delivery', style: TextStyle(color: Colors.black)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder: (context) => DeliveryItemsListAddScreen(),
+                ),
+              );
+            }),
+      ),
       body: PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, dynamic result) {
