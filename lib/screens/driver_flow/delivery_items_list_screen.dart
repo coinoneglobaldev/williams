@@ -8,18 +8,21 @@ import '../../custom_widgets/custom_exit_confirmation.dart';
 import '../../custom_widgets/util_class.dart';
 import '../../models/daily_drop_list_model.dart';
 import '../../services/api_services.dart';
+import 'delivery_items_list_add_screen.dart';
 import 'delivery_upload_screen.dart';
 import 'widget/delivery_item_card.dart';
-import 'widget/driver_home_appbar.dart';
+import 'widget/driver_home_header.dart';
 
 class DeliveryItemsListScreen extends StatefulWidget {
   final String name;
   final String dNo;
+  final String remark;
 
   const DeliveryItemsListScreen({
     super.key,
     required this.name,
     required this.dNo,
+    required this.remark,
   });
 
   @override
@@ -62,16 +65,23 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
     }
   }
 
+  Future<String> hideFloatingActionButton() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String remarks = pref.getString('remarks')!;
+    return remarks;
+  }
+
   Future<List<DailyDropListModel>> fetchDeliveryItems() async {
     setState(() {
       isLoading = true;
     });
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String prmCmpId = prefs.getString('cmpId')!;
-      String prmBrId = prefs.getString('brId')!;
-      String prmFaId = prefs.getString('faId')!;
-      String prmUId = prefs.getString('userId')!;
+      SharedPreferences driverPreferences =
+          await SharedPreferences.getInstance();
+      String prmCmpId = driverPreferences.getString('cmpId')!;
+      String prmBrId = driverPreferences.getString('brId')!;
+      String prmFaId = driverPreferences.getString('faId')!;
+      String prmUId = driverPreferences.getString('userId')!;
       String todayDate = _formatDate(DateTime.now());
 
       final items = await apiServices.fnGetVehicleTransportList(
@@ -152,6 +162,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
             child: DeliveryItemCard(
               selectedItem: item,
               refreshCallback: fetchDeliveryItems,
+              remark: widget.remark,
             ),
           );
         },
@@ -163,6 +174,20 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      // floatingActionButton: SizedBox(
+      //   width: 150,
+      //   child: FloatingActionButton(
+      //       backgroundColor: Colors.orange,
+      //       child: Text('Add Delivery', style: TextStyle(color: Colors.black)),
+      //       onPressed: () {
+      //         Navigator.push(
+      //           context,
+      //           CupertinoPageRoute(
+      //             builder: (context) => DeliveryItemsListAddScreen(),
+      //           ),
+      //         );
+      //       }),
+      // ),
       body: PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -177,10 +202,12 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
         },
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15,),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15,
+            ),
             child: Column(
               children: [
-                DriverHomeAppbar(name: widget.name, dNo: widget.dNo),
+                DriverHomeHeader(name: widget.name, dNo: widget.dNo),
                 const SizedBox(height: 10),
                 // Tab Bar
                 Container(
@@ -249,8 +276,8 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
                       ? const Center(child: CircularProgressIndicator())
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(20),
-                        clipBehavior: Clip.antiAlias,
-                        child: TabBarView(
+                          clipBehavior: Clip.antiAlias,
+                          child: TabBarView(
                             physics: NeverScrollableScrollPhysics(),
                             controller: _tabController,
                             children: [
@@ -258,7 +285,7 @@ class _DeliveryItemsListScreenState extends State<DeliveryItemsListScreen>
                               _buildDeliveryList(finishedDeliveries),
                             ],
                           ),
-                      ),
+                        ),
                 ),
               ],
             ),

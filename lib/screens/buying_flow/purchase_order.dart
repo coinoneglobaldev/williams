@@ -923,7 +923,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
                                 ),
                                 label: const Text('Buying Sheet'),
                               ),
-                              Expanded(flex:3,child: SizedBox())
+                              Expanded(flex: 3, child: SizedBox())
                             ],
                           ),
                         ),
@@ -1465,7 +1465,7 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
           _purchaseSheet.length,
           (index) => TextEditingController(text: _purchaseSheet[index].rate),
         );
-       await calculateTotalAmount(buyingSheet: _purchaseSheet);
+        await calculateTotalAmount(buyingSheet: _purchaseSheet);
         setState(() {});
         if (!mounted) return;
         Navigator.pop(context);
@@ -1990,10 +1990,12 @@ class _PurchaseOrderState extends State<PurchaseOrder> {
     return ElevatedButton(
       onPressed: () {
         bool atLeastOneSelected = _purchaseSheet.any((item) => item.isSelected);
-        if(atLeastOneSelected){ _updateNow();}else{
-          Util.customErrorSnackBar(context, 'Please select at least one item to order');
+        if (atLeastOneSelected) {
+          _updateNow();
+        } else {
+          Util.customErrorSnackBar(
+              context, 'Please select at least one item to order');
         }
-
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,

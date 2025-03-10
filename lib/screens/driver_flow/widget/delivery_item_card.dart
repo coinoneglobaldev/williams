@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../custom_widgets/util_class.dart';
@@ -10,10 +11,12 @@ import 'transport_item_list.dart';
 class DeliveryItemCard extends StatefulWidget {
   final DailyDropListModel selectedItem;
   final Function refreshCallback;
+  final String remark;
 
   const DeliveryItemCard({
     required this.selectedItem,
     required this.refreshCallback,
+    required this.remark,
     super.key,
   });
 
@@ -22,6 +25,8 @@ class DeliveryItemCard extends StatefulWidget {
 }
 
 class _DeliveryItemCardState extends State<DeliveryItemCard> {
+  String hideChk = '';
+
   Future<void> _launchGoogleMaps() async {
     final item = widget.selectedItem;
     if ([item.latitude, item.longitude, item.firstLineAdd]
@@ -42,6 +47,11 @@ class _DeliveryItemCardState extends State<DeliveryItemCard> {
     } catch (e) {
       _handleError('Could not launch Google Maps');
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   void _handleError(String message) {
@@ -116,42 +126,44 @@ class _DeliveryItemCardState extends State<DeliveryItemCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: widget.selectedItem.isChk == '0'
-                        ? Colors.blue
-                        : widget.selectedItem.isChk == '1'
-                            ? Colors.orange
-                            : Colors.red,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 10,
-                    shadowColor: Colors.black,
-                  ),
-                  onPressed: widget.selectedItem.isDelivery == '1'
-                      ? null
-                      : () {
-                          Navigator.push(
-                            context,
-                            CupertinoPageRoute(
-                              builder: (context) => TransportItemList(
-                                selectedItem: widget.selectedItem,
-                              ),
-                            ),
-                          ).then((value) => widget.refreshCallback());
-                        },
-                  child: const Text(
-                    'Check',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
+                widget.remark == ''
+                    ? ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: widget.selectedItem.isChk == '0'
+                              ? Colors.blue
+                              : widget.selectedItem.isChk == '1'
+                                  ? Colors.orange
+                                  : Colors.red,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 10,
+                          shadowColor: Colors.black,
+                        ),
+                        onPressed: widget.selectedItem.isDelivery == '1'
+                            ? null
+                            : () {
+                                Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                    builder: (context) => TransportItemList(
+                                      selectedItem: widget.selectedItem,
+                                    ),
+                                  ),
+                                ).then((value) => widget.refreshCallback());
+                              },
+                        child: const Text(
+                          'Check',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    : SizedBox.shrink(),
                 SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.symmetric(
